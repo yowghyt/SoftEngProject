@@ -52,6 +52,63 @@ body {
     border-bottom: 3px solid #fff;
 }
 
+.profile-link {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem !important;
+    margin-left: 1rem;
+    transition: all 0.3s ease;
+}
+
+.profile-icon {
+    transition: all 0.3s ease;
+}
+
+.profile-link:hover .profile-icon {
+    transform: scale(1.1);
+}
+
+.dropdown-menu {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 220px;
+    margin-top: 10px;
+}
+
+.dropdown-menu .dropdown-item {
+    padding: 10px 15px;
+    transition: all 0.2s ease;
+    color: #212529;
+    font-size: 0.95rem;
+}
+
+.dropdown-menu .dropdown-item:hover {
+    background-color: var(--light-bg);
+    color: var(--primary-color);
+}
+
+.dropdown-menu .dropdown-item svg {
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
+.dropdown-menu .dropdown-item-text {
+    color: var(--secondary-color);
+    padding: 10px 15px;
+    display: block;
+    font-size: 0.85rem;
+}
+
+.dropdown-menu .text-danger:hover {
+    background-color: #ffe5e5 !important;
+    color: var(--danger-color) !important;
+}
+
+.dropdown-divider {
+    margin: 8px 0;
+}
+
 /* Hero Section */
 .hero-section {
     position: relative;

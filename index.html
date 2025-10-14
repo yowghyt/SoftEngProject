@@ -8,11 +8,10 @@
     <link rel="stylesheet" href="Css/index.css">
 </head>
 <body>
-
-<!-- Navigation Bar -->
-<nav class="navbar navbar-dark navbar-expand-lg">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-dark navbar-expand-lg">
         <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="#">👨‍💼Custodian Borrowing System</a>
+            <a class="navbar-brand fw-bold" href="#">👨‍💼 Admin Dashboard - Custodian Borrowing System</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -30,23 +29,42 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#rooms">Room Reservations</a>
                     </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle profile-link" href="#" id="navbarProfileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="profile-icon">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarProfileDropdown">
+                            <li><a class="dropdown-item" href="#"><strong>Admin User</strong></a></li>
+                            <li><small class="dropdown-item-text">ID: 2241586</small></li>
+                            <li><small class="dropdown-item-text">admin@custodian.com</small></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>My Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>Settings</a></li>
+                            <li><a class="dropdown-item" href="#"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>Activity Log</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 3 16 19"></polyline><polyline points="21 8 9 8"></polyline></svg>Logout</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </div>
-</nav>
+    </nav>
 
-<!-- Hero Section -->
-<section id="dashboard" class="hero-section text white text-center py-4">
+    <!-- Hero Section -->
+    <section id="dashboard" class="hero-section text-white text-center py-4">
         <div class="container">
-            <h1 class="display-5 fw bold mb-2">Admin Dashboard</h1>
-            <p class="lead mb-0">Manage borrowings, Reservations, and equipment</p>
+            <h1 class="display-5 fw-bold mb-2">Admin Dashboard</h1>
+            <p class="lead mb-0">Manage borrowings, reservations, and equipment</p>
         </div>
-</section>
+    </section>
 
- <!-- Main Content -->
-<div class="container-fluid mt-5 px-4">
-    <!-- Statistics Cards -->
-    <div class="row mb-4">
+    <!-- Main Content -->
+    <div class="container-fluid mt-5 px-4">
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
             <div class="col-md-3 col-sm-6 mb-3">
                 <div class="stat-card">
                     <div class="stat-icon">📦</div>
@@ -57,7 +75,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="col-md-3 col-sm-6 mb-3">
                 <div class="stat-card">
                     <div class="stat-icon">👥</div>
@@ -68,7 +85,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="col-md-3 col-sm-6 mb-3">
                 <div class="stat-card">
                     <div class="stat-icon">🏛️</div>
@@ -79,7 +95,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="col-md-3 col-sm-6 mb-3">
                 <div class="stat-card">
                     <div class="stat-icon">⚠️</div>
@@ -90,10 +105,10 @@
                     </div>
                 </div>
             </div>
-    </div>
+        </div>
 
-    <!-- Currently Borrowed Items -->
-    <section id="inventory" class="mb-5">
+        <!-- Currently Borrowed Items -->
+        <section id="inventory" class="mb-5">
             <div class="section-header mb-4">
                 <h2>📦 Currently Borrowed Items</h2>
                 <p class="text-muted">Real-time tracking of borrowed equipment</p>
@@ -105,6 +120,7 @@
                         <tr>
                             <th>Item ID</th>
                             <th>Item Name</th>
+                            <th>Student ID</th>
                             <th>Borrower Name</th>
                             <th>Borrowed Date</th>
                             <th>Due Date</th>
@@ -117,6 +133,7 @@
                         <tr>
                             <td>#IT-001</td>
                             <td>Canon EOS R5 Camera</td>
+                            <td><strong>2241586</strong></td>
                             <td>Juan Dela Cruz</td>
                             <td>Oct 10, 2025</td>
                             <td>Oct 17, 2025</td>
@@ -130,6 +147,7 @@
                         <tr>
                             <td>#IT-002</td>
                             <td>Dell XPS 13 Laptop</td>
+                            <td><strong>2241587</strong></td>
                             <td>Maria Santos</td>
                             <td>Oct 12, 2025</td>
                             <td>Oct 19, 2025</td>
@@ -143,6 +161,7 @@
                         <tr>
                             <td>#IT-003</td>
                             <td>Tool Set (Hammer, Wrench, Drill)</td>
+                            <td><strong>2241588</strong></td>
                             <td>Pedro Rodriguez</td>
                             <td>Oct 05, 2025</td>
                             <td>Oct 12, 2025</td>
@@ -156,6 +175,7 @@
                         <tr>
                             <td>#IT-004</td>
                             <td>Nikon Z9 Camera</td>
+                            <td><strong>2241589</strong></td>
                             <td>Ana Garcia</td>
                             <td>Oct 08, 2025</td>
                             <td>Oct 15, 2025</td>
@@ -169,6 +189,7 @@
                         <tr>
                             <td>#IT-005</td>
                             <td>LED Lighting Kit</td>
+                            <td><strong>2241590</strong></td>
                             <td>Carlos Morales</td>
                             <td>Oct 13, 2025</td>
                             <td>Oct 18, 2025</td>
@@ -182,6 +203,7 @@
                         <tr>
                             <td>#IT-006</td>
                             <td>Audio Recording Microphone</td>
+                            <td><strong>2241591</strong></td>
                             <td>Rosa Fernandez</td>
                             <td>Oct 11, 2025</td>
                             <td>Oct 16, 2025</td>
@@ -195,10 +217,10 @@
                     </tbody>
                 </table>
             </div>
-    </section>
+        </section>
 
-    <!-- Currently Active Room Reservations -->
-    <section id="rooms" class="mb-5">
+        <!-- Currently Active Room Reservations -->
+        <section id="rooms" class="mb-5">
             <div class="section-header mb-4">
                 <h2>🏛️ Active Room Reservations</h2>
                 <p class="text-muted">Real-time room usage and reservations</p>
@@ -210,6 +232,7 @@
                         <tr>
                             <th>Room Name</th>
                             <th>Room Code</th>
+                            <th>Student ID</th>
                             <th>Reserver Name</th>
                             <th>Start Time</th>
                             <th>End Time</th>
@@ -222,6 +245,7 @@
                         <tr>
                             <td>Audio Studio</td>
                             <td>#ROOM-302</td>
+                            <td><strong>2241594</strong></td>
                             <td>John Martinez</td>
                             <td>Oct 14, 2:00 PM</td>
                             <td>Oct 14, 3:30 PM</td>
@@ -235,6 +259,7 @@
                         <tr>
                             <td>Video Production Room</td>
                             <td>#ROOM-405</td>
+                            <td><strong>2241595</strong></td>
                             <td>Lisa Chen</td>
                             <td>Oct 14, 1:00 PM</td>
                             <td>Oct 14, 4:00 PM</td>
@@ -248,6 +273,7 @@
                         <tr>
                             <td>Photo Studio</td>
                             <td>#ROOM-203</td>
+                            <td><strong>2241596</strong></td>
                             <td>Miguel Santos</td>
                             <td>Oct 14, 3:00 PM</td>
                             <td>Oct 14, 4:30 PM</td>
@@ -261,6 +287,7 @@
                         <tr>
                             <td>Meeting Room</td>
                             <td>#ROOM-101</td>
+                            <td><strong>2241597</strong></td>
                             <td>Angela Davis</td>
                             <td>Oct 14, 10:00 AM</td>
                             <td>Oct 14, 11:30 AM</td>
@@ -273,6 +300,7 @@
                         <tr>
                             <td>Lab Space</td>
                             <td>#ROOM-501</td>
+                            <td><strong>2241598</strong></td>
                             <td>Dr. Robert Kim</td>
                             <td>Oct 14, 2:30 PM</td>
                             <td>Oct 14, 5:30 PM</td>
@@ -286,10 +314,10 @@
                     </tbody>
                 </table>
             </div>
-    </section>
+        </section>
 
-    <!-- Borrower History -->
-    <section id="borrowers" class="mb-5">
+        <!-- Borrower History -->
+        <section id="borrowers" class="mb-5">
             <div class="section-header mb-4">
                 <h2>👥 Borrower History & Statistics</h2>
                 <p class="text-muted">Complete history of all borrowers and their transactions</p>
@@ -308,14 +336,14 @@
             </ul>
 
             <div class="tab-content">
-
-            <!-- All Borrowers -->
+                <!-- All Borrowers -->
                 <div class="tab-pane fade show active" id="all-borrowers" role="tabpanel">
                     <div class="table-responsive">
                         <table class="table table-hover admin-table">
                             <thead class="table-light">
                                 <tr>
                                     <th>Borrower ID</th>
+                                    <th>Student ID</th>
                                     <th>Name</th>
                                     <th>Email</th>
                                     <th>Total Borrows</th>
@@ -328,6 +356,7 @@
                             <tbody>
                                 <tr>
                                     <td>#BOR-001</td>
+                                    <td><strong>2241586</strong></td>
                                     <td>Juan Dela Cruz</td>
                                     <td>juan.delacruz@email.com</td>
                                     <td>12</td>
@@ -341,6 +370,7 @@
                                 </tr>
                                 <tr>
                                     <td>#BOR-002</td>
+                                    <td><strong>2241587</strong></td>
                                     <td>Maria Santos</td>
                                     <td>maria.santos@email.com</td>
                                     <td>8</td>
@@ -354,6 +384,7 @@
                                 </tr>
                                 <tr>
                                     <td>#BOR-003</td>
+                                    <td><strong>2241588</strong></td>
                                     <td>Pedro Rodriguez</td>
                                     <td>pedro.rodriguez@email.com</td>
                                     <td>15</td>
@@ -367,6 +398,7 @@
                                 </tr>
                                 <tr>
                                     <td>#BOR-004</td>
+                                    <td><strong>2241589</strong></td>
                                     <td>Ana Garcia</td>
                                     <td>ana.garcia@email.com</td>
                                     <td>20</td>
@@ -380,6 +412,7 @@
                                 </tr>
                                 <tr>
                                     <td>#BOR-005</td>
+                                    <td><strong>2241590</strong></td>
                                     <td>Carlos Morales</td>
                                     <td>carlos.morales@email.com</td>
                                     <td>6</td>
@@ -393,6 +426,7 @@
                                 </tr>
                                 <tr>
                                     <td>#BOR-006</td>
+                                    <td><strong>2241591</strong></td>
                                     <td>Rosa Fernandez</td>
                                     <td>rosa.fernandez@email.com</td>
                                     <td>18</td>
@@ -406,6 +440,7 @@
                                 </tr>
                                 <tr>
                                     <td>#BOR-007</td>
+                                    <td><strong>2241592</strong></td>
                                     <td>David Kim</td>
                                     <td>david.kim@email.com</td>
                                     <td>25</td>
@@ -422,13 +457,14 @@
                     </div>
                 </div>
 
-            <!-- Frequent Borrowers -->
+                <!-- Frequent Borrowers -->
                 <div class="tab-pane fade" id="frequent-borrowers" role="tabpanel">
                     <div class="table-responsive">
                         <table class="table table-hover admin-table">
                             <thead class="table-light">
                                 <tr>
                                     <th>Rank</th>
+                                    <th>Student ID</th>
                                     <th>Borrower Name</th>
                                     <th>Total Borrows</th>
                                     <th>Most Borrowed Item</th>
@@ -440,6 +476,7 @@
                             <tbody>
                                 <tr>
                                     <td><strong>1</strong></td>
+                                    <td><strong>2241592</strong></td>
                                     <td>David Kim</td>
                                     <td>25</td>
                                     <td>Camera Equipment</td>
@@ -449,6 +486,7 @@
                                 </tr>
                                 <tr>
                                     <td><strong>2</strong></td>
+                                    <td><strong>2241589</strong></td>
                                     <td>Ana Garcia</td>
                                     <td>20</td>
                                     <td>Laptop/Tablets</td>
@@ -458,6 +496,7 @@
                                 </tr>
                                 <tr>
                                     <td><strong>3</strong></td>
+                                    <td><strong>2241591</strong></td>
                                     <td>Rosa Fernandez</td>
                                     <td>18</td>
                                     <td>Audio Equipment</td>
@@ -467,6 +506,7 @@
                                 </tr>
                                 <tr>
                                     <td><strong>4</strong></td>
+                                    <td><strong>2241586</strong></td>
                                     <td>Juan Dela Cruz</td>
                                     <td>12</td>
                                     <td>Tools</td>
@@ -479,12 +519,13 @@
                     </div>
                 </div>
 
-            <!-- Delinquent Borrowers -->
+                <!-- Delinquent Borrowers -->
                 <div class="tab-pane fade" id="delinquent-borrowers" role="tabpanel">
                     <div class="table-responsive">
                         <table class="table table-hover admin-table">
                             <thead class="table-light">
                                 <tr>
+                                    <th>Student ID</th>
                                     <th>Borrower Name</th>
                                     <th>Item Overdue</th>
                                     <th>Due Date</th>
@@ -496,6 +537,7 @@
                             </thead>
                             <tbody>
                                 <tr>
+                                    <td><strong>2241588</strong></td>
                                     <td>Pedro Rodriguez</td>
                                     <td>Tool Set</td>
                                     <td>Oct 12, 2025</td>
@@ -508,6 +550,7 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td><strong>2241593</strong></td>
                                     <td>Jose Reyes</td>
                                     <td>Nikon D850 Camera</td>
                                     <td>Oct 08, 2025</td>
@@ -524,19 +567,17 @@
                     </div>
                 </div>
             </div>
-    </section>
+        </section>
+    </div>
 
-</div>
-
-<!-- Footer -->
-<footer class="bg-dark text-white mt-5 py-4">
+    <!-- Footer -->
+    <footer class="bg-dark text-white mt-5 py-4">
         <div class="container text-center">
             <p>&copy; 2025 Custodian Borrowing System - Admin Panel. All rights reserved.</p>
-            <small class="text-muted">Baguio City, Benguet | Last Updated: Oct 14, 2025</small>
+            <small class="text-muted">Tarlac City, Central Luzon | Last Updated: Oct 14, 2025</small>
         </div>
-</footer>
+    </footer>
 
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>
 </html>
