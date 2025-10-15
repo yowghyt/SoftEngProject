@@ -33,6 +33,7 @@ These modules will be developed and divided accordingly for the Midterms and Fin
 | Contillo, Daniel Roi | [@sora598](https://github.com/sora598) |
 | Damocles, Jhezreen Adriana | [@drianajd](https://github.com/drianajd) |
 | Javier, Charles Louis | [@JayJay3937](https://github.com/JayJay3937) |
+| Juan, Airon | [@218juanAiron](https://github.com/218juanAiron) |
 
 
 ---
