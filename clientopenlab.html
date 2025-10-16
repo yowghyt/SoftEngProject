@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Entry Log - Time In/Out System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="Css/clientlab.css">
+</head>
+<body>
+<!-- Navigation Bar -->
+<nav class="navbar navbar-dark navbar-expand-lg">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="#">🚪 Lab Entry Log System</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#time-in-out">Time In/Out</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#current-visitors">Current Visitors</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#history">Today's Log</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="AdHome.html">Back to Dashboard</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <h1 class="display-5 fw-bold mb-2">Lab Entry & Exit Log</h1>
+        <p class="lead mb-0">Track student and visitor access to the laboratory</p>
+        <div class="mt-3">
+            <span class="badge bg-light text-dark fs-6">📅 <span id="current-date">October 16, 2025</span></span>
+            <span class="badge bg-light text-dark fs-6 ms-2" id="current-time">⏰ Loading...</span>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<div class="container-fluid mt-5 px-4">
+    <!-- Quick Stats -->
+    <div class="row mb-5">
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stat-card stat-in">
+                <div class="stat-icon">👥</div>
+                <div class="stat-content">
+                    <h6>Currently Inside</h6>
+                    <h3 id="inside-count">8</h3>
+                    <small class="text-muted">Active visitors</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stat-card stat-today">
+                <div class="stat-icon">📊</div>
+                <div class="stat-content">
+                    <h6>Total Today</h6>
+                    <h3 id="today-count">24</h3>
+                    <small class="text-muted">Unique visitors</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stat-card stat-time">
+                <div class="stat-icon">⏱️</div>
+                <div class="stat-content">
+                    <h6>Avg. Duration</h6>
+                    <h3 id="avg-duration">2.5h</h3>
+                    <small class="text-muted">Per visit</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stat-card stat-capacity">
+                <div class="stat-icon">🏛️</div>
+                <div class="stat-content">
+                    <h6>Lab Capacity</h6>
+                    <h3><span id="capacity-current">8</span>/30</h3>
+                    <small class="text-success">Available</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Time In/Out Section -->
+    <section id="time-in-out" class="mb-5">
+        <div class="section-header mb-4">
+            <h2>🚪 Student Entry/Exit Portal</h2>
+            <p class="text-muted">Scan your ID or enter manually to log your visit</p>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="entry-card">
+                    <div class="entry-header bg-success">
+                        <h4>🟢 Time In</h4>
+                        <p class="mb-0">Log your entry to the lab</p>
+                    </div>
+                    <div class="entry-body">
+                        <form id="timeInForm">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Student ID Number</label>
+                                <input type="text" class="form-control form-control-lg" id="timeInStudentId" placeholder="Enter your Student ID (e.g., 2241586)" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Full Name</label>
+                                <input type="text" class="form-control form-control-lg" id="timeInName" placeholder="Enter your full name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Purpose of Visit</label>
+                                <select class="form-select form-select-lg" id="timeInPurpose" required>
+                                    <option value="">Select purpose...</option>
+                                    <option>Study/Research</option>
+                                    <option>Project Work</option>
+                                    <option>Equipment Use</option>
+                                    <option>Class Activity</option>
+                                    <option>Meeting</option>
+                                    <option>Other</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Additional Notes (Optional)</label>
+                                <textarea class="form-control" id="timeInNotes" rows="2" placeholder="Any additional information..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success btn-lg w-100">
+                                <strong>✓ Log Time In</strong>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 mb-4">
+                <div class="entry-card">
+                    <div class="entry-header bg-danger">
+                        <h4>🔴 Time Out</h4>
+                        <p class="mb-0">Log your exit from the lab</p>
+                    </div>
+                    <div class="entry-body">
+                        <form id="timeOutForm">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Student ID Number</label>
+                                <input type="text" class="form-control form-control-lg" id="timeOutStudentId" placeholder="Enter your Student ID" required>
+                            </div>
+                            <div class="mb-4">
+                                <div class="alert alert-info">
+                                    <strong>Quick Checkout:</strong> Just enter your Student ID and click Time Out. Your session will be automatically closed.
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Feedback (Optional)</label>
+                                <textarea class="form-control" id="timeOutFeedback" rows="3" placeholder="How was your experience? Any issues to report?"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-danger btn-lg w-100">
+                                <strong>✓ Log Time Out</strong>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Current Visitors Section -->
+    <section id="current-visitors" class="mb-5">
+        <div class="section-header mb-4">
+            <h2>👥 Currently Inside the Lab</h2>
+            <p class="text-muted">Real-time list of students currently in the laboratory</p>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover lab-table">
+                <thead class="table-light">
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Name</th>
+                        <th>Time In</th>
+                        <th>Duration</th>
+                        <th>Purpose</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="currentVisitorsTable">
+                    <tr>
+                        <td><strong>2241586</strong></td>
+                        <td>Juan Dela Cruz</td>
+                        <td>08:30 AM</td>
+                        <td><span class="badge bg-info">2h 15m</span></td>
+                        <td>Project Work</td>
+                        <td><span class="badge bg-success">Inside</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" onclick="forceTimeOut('2241586')">Force Time Out</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>2241587</strong></td>
+                        <td>Maria Santos</td>
+                        <td>09:15 AM</td>
+                        <td><span class="badge bg-info">1h 30m</span></td>
+                        <td>Study/Research</td>
+                        <td><span class="badge bg-success">Inside</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" onclick="forceTimeOut('2241587')">Force Time Out</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>2241589</strong></td>
+                        <td>Ana Garcia</td>
+                        <td>10:00 AM</td>
+                        <td><span class="badge bg-info">45m</span></td>
+                        <td>Equipment Use</td>
+                        <td><span class="badge bg-success">Inside</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" onclick="forceTimeOut('2241589')">Force Time Out</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>2241590</strong></td>
+                        <td>Carlos Morales</td>
+                        <td>10:30 AM</td>
+                        <td><span class="badge bg-info">15m</span></td>
+                        <td>Class Activity</td>
+                        <td><span class="badge bg-success">Inside</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" onclick="forceTimeOut('2241590')">Force Time Out</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>2241591</strong></td>
+                        <td>Rosa Fernandez</td>
+                        <td>07:45 AM</td>
+                        <td><span class="badge bg-warning text-dark">3h 00m</span></td>
+                        <td>Project Work</td>
+                        <td><span class="badge bg-success">Inside</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" onclick="forceTimeOut('2241591')">Force Time Out</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>2241594</strong></td>
+                        <td>John Martinez</td>
+                        <td>09:45 AM</td>
+                        <td><span class="badge bg-info">1h 00m</span></td>
+                        <td>Meeting</td>
+                        <td><span class="badge bg-success">Inside</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" onclick="forceTimeOut('2241594')">Force Time Out</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>2241595</strong></td>
+                        <td>Lisa Chen</td>
+                        <td>08:00 AM</td>
+                        <td><span class="badge bg-warning text-dark">2h 45m</span></td>
+                        <td>Study/Research</td>
+                        <td><span class="badge bg-success">Inside</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" onclick="forceTimeOut('2241595')">Force Time Out</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>2241596</strong></td>
+                        <td>Miguel Santos</td>
+                        <td>10:15 AM</td>
+                        <td><span class="badge bg-info">30m</span></td>
+                        <td>Equipment Use</td>
+                        <td><span class="badge bg-success">Inside</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" onclick="forceTimeOut('2241596')">Force Time Out</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Today's Complete Log -->
+    <section id="history" class="mb-5">
+        <div class="section-header mb-4">
+            <h2>📋 Today's Complete Entry Log</h2>
+            <p class="text-muted">Full history of all entries and exits for <span id="log-date">October 16, 2025</span></p>
+        </div>
+
+        <div class="mb-3">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-primary active" onclick="filterLog('all')">All</button>
+                <button type="button" class="btn btn-outline-primary" onclick="filterLog('completed')">Completed</button>
+                <button type="button" class="btn btn-outline-primary" onclick="filterLog('inside')">Still Inside</button>
+            </div>
+            <button class="btn btn-success float-end" onclick="exportLog()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                    <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                </svg>
+                Export Today's Log
+            </button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover lab-table">
+                <thead class="table-light">
+                    <tr>
+                        <th>Entry #</th>
+                        <th>Student ID</th>
+                        <th>Name</th>
+                        <th>Time In</th>
+                        <th>Time Out</th>
+                        <th>Duration</th>
+                        <th>Purpose</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTable">
+                    <tr data-status="completed">
+                        <td>#001</td>
+                        <td><strong>2241592</strong></td>
+                        <td>David Kim</td>
+                        <td>07:00 AM</td>
+                        <td>09:30 AM</td>
+                        <td>2h 30m</td>
+                        <td>Study/Research</td>
+                        <td><span class="badge bg-secondary">Completed</span></td>
+                    </tr>
+                    <tr data-status="inside">
+                        <td>#002</td>
+                        <td><strong>2241591</strong></td>
+                        <td>Rosa Fernandez</td>
+                        <td>07:45 AM</td>
+                        <td>-</td>
+                        <td>3h 00m</td>
+                        <td>Project Work</td>
+                        <td><span class="badge bg-success">Inside</span></td>
+                    </tr>
+                    <tr data-status="inside">
+                        <td>#003</td>
+                        <td><strong>2241595</strong></td>
+                        <td>Lisa Chen</td>
+                        <td>08:00 AM</td>
+                        <td>-</td>
+                        <td>2h 45m</td>
+                        <td>Study/Research</td>
+                        <td><span class="badge bg-success">Inside</span></td>
+                    </tr>
+                    <tr data-status="inside">
+                        <td>#004</td>
+                        <td><strong>2241586</strong></td>
+                        <td>Juan Dela Cruz</td>
+                        <td>08:30 AM</td>
+                        <td>-</td>
+                        <td>2h 15m</td>
+                        <td>Project Work</td>
+                        <td><span class="badge bg-success">Inside</span></td>
+                    </tr>
+                    <tr data-status="completed">
+                        <td>#005</td>
+                        <td><strong>2241593</strong></td>
+                        <td>Jose Reyes</td>
+                        <td>08:45 AM</td>
+                        <td>10:15 AM</td>
+                        <td>1h 30m</td>
+                        <td>Equipment Use</td>
+                        <td><span class="badge bg-secondary">Completed</span></td>
+                    </tr>
+                    <tr data-status="inside">
+                        <td>#006</td>
+                        <td><strong>2241587</strong></td>
+                        <td>Maria Santos</td>
+                        <td>09:15 AM</td>
+                        <td>-</td>
+                        <td>1h 30m</td>
+                        <td>Study/Research</td>
+                        <td><span class="badge bg-success">Inside</span></td>
+                    </tr>
+                    <tr data-status="inside">
+                        <td>#007</td>
+                        <td><strong>2241594</strong></td>
+                        <td>John Martinez</td>
+                        <td>09:45 AM</td>
+                        <td>-</td>
+                        <td>1h 00m</td>
+                        <td>Meeting</td>
+                        <td><span class="badge bg-success">Inside</span></td>
+                    </tr>
+                    <tr data-status="inside">
+                        <td>#008</td>
+                        <td><strong>2241589</strong></td>
+                        <td>Ana Garcia</td>
+                        <td>10:00 AM</td>
+                        <td>-</td>
+                        <td>45m</td>
+                        <td>Equipment Use</td>
+                        <td><span class="badge bg-success">Inside</span></td>
+                    </tr>
+                    <tr data-status="inside">
+                        <td>#009</td>
+                        <td><strong>2241596</strong></td>
+                        <td>Miguel Santos</td>
+                        <td>10:15 AM</td>
+                        <td>-</td>
+                        <td>30m</td>
+                        <td>Equipment Use</td>
+                        <td><span class="badge bg-success">Inside</span></td>
+                    </tr>
+                    <tr data-status="inside">
+                        <td>#010</td>
+                        <td><strong>2241590</strong></td>
+                        <td>Carlos Morales</td>
+                        <td>10:30 AM</td>
+                        <td>-</td>
+                        <td>15m</td>
+                        <td>Class Activity</td>
+                        <td><span class="badge bg-success">Inside</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<!-- Footer -->
+<footer class="text-light py-4">
+    <div class="container text-center">
+        <p>&copy; 2025 Lab Entry Log System. All rights reserved.</p>
+        <small class="text-muted">Developed for efficient laboratory management</small>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N" crossorigin="anonymous"></script>
+
+</body>
+</html>
