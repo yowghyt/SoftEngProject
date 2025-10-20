@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   console.log("Fetching borrowed items...");
 
-  fetch("get_borrowed_items.php")
+  fetch("php/get_borrowed_items.php")
     .then(response => response.json())
     .then(data => {
       console.log("Fetched data:", data);
@@ -22,8 +22,8 @@ document.addEventListener("DOMContentLoaded", () => {
             <td>${item.borrowerName}</td>
             <td>${borrowedDate.toDateString()}</td>
             <td>${dueDate.toDateString()}</td>
-            <td><span class="badge bg-success">${item.status}</span></td>
             <td><span class="badge bg-info">${daysLeft} days</span></td>
+            <td><span class="badge bg-success">${item.status}</span></td>
             <td>
               <button class="btn btn-sm btn-primary">Details</button>
               <button class="btn btn-sm btn-warning">Extend</button>
