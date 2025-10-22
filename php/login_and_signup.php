@@ -1,0 +1,109 @@
+<?php
+/**
+ * server.php
+ * 
+ * This script handles LOGIN and SIGNUP requests for users.
+ * 
+ * Required fields:
+ *  - SIGNUP: email, first_name, last_name, id_number, password
+ *  - LOGIN:  id_number, password
+ */
+
+include 'db_connect.php'; // connect to database
+
+// Decode JSON request (from frontend)
+$data = json_decode(file_get_contents("php://input"), true);
+
+$action = $data['action'] ?? '';
+
+if ($action === 'login') {
+    loginUser($conn, $data);
+} elseif ($action === 'signup') {
+    signupUser($conn, $data);
+} else {
+    echo json_encode(["status" => "error", "message" => "Invalid action"]);
+}
+
+/**
+ * LOGIN USER
+ */
+function loginUser($conn, $data) {
+    $id_number = $data['id_number'] ?? '';
+    $password = $data['password'] ?? '';
+
+    if (empty($id_number) || empty($password)) {
+        echo json_encode(["status" => "error", "message" => "Missing ID number or password"]);
+        return;
+    }
+
+    $stmt = $conn->prepare("SELECT * FROM users WHERE id_number = ?");
+    $stmt->bind_param("s", $id_number);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $user = $result->fetch_assoc();
+
+        if (password_verify($password, $user['password'])) {
+            echo json_encode([
+                "status" => "success",
+                "message" => "Login successful",
+                "user" => [
+                    "id_number" => $user['id_number'],
+                    "first_name" => $user['first_name'],
+                    "last_name" => $user['last_name'],
+                    "email" => $user['email']
+                ]
+            ]);
+        } else {
+            echo json_encode(["status" => "error", "message" => "Invalid password"]);
+        }
+    } else {
+        echo json_encode(["status" => "error", "message" => "User not found"]);
+    }
+
+    $stmt->close();
+}
+
+/**
+ * SIGN UP USER
+ */
+function signupUser($conn, $data) {
+    $email = $data['email'] ?? '';
+    $first_name = $data['first_name'] ?? '';
+    $last_name = $data['last_name'] ?? '';
+    $id_number = $data['id_number'] ?? '';
+    $password = $data['password'] ?? '';
+
+    if (empty($email) || empty($first_name) || empty($last_name) || empty($id_number) || empty($password)) {
+        echo json_encode(["status" => "error", "message" => "All fields are required"]);
+        return;
+    }
+
+    $stmt = $conn->prepare("SELECT * FROM users WHERE id_number = ? OR email = ?");
+    $stmt->bind_param("ss", $id_number, $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        echo json_encode(["status" => "error", "message" => "ID number or email already registered"]);
+        return;
+    }
+
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+    $stmt = $conn->prepare("
+        INSERT INTO users (email, first_name, last_name, id_number, password)
+        VALUES (?, ?, ?, ?, ?)
+    ");
+    $stmt->bind_param("sssss", $email, $first_name, $last_name, $id_number, $hashed_password);
+
+    if ($stmt->execute()) {
+        echo json_encode(["status" => "success", "message" => "Signup successful"]);
+    } else {
+        echo json_encode(["status" => "error", "message" => "Error during signup"]);
+    }
+
+    $stmt->close();
+}
+?>

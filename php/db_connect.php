@@ -5,7 +5,7 @@ Database connection
 $servername = "localhost";
 $username = "root"; 
 $password = "";
-$dbname = "custodian_db"; 
+$dbname = "softengdb2"; 
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
