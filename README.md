@@ -46,8 +46,8 @@ The application consists of one main modules:
 ## Tech Stack
 
 - **Frontend:** HTML5, CSS3, JavaScript
-- **Backend:** N/a
-- **Database:** N/a
+- **Backend:** PHP
+- **Database:** SQL/MySQL
 - **Version Control:** Git & GitHub
 
 ---

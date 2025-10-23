@@ -1,6 +1,7 @@
 <?php
 header('Content-Type: application/json');
-include 'db_connect.php'; // adjust path if needed
+include __DIR__ . '/db_connect.php';
+
 
 $sql = "SELECT 
             r.roomId,
