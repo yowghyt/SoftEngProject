@@ -1,17 +1,22 @@
-# Team Ballerina's Midterm Project - Custodian Borrowing System
+Custodian Borrowing System
 
-## 📌 Project Overview
-
-This repository contains our Midterm Project for Web Technologies (IT 312). Our project is a **Custodian Borrowing System and Room Reservation Platform** designed for SLU Maryheights Campus. The application enables students and faculty to borrow equipment and resources from the custodian, as well as reserve school facilities and rooms for various campus activities.
+## Description
+This project involves a Custodian Borrowing System and a room reservation platform to be used on the SLU Maryheights Campus. The application enables students and faculty to borrow equipment and resources from the custodian and also make reservations for school facilities and rooms to host various campus activities.
 
 The application consists of one main modules:
 - **Admin/Custodian/Staff** - Manage inventory, approve borrowing requests, View system dashboard, manage inventory, and oversee reservations
 
-These modules will be developed and divided accordingly for the Midterms and Finals terms.
+---
+
+## File Structure
+```
+
+```
 
 ---
 
-## 🎯 Objectives
+
+## Objectives
 
 - Develop a functional borrowing and reservation system tailored to the SLU Maryheights campus community
 - Implement role-based access control for Custodian Staff
@@ -24,7 +29,8 @@ These modules will be developed and divided accordingly for the Midterms and Fin
 
 ---
 
-## 👥 Team Members
+
+## Authors
 
 | Name | GitHub |
 |------|--------|
@@ -35,22 +41,9 @@ These modules will be developed and divided accordingly for the Midterms and Fin
 | Javier, Charles Louis | [@JayJay3937](https://github.com/JayJay3937) |
 | Juan, Airon | [@218juanAiron](https://github.com/218juanAiron) |
 
-
 ---
 
-## 📅 Submission Details
-
-| Detail | Information |
-|--------|-------------|
-| **Course** | Software Engineering (9468 - IT313) |
-| **Instructor** | Sandra |
-| **Project Type** | Midterm Project |
-| **Due Date** | October 30, 2025 |
-| **Institution** | Saint Louis University - Maryheights Campus |
-
----
-
-## 🛠️ Technology Stack
+## Tech Stack
 
 - **Frontend:** HTML5, CSS3, JavaScript
 - **Backend:** N/a
@@ -59,39 +52,7 @@ These modules will be developed and divided accordingly for the Midterms and Fin
 
 ---
 
-## ✨ Key Features
-
-### For Custodian/Staff
-- Manage equipment inventory
-- Approve or reject borrowing requests
-- Track borrowed items
-- Monitor room reservations
-- Update item availability status
-- Generate borrowing reports
-- Manage return of items
-
-### For Administrators
-- User management dashboard
-- Complete inventory management system
-- View all borrowing requests and reservations
-- System monitoring and analytics
-- Generate usage reports and statistics
-- Manage equipment categories and details
-- User support and troubleshooting
-
----
-
-## 📞 Contact & Support
-
-For questions about this project:
-
-- **Academic Inquiries:** Contact through team members or course instructor
-- **Technical Issues:** [Create a GitHub issue](https://github.com/Team-Cappucina/borrowing-system/issues)
-- **Email:** [Team email or instructor contact]
-
----
-
-## 📜 License & Usage
+## License & Usage
 
 This project is created solely for **educational purposes** as part of our Web Technologies Midterm Project. All content is intended for academic evaluation and learning purposes only. 
 
@@ -99,22 +60,4 @@ Unauthorized use, reproduction, or distribution of this project without proper a
 
 ---
 
-## 📝 Development Progress
-
-### Midterm Phase
-- [ ] System architecture and database design
-- [ ] User authentication system
-- [ ] Equipment borrowing module
-- [ ] Room reservation module
-- [ ] Basic custodian interface
-
-### Finals Phase
-- [ ] Admin dashboard
-- [ ] Notification system
-- [ ] Advanced reporting features
-- [ ] Testing and deployment
-- [ ] Final documentation
-
----
-
-**Last Updated:** October 2024
+**Last Updated:** October 2025
