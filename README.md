@@ -53,8 +53,8 @@ These modules will be developed and divided accordingly for the Midterms and Fin
 ## 🛠️ Technology Stack
 
 - **Frontend:** HTML5, CSS3, JavaScript
-- **Backend:** N/a
-- **Database:** N/a
+- **Backend:** PHP
+- **Database:** SQL/MySQL
 - **Version Control:** Git & GitHub
 
 ---
