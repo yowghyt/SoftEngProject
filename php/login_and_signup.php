@@ -2,7 +2,7 @@
 /**
  * server.php
  * 
- * This script handles LOGIN and SIGNUP requests for users.
+ * This script handles LOGIN, SIGNUP and Logout requests for users.
  * 
  * Required fields:
  *  - SIGNUP: email, first_name, last_name, id_number, password
@@ -45,6 +45,13 @@ function loginUser($conn, $data) {
         $user = $result->fetch_assoc();
 
         if (password_verify($password, $user['password'])) {
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+
+            // Store minimal session data
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['id_number'] = $user['id_number'];
             echo json_encode([
                 "status" => "success",
                 "message" => "Login successful",
@@ -54,7 +61,9 @@ function loginUser($conn, $data) {
                     "last_name" => $user['last_name'],
                     "email" => $user['email']
                 ]
+                
             ]);
+            $_SESSION['user_id'] = $user['id'];
         } else {
             echo json_encode(["status" => "error", "message" => "Invalid password"]);
         }
@@ -106,4 +115,31 @@ function signupUser($conn, $data) {
 
     $stmt->close();
 }
+
+function logoutUser() {
+    // Start the session only if not already active
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    // Check if a user is logged in
+    if (isset($_SESSION['user_id'])) {
+        // Clear all session variables
+        $_SESSION = [];
+
+        // Destroy the session file on the server
+        session_destroy();
+
+        echo json_encode([
+            "status" => "success",
+            "message" => "Logout successful"
+        ]);
+    } else {
+        echo json_encode([
+            "status" => "error",
+            "message" => "No user is currently logged in"
+        ]);
+    }
+}
+
 ?>
