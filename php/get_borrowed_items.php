@@ -1,5 +1,6 @@
 <?php
-include 'db_connect.php';
+include __DIR__ . '/db_connect.php';
+
 
 $sql = "SELECT 
         e.equipmentId,
