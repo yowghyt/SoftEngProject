@@ -105,31 +105,6 @@ INSERT INTO `equipmentreservation` (`reservationId`, `userId`, `equipmentId`, `d
 -- --------------------------------------------------------
 
 --
--- Table structure for table `openlablog`
---
-
-DROP TABLE IF EXISTS `openlablog`;
-CREATE TABLE IF NOT EXISTS `openlablog` (
-  `idLog` int NOT NULL AUTO_INCREMENT,
-  `userId` int NOT NULL,
-  `date` date NOT NULL,
-  `timeIn` time(6) NOT NULL,
-  PRIMARY KEY (`idLog`),
-  KEY `userId` (`userId`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Dumping data for table `openlablog`
---
-
-INSERT INTO `openlablog` (`idLog`, `userId`, `date`, `timeIn`) VALUES
-(1, 1, '2025-10-16', '09:15:00.000000'),
-(2, 2, '2025-10-16', '09:45:00.000000'),
-(3, 3, '2025-10-17', '10:30:00.000000');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `printlog`
 --
 
@@ -195,17 +170,20 @@ CREATE TABLE IF NOT EXISTS `room` (
   `floor` varchar(50) DEFAULT NULL,
   `equipment` text,
   `description` text,
-  PRIMARY KEY (`roomId`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  PRIMARY KEY (`roomId`),
+  UNIQUE KEY `roomName` (`roomName`)   -- Required for FK
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `room`
 --
 
 INSERT INTO `room` (`roomId`, `roomName`, `status`, `capacity`, `building`, `floor`, `equipment`, `description`) VALUES
-(1, 'CL1', 'Available', 40, 'Main Building', '1st Floor', 'Projector, Whiteboard, 40 Computers, Air Conditioning', 'Computer laboratory with modern desktop computers for programming and general use'),
-(2, 'CL2', 'Reserved', 35, 'Main Building', '2nd Floor', 'Smart Board, 35 Computers, Projector, Sound System', 'Computer laboratory equipped with smart board and multimedia capabilities'),
-(3, 'CL3', 'Available', 30, 'Main Building', '3rd Floor', 'Projector, Interactive Display, 30 Computers, Printer', 'Advanced computer laboratory for specialized courses and research');
+(1, '423', 'Available', 40, 'Fr. Seraphin Devesse Building', '1st Floor', 'Projector, Whiteboard, 40 Computers, Air Conditioning', 'Computer laboratory with modern desktop computers for programming and general use'),
+(2, '422', 'Reserved', 35, 'Fr. Seraphin Devesse Building', '2nd Floor', 'Smart Board, 35 Computers, Projector, Sound System', 'Computer laboratory equipped with smart board and multimedia capabilities'),
+(3, 'CL3', 'Available', 30, 'Fr. Seraphin Devesse Building', '3rd Floor', 'Projector, Interactive Display, 30 Computers, Printer', 'Advanced computer laboratory for specialized courses and research'),
+(4, '424', 'Available', 15, 'Fr. Seraphin Devesse Building', '4th Floor', '30 Computers, Printer', 'Advanced computer laboratory for specialized courses and research'),
+(5, '426', 'Available', 15, 'Fr. Seraphin Devesse Building', '4th Floor', '30 Computers, Printer', 'Advanced computer laboratory for specialized courses and research');
 
 -- --------------------------------------------------------
 
@@ -262,6 +240,70 @@ INSERT INTO `users` (`userId`, `idNumber`, `fname`, `lname`) VALUES
 (3, 2240755, 'John', 'Cruz'),
 (4, 2240790, 'Prof', 'Villanueva');
 
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `BYODlog`
+--
+DROP TABLE IF EXISTS `BYODlog`;
+CREATE TABLE IF NOT EXISTS `BYODlog` (
+  `idLog` int NOT NULL AUTO_INCREMENT,
+  `userId` int NOT NULL,
+  `date` date NOT NULL,
+  `timeIn` time(6) NOT NULL,
+  `timeOut` time(6) DEFAULT NULL,
+  `roomName` varchar(50) NOT NULL,
+  PRIMARY KEY (`idLog`),
+  KEY `userId` (`userId`),
+  KEY `roomName` (`roomName`),
+  CONSTRAINT `fk_byodlog_room`
+    FOREIGN KEY (`roomName`) REFERENCES `room` (`roomName`)
+    ON UPDATE CASCADE ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `BYODlog`
+--
+
+INSERT INTO `BYODlog` (`idLog`, `userId`, `date`, `timeIn`, `timeOut`, `roomName`) VALUES
+(1, 1, '2025-10-16', '09:15:00.000000', '11:30:00.000000', '426'),
+(2, 2, '2025-10-16', '09:45:00.000000', '12:10:00.000000', '426'),
+(3, 3, '2025-10-17', '10:30:00.000000', '12:00:00.000000', '426'),
+(4, 1, '2025-10-18', '08:55:00.000000', '10:45:00.000000', '426'),
+(5, 4, '2025-10-18', '13:20:00.000000', '15:00:00.000000', '426');
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `KnowledgeCenterlog`
+--
+DROP TABLE IF EXISTS `KnowledgeCenterlog`;
+CREATE TABLE IF NOT EXISTS `KnowledgeCenterlog` (
+  `idLog` int NOT NULL AUTO_INCREMENT,
+  `userId` int NOT NULL,
+  `date` date NOT NULL,
+  `timeIn` time(6) NOT NULL,
+  `timeOut` time(6) DEFAULT NULL,
+  `roomName` varchar(50) NOT NULL,
+  PRIMARY KEY (`idLog`),
+  KEY `userId` (`userId`),
+  KEY `roomName` (`roomName`),
+  CONSTRAINT `fk_kclog_room`
+    FOREIGN KEY (`roomName`) REFERENCES `room` (`roomName`)
+    ON UPDATE CASCADE ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `KnowledgeCenterlog`
+--
+
+INSERT INTO `KnowledgeCenterlog` (`idLog`, `userId`, `date`, `timeIn`, `timeOut`, `roomName`) VALUES
+(1, 4, '2025-10-16', '09:10:00.000000', '11:00:00.000000', '424'),
+(2, 3, '2025-10-16', '10:00:00.000000', '12:30:00.000000', '424'),
+(3, 2, '2025-10-17', '08:45:00.000000', '10:15:00.000000', '424'),
+(4, 1, '2025-10-18', '14:00:00.000000', '16:10:00.000000', '424'),
+(5, 1, '2025-10-19', '09:25:00.000000', '11:50:00.000000', '424');
+
 --
 -- Constraints for dumped tables
 --
@@ -274,10 +316,26 @@ ALTER TABLE `equipmentreservation`
   ADD CONSTRAINT `FKuserIdEquipRes` FOREIGN KEY (`userId`) REFERENCES `users` (`userId`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 --
--- Constraints for table `openlablog`
+-- Constraints for table `BYODlog`
 --
-ALTER TABLE `openlablog`
-  ADD CONSTRAINT `FKuserIdOpen` FOREIGN KEY (`userId`) REFERENCES `users` (`userId`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE `BYODlog`
+  ADD CONSTRAINT `FKuserIdBYOD`
+    FOREIGN KEY (`userId`) REFERENCES `users` (`userId`)
+    ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FKroomNameBYOD`
+    FOREIGN KEY (`roomName`) REFERENCES `room` (`roomName`)
+    ON DELETE RESTRICT ON UPDATE CASCADE;
+--
+--
+-- Constraints for table `KnowledgeCenterlog`
+--
+ALTER TABLE `KnowledgeCenterlog`
+  ADD CONSTRAINT `FKuserIdKC`
+    FOREIGN KEY (`userId`) REFERENCES `users` (`userId`)
+    ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FKroomNameKC`
+    FOREIGN KEY (`roomName`) REFERENCES `room` (`roomName`)
+    ON DELETE RESTRICT ON UPDATE CASCADE;
 
 --
 -- Constraints for table `printlog`
