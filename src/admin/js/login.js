@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-            const response = await fetch("../php/auth/auth.php", {
+            const response = await fetch("../src/php/auth/auth.php", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 sessionStorage.setItem("user", JSON.stringify(result.user));
 
                 // Fixed: Updated redirect path
-                window.location.href = "../admin/AdHome.html";
+                window.location.href = "../src/admin/AdHome.html";
             } else {
                 alert(result.message || "Login failed. Please try again.");
             }
