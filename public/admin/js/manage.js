@@ -1,15 +1,15 @@
 // Manage Inventory JavaScript Functions
 
 // Wait for DOM and Bootstrap to be fully loaded
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     console.log('Manage Inventory page loaded');
-    
+
     // Ensure Bootstrap is loaded
     if (typeof bootstrap === 'undefined') {
         console.error('Bootstrap JS is not loaded!');
         return;
     }
-    
+
     // Initialize all modals
     const modalElements = document.querySelectorAll('.modal');
     modalElements.forEach(modalEl => {
@@ -19,18 +19,18 @@ document.addEventListener('DOMContentLoaded', function() {
             focus: true
         });
     });
-    
+
     // Initialize tabs
     const triggerTabList = document.querySelectorAll('button[data-bs-toggle="tab"]');
     triggerTabList.forEach(triggerEl => {
         const tabTrigger = new bootstrap.Tab(triggerEl);
-        
+
         triggerEl.addEventListener('click', event => {
             event.preventDefault();
             tabTrigger.show();
         });
     });
-    
+
     console.log('Bootstrap components initialized');
 });
 

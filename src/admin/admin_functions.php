@@ -1,4 +1,5 @@
 <?php
+
 /**
  * THIS FILE CONTAINS THE FUNCTIONS FOR ADMIN ACTIONS
  * 
@@ -34,13 +35,22 @@
  * echo json_encode($data);
  */
 
-include 'db_connect.php';
+require_once __DIR__ . '/../config/db_connect.php';
+
+$conn = Database::getInstance()->getConnection();
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+} else {
+    echo "Connected successfully!";
+}
 
 /**
  * Fetch all borrowed equipment with borrower details and due date info.
  * Returns: array of associative rows
  */
-function fetchBorrowedItems($conn) {
+function fetchBorrowedItems($conn)
+{
     $sql = "
         SELECT er.reservationId, er.userId, u.idNumber AS studentId,
                CONCAT(u.fname, ' ', u.lname) AS borrowerName,
@@ -69,7 +79,8 @@ function fetchBorrowedItems($conn) {
 /**
  * Fetch all active room reservations
  */
-function fetchActiveRooms($conn) {
+function fetchActiveRooms($conn)
+{
     $sql = "
         SELECT rr.reservationId, rr.userId,
                CONCAT(u.fname, ' ', u.lname) AS reserverName,
@@ -88,7 +99,8 @@ function fetchActiveRooms($conn) {
 /**
  * Fetch borrower statistics (total equipment + room reservations)
  */
-function fetchBorrowerStats($conn) {
+function fetchBorrowerStats($conn)
+{
     $sql = "
         SELECT u.userId, CONCAT(u.fname, ' ', u.lname) AS name, u.idNumber,
                (SELECT COUNT(*) FROM equipmentreservation er WHERE er.userId = u.userId) AS total_equipment,
@@ -105,7 +117,8 @@ function fetchBorrowerStats($conn) {
  * Fetch all pending requests (equipment or room)
  * @param string|null $type - 'equipment' | 'room' | null for all
  */
-function fetchPendingRequests($conn, $type = null) {
+function fetchPendingRequests($conn, $type = null)
+{
     if ($type) {
         $stmt = $conn->prepare("
             SELECT req.*, CONCAT(u.fname, ' ', u.lname) AS name
@@ -132,7 +145,8 @@ function fetchPendingRequests($conn, $type = null) {
 /**
  * Approve a pending request (equipment or room)
  */
-function approveRequest($conn, $requestId) {
+function approveRequest($conn, $requestId)
+{
     $stmt = $conn->prepare("SELECT * FROM request WHERE requestId = ?");
     $stmt->bind_param('i', $requestId);
     $stmt->execute();
@@ -166,7 +180,8 @@ function approveRequest($conn, $requestId) {
 /**
  * Reject a request (equipment or room)
  */
-function rejectRequest($conn, $requestId, $reason = '') {
+function rejectRequest($conn, $requestId, $reason = '')
+{
     $stmt = $conn->prepare("SELECT * FROM request WHERE requestId = ?");
     $stmt->bind_param('i', $requestId);
     $stmt->execute();
@@ -200,7 +215,8 @@ function rejectRequest($conn, $requestId, $reason = '') {
 /**
  * Mark an equipment reservation as returned
  */
-function markReturned($conn, $reservationId) {
+function markReturned($conn, $reservationId)
+{
     $stmt = $conn->prepare("UPDATE equipmentreservation SET status = 'Returned' WHERE reservationId = ?");
     $stmt->bind_param('i', $reservationId);
     return $stmt->execute();
@@ -209,7 +225,8 @@ function markReturned($conn, $reservationId) {
 /**
  * Fetch open lab logs
  */
-function fetchOpenLabLog($conn) {
+function fetchOpenLabLog($conn)
+{
     $sql = "
         SELECT ol.*, CONCAT(u.fname, ' ', u.lname) AS name, u.idNumber
         FROM openlablog ol
@@ -223,7 +240,8 @@ function fetchOpenLabLog($conn) {
 /**
  * Fetch print logs
  */
-function fetchPrintLog($conn) {
+function fetchPrintLog($conn)
+{
     $sql = "
         SELECT pl.*, CONCAT(u.fname, ' ', u.lname) AS name, u.idNumber
         FROM printlog pl
@@ -237,9 +255,9 @@ function fetchPrintLog($conn) {
 /**
  * Fetch all equipment (for inventory view)
  */
-function fetchEquipment($conn) {
+function fetchEquipment($conn)
+{
     $sql = "SELECT * FROM equipment ORDER BY equipmentName ASC";
     $result = $conn->query($sql);
     return $result->fetch_all(MYSQLI_ASSOC);
 }
-?>

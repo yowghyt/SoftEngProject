@@ -1,5 +1,7 @@
 <?php
-include __DIR__ . '/db_connect.php';
+require_once __DIR__ . '/../config/db_connect.php';
+
+$conn = Database::getInstance()->getConnection();
 
 
 $sql = "SELECT 

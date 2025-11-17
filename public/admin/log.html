@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Entry Logs - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="Css/AdHome.css">
+</head>
+
+<body>
+    <!-- Top Navbar -->
+    <nav class="top-navbar">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <button class="mobile-toggle" onclick="toggleSidebar()">☰</button>
+            <h4>Admin Dashboard</h4>
+        </div>
+
+        <div class="dropdown profile-dropdown">
+            <button class="profile-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="profile-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+                <div style="text-align: left;">
+                    <div style="font-weight: 600; font-size: 14px;">Admin User</div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.7);">admin@custodian.com</div>
+                </div>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" style="min-width: 250px;">
+                <li><a class="dropdown-item" href="#"><strong>Admin User</strong></a></li>
+                <li><small class="dropdown-item-text">ID: 2241586</small></li>
+                <li><small class="dropdown-item-text">admin@custodian.com</small></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item" href="#">My Profile</a></li>
+                <li><a class="dropdown-item" href="#">Settings</a></li>
+                <li><a class="dropdown-item" href="#">Activity Log</a></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item text-danger" href="/index.html#login_page">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h5>👨‍💼 Admin Panel</h5>
+            <small>Custodian Management System</small>
+        </div>
+        <ul class="sidebar-nav">
+            <li>
+                <a href="../admin/AdHome.html">
+                    <span>📊</span> Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="../admin/accept.html">
+                    <span>⏳</span> Pending Requests
+                </a>
+            </li>
+            <li>
+                <a href="../admin/log.html" class="active">
+                    <span>📋</span> Lab Entry Log
+                </a>
+            </li>
+            <li>
+                <a href="../admin/manage.html">
+                    <span>⚙️</span> Manage Inventory
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="stat-card">
+                    <div class="stat-icon">🔬</div>
+                    <div class="stat-content">
+                        <h6>Lab 1 - Currently Inside</h6>
+                        <h3>8</h3>
+                        <small class="text-muted">Capacity: 30</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="stat-card">
+                    <div class="stat-icon">💻</div>
+                    <div class="stat-content">
+                        <h6>Lab 2 - Currently Inside</h6>
+                        <h3>12</h3>
+                        <small class="text-muted">Capacity: 40</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-content">
+                        <h6>Total Entries Today</h6>
+                        <h3>45</h3>
+                        <small class="text-muted">Across both labs</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="stat-card">
+                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-content">
+                        <h6>Average Duration</h6>
+                        <h3>2.5h</h3>
+                        <small class="text-muted">Per session</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Filter by Lab</label>
+                        <select class="form-select">
+                            <option value="">All Labs</option>
+                            <option value="lab1">Lab 1 - Open Lab</option>
+                            <option value="lab2">Lab 2 - Research Lab</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Filter by Date</label>
+                        <input type="date" class="form-control" value="2025-10-15">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Filter by Status</label>
+                        <select class="form-select">
+                            <option value="">All Status</option>
+                            <option value="inside">Currently Inside</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Search Student</label>
+                        <input type="text" class="form-control" placeholder="Student ID or Name">
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <button class="btn btn-primary me-2">Apply Filters</button>
+                        <button class="btn btn-secondary">Reset</button>
+                        <button class="btn btn-success float-end">Export to Excel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lab Entry Logs Table -->
+        <section class="mb-5">
+            <div class="section-header mb-4">
+                <h2>🔬 Lab Entry Records</h2>
+                <p class="text-muted">Complete log of student entries and exits</p>
+            </div>
+
+            <ul class="nav nav-tabs mb-4" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="all-logs-tab" data-bs-toggle="tab" data-bs-target="#all-logs"
+                        type="button" role="tab">All Logs</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="lab1-tab" data-bs-toggle="tab" data-bs-target="#lab1-logs"
+                        type="button" role="tab">Open Lab 1</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="lab2-tab" data-bs-toggle="tab" data-bs-target="#lab2-logs"
+                        type="button" role="tab">Research Lab 2</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="active-tab" data-bs-toggle="tab" data-bs-target="#active-logs"
+                        type="button" role="tab">Currently Inside</button>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <!-- All Logs -->
+                <div class="tab-pane fade show active" id="all-logs" role="tabpanel">
+                    <div class="table-responsive">
+                        <table class="table table-hover admin-table">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Log ID</th>
+                                    <th>Student ID</th>
+                                    <th>Student Name</th>
+                                    <th>Lab</th>
+                                    <th>Date</th>
+                                    <th>Time In</th>
+                                    <!-- <th>Time Out</th> -->
+                                    <!-- <th>Duration</th> -->
+                                    <!-- <th>Purpose</th> -->
+                                    <!-- <th>Status</th> -->
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#LOG-001</td>
+                                    <td><strong>2241586</strong></td>
+                                    <td>Juan Dela Cruz</td>
+                                    <td>Lab 1 - Open Lab</td>
+                                    <td>Oct 15, 2025</td>
+                                    <td>8:30 AM</td>
+                                    <!-- <td>10:45 AM</td> -->
+                                    <!-- <td>2h 15m</td> -->
+                                    <!-- <td>Research</td> -->
+                                    <!-- <td><span class="badge bg-success">Completed</span></td> -->
+                                    <td>
+                                        <button class="btn btn-sm btn-primary">View Details</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#LOG-002</td>
+                                    <td><strong>2241587</strong></td>
+                                    <td>Maria Santos</td>
+                                    <td>Lab 2 - Research Lab</td>
+                                    <td>Oct 15, 2025</td>
+                                    <td>9:00 AM</td>
+                                    <!-- <td>-</td> -->
+                                    <!-- <td>-</td> -->
+                                    <!-- <td>Experiment</td> -->
+                                    <!-- <td><span class="badge bg-warning">Inside</span></td> -->
+                                    <td>
+                                        <button class="btn btn-sm btn-info">Check Out</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#LOG-003</td>
+                                    <td><strong>2241588</strong></td>
+                                    <td>Pedro Rodriguez</td>
+                                    <td>Lab 1 - Open Lab</td>
+                                    <td>Oct 15, 2025</td>
+                                    <td>10:00 AM</td>
+                                    <!-- <td>-</td> -->
+                                    <!-- <td>-</td> -->
+                                    <!-- <td>Programming</td> -->
+                                    <!-- <td><span class="badge bg-warning">Inside</span></td> -->
+                                    <td>
+                                        <button class="btn btn-sm btn-info">Check Out</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#LOG-004</td>
+                                    <td><strong>2241589</strong></td>
+                                    <td>Ana Garcia</td>
+                                    <td>Lab 2 - Research Lab</td>
+                                    <td>Oct 15, 2025</td>
+                                    <td>7:30 AM</td>
+                                    <!-- <td>9:00 AM</td> -->
+                                    <!-- <td>1h 30m</td> -->
+                                    <!-- <td>Lab Work</td> -->
+                                    <!-- <td><span class="badge bg-success">Completed</span></td> -->
+                                    <td>
+                                        <button class="btn btn-sm btn-primary">View Details</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#LOG-005</td>
+                                    <td><strong>2241590</strong></td>
+                                    <td>Carlos Morales</td>
+                                    <td>Lab 1 - Open Lab</td>
+                                    <td>Oct 15, 2025</td>
+                                    <td>11:00 AM</td>
+                                    <!-- <td>-</td> -->
+                                    <!-- <td>-</td> -->
+                                    <!-- <td>Study</td> -->
+                                    <!-- <td><span class="badge bg-warning">Inside</span></td> -->
+                                    <td>
+                                        <button class="btn btn-sm btn-info">Check Out</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#LOG-006</td>
+                                    <td><strong>2241591</strong></td>
+                                    <td>Rosa Fernandez</td>
+                                    <td>Lab 2 - Research Lab</td>
+                                    <td>Oct 14, 2025</td>
+                                    <td>2:00 PM</td>
+                                    <!-- <td>5:30 PM</td> -->
+                                    <!-- <td>3h 30m</td> -->
+                                    <!-- <td>Project Work</td> -->
+                                    <!-- <td><span class="badge bg-success">Completed</span></td> -->
+                                    <td>
+                                        <button class="btn btn-sm btn-primary">View Details</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#LOG-007</td>
+                                    <td><strong>2241592</strong></td>
+                                    <td>David Kim</td>
+                                    <td>Lab 1 - Open Lab</td>
+                                    <td>Oct 14, 2025</td>
+                                    <td>1:00 PM</td>
+                                    <!-- <td>3:45 PM</td> -->
+                                    <!-- <td>2h 45m</td> -->
+                                    <!-- <td>Coding Practice</td> -->
+                                    <!-- <td><span class="badge bg-success">Completed</span></td> -->
+                                    <td>
+                                        <button class="btn btn-sm btn-primary">View Details</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#LOG-008</td>
+                                    <td><strong>2241593</strong></td>
+                                    <td>Lisa Chen</td>
+                                    <td>Lab 2 - Research Lab</td>
+                                    <td>Oct 14, 2025</td>
+                                    <td>10:30 AM</td>
+                                    <!-- <td>12:00 PM</td> -->
+                                    <!-- <td>1h 30m</td> -->
+                                    <!-- <td>Chemistry Lab</td> -->
+                                    <!-- <td><span class="badge bg-success">Completed</span></td> -->
+                                    <td>
+                                        <button class="btn btn-sm btn-primary">View Details</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Lab 1 Logs -->
+                <div class="tab-pane fade" id="lab1-logs" role="tabpanel">
+                    <div class="table-responsive">
+                        <table class="table table-hover admin-table">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Log ID</th>
+                                    <th>Student ID</th>
+                                    <th>Student Name</th>
+                                    <th>Date</th>
+                                    <th>Time In</th>
+                                    <th>Time Out</th>
+                                    <th>Duration</th>
+                                    <th>Purpose</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#LOG-001</td>
+                                    <td><strong>2241586</strong></td>
+                                    <td>Juan Dela Cruz</td>
+                                    <td>Oct 15, 2025</td>
+                                    <td>8:30 AM</td>
+                                    <td>10:45 AM</td>
+                                    <td>2h 15m</td>
+                                    <td>Research</td>
+                                    <td><span class="badge bg-success">Completed</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary">View Details</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#LOG-003</td>
+                                    <td><strong>2241588</strong></td>
+                                    <td>Pedro Rodriguez</td>
+                                    <td>Oct 15, 2025</td>
+                                    <td>10:00 AM</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>Programming</td>
+                                    <td><span class="badge bg-warning">Inside</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-info">Check Out</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#LOG-005</td>
+                                    <td><strong>2241590</strong></td>
+                                    <td>Carlos Morales</td>
+                                    <td>Oct 15, 2025</td>
+                                    <td>11:00 AM</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>Study</td>
+                                    <td><span class="badge bg-warning">Inside</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-info">Check Out</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Lab 2 Logs -->
+                <div class="tab-pane fade" id="lab2-logs" role="tabpanel">
+                    <div class="table-responsive">
+                        <table class="table table-hover admin-table">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Log ID</th>
+                                    <th>Student ID</th>
+                                    <th>Student Name</th>
+                                    <th>Date</th>
+                                    <th>Time In</th>
+                                    <th>Time Out</th>
+                                    <th>Duration</th>
+                                    <th>Purpose</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#LOG-002</td>
+                                    <td><strong>2241587</strong></td>
+                                    <td>Maria Santos</td>
+                                    <td>Oct 15, 2025</td>
+                                    <td>9:00 AM</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>Experiment</td>
+                                    <td><span class="badge bg-warning">Inside</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-info">Check Out</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#LOG-004</td>
+                                    <td><strong>2241589</strong></td>
+                                    <td>Ana Garcia</td>
+                                    <td>Oct 15, 2025</td>
+                                    <td>7:30 AM</td>
+                                    <td>9:00 AM</td>
+                                    <td>1h 30m</td>
+                                    <td>Lab Work</td>
+                                    <td><span class="badge bg-success">Completed</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary">View Details</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white mt-5 py-4">
+        <div class="container text-center">
+            <p>&copy; 2025 Custodian Borrowing System - Admin Panel. All rights reserved.</p>
+            <small class="text-muted">Tarlac City, Central Luzon | Last Updated: Oct 15, 2025</small>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

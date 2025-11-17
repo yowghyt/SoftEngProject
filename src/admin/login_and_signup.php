@@ -12,7 +12,9 @@ header("Content-Type: application/json");
  *  - LOGIN:  email, password
  */
 
-include 'db_connect.php'; // connect to database
+require_once __DIR__ . '/../config/db_connect.php';
+
+$conn = Database::getInstance()->getConnection();
 
 // Decode JSON request (from frontend)
 $data = json_decode(file_get_contents("php://input"), true);
