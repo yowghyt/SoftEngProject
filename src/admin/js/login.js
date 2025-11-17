@@ -1,9 +1,11 @@
+
+// Login 
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.querySelector("form");
-    
+
     form.addEventListener("submit", async (event) => {
         event.preventDefault(); // Prevent page reload
-        
+
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value.trim();
 
@@ -13,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-            const response = await fetch("php/login_and_signup.php", {
+            const response = await fetch("../php/auth/auth.php", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -30,19 +32,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
             let result;
             try {
-              result = JSON.parse(text);
+                result = JSON.parse(text);
             } catch (err) {
+                console.error("JSON Parse Error:", err);
                 alert("Server returned invalid JSON. Check PHP for errors.");
                 return;
             }
 
-            console.log(result);
+            console.log("Parsed Result:", result);
 
             if (result.status === "success") {
                 alert("Login Successful!");
-                window.location.href = "AdHome.html"; // ✅ Redirect to dashboard
+                // Store user data in sessionStorage (optional)
+                sessionStorage.setItem("user", JSON.stringify(result.user));
+
+                // Fixed: Updated redirect path
+                window.location.href = "../admin/AdHome.html";
             } else {
-                alert(result.message);
+                alert(result.message || "Login failed. Please try again.");
             }
         } catch (error) {
             console.error("Error:", error);
