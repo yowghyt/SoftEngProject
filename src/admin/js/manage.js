@@ -1,253 +1,575 @@
-// Manage Inventory JavaScript Functions
-
-// Wait for DOM and Bootstrap to be fully loaded
-document.addEventListener('DOMContentLoaded', function () {
-    console.log('Manage Inventory page loaded');
-
-    // Ensure Bootstrap is loaded
-    if (typeof bootstrap === 'undefined') {
-        console.error('Bootstrap JS is not loaded!');
-        return;
-    }
-
-    // Initialize all modals
-    const modalElements = document.querySelectorAll('.modal');
-    modalElements.forEach(modalEl => {
-        new bootstrap.Modal(modalEl, {
-            backdrop: true,
-            keyboard: true,
-            focus: true
-        });
-    });
-
-    // Initialize tabs
-    const triggerTabList = document.querySelectorAll('button[data-bs-toggle="tab"]');
-    triggerTabList.forEach(triggerEl => {
-        const tabTrigger = new bootstrap.Tab(triggerEl);
-
-        triggerEl.addEventListener('click', event => {
-            event.preventDefault();
-            tabTrigger.show();
-        });
-    });
-
-    console.log('Bootstrap components initialized');
+document.addEventListener("DOMContentLoaded", () => {
+    loadEquipment();
+    loadRooms();
 });
 
-// ITEM FUNCTIONS
-function addItem() {
-    // Get form values
-    const itemName = document.getElementById('itemName').value;
-    const itemCategory = document.getElementById('itemCategory').value;
-    const itemBrand = document.getElementById('itemBrand').value;
-    const itemQuantity = document.getElementById('itemQuantity').value;
-    const itemCondition = document.getElementById('itemCondition').value;
-    const itemStatus = document.getElementById('itemStatus').value;
-    const itemDescription = document.getElementById('itemDescription').value;
+// ==================== LOAD EQUIPMENT ====================
+async function loadEquipment() {
+    try {
+        const response = await fetch("/SoftEngProject/src/php/admin/manage.php?action=get_equipment");
+        const result = await response.json();
 
-    // Validate form
-    if (!itemName || !itemCategory || !itemBrand || !itemQuantity || !itemCondition || !itemStatus) {
+        if (result.status === "success") {
+            displayEquipment(result.data);
+        } else {
+            console.error("Error:", result.message);
+            showEmptyEquipmentState();
+        }
+    } catch (error) {
+        console.error("Error loading equipment:", error);
+        showEmptyEquipmentState();
+    }
+}
+
+function displayEquipment(equipment) {
+    const tbody = document.querySelector('#items-section tbody');
+
+    if (equipment.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4">No equipment found</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = equipment.map(item => {
+        const statusBadge = item.status === 'Available' ?
+            '<span class="badge bg-success">Available</span>' :
+            '<span class="badge bg-warning text-dark">Not Available</span>';
+
+        return `
+            <tr>
+                <td>#IT-${String(item.equipmentId).padStart(3, '0')}</td>
+                <td>${item.equipmentName}</td>
+                <td>${item.category || 'N/A'}</td>
+                <td>${item.brand || 'N/A'}</td>
+                <td>${item.quantity}</td>
+                <td>${item.available || item.quantity}</td>
+                <td>${statusBadge}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary" onclick="viewEquipment(${item.equipmentId})">View</button>
+                    <button class="btn btn-sm btn-warning" onclick="editEquipment(${item.equipmentId})">Edit</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteEquipment(${item.equipmentId})">Delete</button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function showEmptyEquipmentState() {
+    const tbody = document.querySelector('#items-section tbody');
+    tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4">Failed to load equipment</td></tr>';
+}
+
+// ==================== LOAD ROOMS ====================
+async function loadRooms() {
+    try {
+        const response = await fetch("/SoftEngProject/src/php/admin/manage.php?action=get_rooms");
+        const result = await response.json();
+
+        if (result.status === "success") {
+            displayRooms(result.data);
+        } else {
+            console.error("Error:", result.message);
+            showEmptyRoomState();
+        }
+    } catch (error) {
+        console.error("Error loading rooms:", error);
+        showEmptyRoomState();
+    }
+}
+
+function displayRooms(rooms) {
+    const tbody = document.querySelector('#rooms-section tbody');
+
+    if (rooms.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4">No rooms found</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = rooms.map(room => {
+        let statusBadge;
+        if (room.status === 'Available') {
+            statusBadge = '<span class="badge bg-success">Available</span>';
+        } else if (room.status === 'Reserved') {
+            statusBadge = '<span class="badge bg-warning text-dark">Reserved</span>';
+        } else {
+            statusBadge = '<span class="badge bg-danger">Not Available</span>';
+        }
+
+        return `
+            <tr>
+                <td>#ROOM-${String(room.roomId).padStart(3, '0')}</td>
+                <td>${room.roomName}</td>
+                <td>${room.building || 'N/A'}</td>
+                <td>${room.floor || 'N/A'}</td>
+                <td>${room.capacity} persons</td>
+                <td>${statusBadge}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary" onclick="viewRoom(${room.roomId})">View</button>
+                    <button class="btn btn-sm btn-warning" onclick="editRoom(${room.roomId})">Edit</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteRoom(${room.roomId})">Delete</button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function showEmptyRoomState() {
+    const tbody = document.querySelector('#rooms-section tbody');
+    tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4">Failed to load rooms</td></tr>';
+}
+
+// ==================== ADD EQUIPMENT ====================
+async function addItem() {
+    const equipmentName = document.getElementById('itemName').value.trim();
+    const category = document.getElementById('itemCategory').value;
+    const brand = document.getElementById('itemBrand').value.trim();
+    const quantity = parseInt(document.getElementById('itemQuantity').value);
+    const condition = document.getElementById('itemCondition').value;
+    const description = document.getElementById('itemDescription').value.trim();
+
+    if (!equipmentName || !category || !brand || !quantity || !condition) {
         alert('Please fill in all required fields');
         return;
     }
 
-    // Here you would typically send this data to your backend
-    console.log('Adding item:', {
-        name: itemName,
-        category: itemCategory,
-        brand: itemBrand,
-        quantity: itemQuantity,
-        condition: itemCondition,
-        status: itemStatus,
-        description: itemDescription
-    });
+    try {
+        const response = await fetch("/SoftEngProject/src/php/admin/manage.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                action: "add_equipment",
+                equipmentName,
+                category,
+                brand,
+                quantity,
+                condition,
+                description,
+                status: 'Available'
+            })
+        });
 
-    // Show success message
-    showAlert('Item added successfully!', 'success');
+        const result = await response.json();
 
-    // Close modal properly
-    const modalEl = document.getElementById('addItemModal');
-    const modal = bootstrap.Modal.getInstance(modalEl);
-    if (modal) {
-        modal.hide();
-    }
-
-    // Reset form
-    document.getElementById('addItemForm').reset();
-
-    // Optional: Reload table
-    // reloadItemsTable();
-}
-
-function updateItem() {
-    // Get form values
-    const itemName = document.getElementById('editItemName').value;
-    const itemCategory = document.getElementById('editItemCategory').value;
-    const itemBrand = document.getElementById('editItemBrand').value;
-    const itemQuantity = document.getElementById('editItemQuantity').value;
-    const itemCondition = document.getElementById('editItemCondition').value;
-    const itemStatus = document.getElementById('editItemStatus').value;
-    const itemDescription = document.getElementById('editItemDescription').value;
-
-    // Here you would typically send this data to your backend
-    console.log('Updating item:', {
-        name: itemName,
-        category: itemCategory,
-        brand: itemBrand,
-        quantity: itemQuantity,
-        condition: itemCondition,
-        status: itemStatus,
-        description: itemDescription
-    });
-
-    // Show success message
-    showAlert('Item updated successfully!', 'success');
-
-    // Close modal properly
-    const modalEl = document.getElementById('editItemModal');
-    const modal = bootstrap.Modal.getInstance(modalEl);
-    if (modal) {
-        modal.hide();
-    }
-
-    // Optional: Reload table
-    // reloadItemsTable();
-}
-
-function deleteItem(itemId) {
-    if (confirm(`Are you sure you want to delete item ${itemId}?`)) {
-        // Here you would typically send delete request to backend
-        console.log('Deleting item:', itemId);
-
-        // Show success message
-        showAlert('Item deleted successfully!', 'success');
-
-        // Optional: Reload table
-        // reloadItemsTable();
+        if (result.status === "success") {
+            alert("Equipment added successfully!");
+            bootstrap.Modal.getInstance(document.getElementById('addItemModal')).hide();
+            document.getElementById('addItemForm').reset();
+            loadEquipment();
+        } else {
+            alert("Error: " + result.message);
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Failed to add equipment");
     }
 }
 
-// ROOM FUNCTIONS
-function addRoom() {
-    // Get form values
-    const roomName = document.getElementById('roomName').value;
-    const roomBuilding = document.getElementById('roomBuilding').value;
-    const roomFloor = document.getElementById('roomFloor').value;
-    const roomCapacity = document.getElementById('roomCapacity').value;
-    const roomEquipment = document.getElementById('roomEquipment').value;
-    const roomStatus = document.getElementById('roomStatus').value;
-    const roomDescription = document.getElementById('roomDescription').value;
+// ==================== VIEW EQUIPMENT ====================
+async function viewEquipment(equipmentId) {
+    try {
+        const response = await fetch(`/SoftEngProject/src/php/admin/manage.php?action=get_equipment_details&id=${equipmentId}`);
+        const result = await response.json();
 
-    // Validate form
-    if (!roomName || !roomBuilding || !roomFloor || !roomCapacity || !roomEquipment || !roomStatus) {
+        if (result.status === "success") {
+            const item = result.data;
+
+            // Populate view modal
+            document.querySelector('#viewItemModal .modal-body').innerHTML = `
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>Item ID:</strong>
+                        <p>#IT-${String(item.equipmentId).padStart(3, '0')}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Item Name:</strong>
+                        <p>${item.equipmentName}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>Category:</strong>
+                        <p>${item.category || 'N/A'}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Brand/Model:</strong>
+                        <p>${item.brand || 'N/A'}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <strong>Quantity:</strong>
+                        <p>${item.quantity}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>Available:</strong>
+                        <p>${item.available || item.quantity}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <strong>Borrowed:</strong>
+                        <p>${item.quantity - (item.available || item.quantity)}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>Condition:</strong>
+                        <p><span class="badge bg-info">${item.condition || 'N/A'}</span></p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Status:</strong>
+                        <p><span class="badge bg-${item.status === 'Available' ? 'success' : 'warning'}">${item.status}</span></p>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <strong>Description:</strong>
+                    <p>${item.description || 'No description available'}</p>
+                </div>
+            `;
+
+            new bootstrap.Modal(document.getElementById('viewItemModal')).show();
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Failed to load equipment details");
+    }
+}
+
+// ==================== EDIT EQUIPMENT ====================
+let currentEditEquipmentId = null;
+
+async function editEquipment(equipmentId) {
+    currentEditEquipmentId = equipmentId;
+
+    try {
+        const response = await fetch(`/SoftEngProject/src/php/admin/manage.php?action=get_equipment_details&id=${equipmentId}`);
+        const result = await response.json();
+
+        if (result.status === "success") {
+            const item = result.data;
+
+            // Populate edit form
+            document.getElementById('editItemName').value = item.equipmentName;
+            document.getElementById('editItemCategory').value = item.category || '';
+            document.getElementById('editItemBrand').value = item.brand || '';
+            document.getElementById('editItemQuantity').value = item.quantity;
+            document.getElementById('editItemCondition').value = item.condition || 'Good';
+            document.getElementById('editItemDescription').value = item.description || '';
+
+            new bootstrap.Modal(document.getElementById('editItemModal')).show();
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Failed to load equipment details");
+    }
+}
+
+async function updateItem() {
+    if (!currentEditEquipmentId) {
+        alert('No equipment selected');
+        return;
+    }
+
+    const equipmentName = document.getElementById('editItemName').value.trim();
+    const category = document.getElementById('editItemCategory').value;
+    const brand = document.getElementById('editItemBrand').value.trim();
+    const quantity = parseInt(document.getElementById('editItemQuantity').value);
+    const condition = document.getElementById('editItemCondition').value;
+    const description = document.getElementById('editItemDescription').value.trim();
+
+    if (!equipmentName || !quantity) {
         alert('Please fill in all required fields');
         return;
     }
 
-    // Here you would typically send this data to your backend
-    console.log('Adding room:', {
-        name: roomName,
-        building: roomBuilding,
-        floor: roomFloor,
-        capacity: roomCapacity,
-        equipment: roomEquipment,
-        status: roomStatus,
-        description: roomDescription
-    });
+    try {
+        const response = await fetch("/SoftEngProject/src/php/admin/manage.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                action: "update_equipment",
+                equipmentId: currentEditEquipmentId,
+                equipmentName,
+                category,
+                brand,
+                quantity,
+                condition,
+                description
+            })
+        });
 
-    // Show success message
-    showAlert('Room added successfully!', 'success');
+        const result = await response.json();
 
-    // Close modal properly
-    const modalEl = document.getElementById('addRoomModal');
-    const modal = bootstrap.Modal.getInstance(modalEl);
-    if (modal) {
-        modal.hide();
-    }
-
-    // Reset form
-    document.getElementById('addRoomForm').reset();
-
-    // Optional: Reload table
-    // reloadRoomsTable();
-}
-
-function updateRoom() {
-    // Get form values
-    const roomName = document.getElementById('editRoomName').value;
-    const roomBuilding = document.getElementById('editRoomBuilding').value;
-    const roomFloor = document.getElementById('editRoomFloor').value;
-    const roomCapacity = document.getElementById('editRoomCapacity').value;
-    const roomEquipment = document.getElementById('editRoomEquipment').value;
-    const roomStatus = document.getElementById('editRoomStatus').value;
-    const roomDescription = document.getElementById('editRoomDescription').value;
-
-    // Here you would typically send this data to your backend
-    console.log('Updating room:', {
-        name: roomName,
-        building: roomBuilding,
-        floor: roomFloor,
-        capacity: roomCapacity,
-        equipment: roomEquipment,
-        status: roomStatus,
-        description: roomDescription
-    });
-
-    // Show success message
-    showAlert('Room updated successfully!', 'success');
-
-    // Close modal properly
-    const modalEl = document.getElementById('editRoomModal');
-    const modal = bootstrap.Modal.getInstance(modalEl);
-    if (modal) {
-        modal.hide();
-    }
-
-    // Optional: Reload table
-    // reloadRoomsTable();
-}
-
-function deleteRoom(roomId) {
-    if (confirm(`Are you sure you want to delete room ${roomId}?`)) {
-        // Here you would typically send delete request to backend
-        console.log('Deleting room:', roomId);
-
-        // Show success message
-        showAlert('Room deleted successfully!', 'success');
-
-        // Optional: Reload table
-        // reloadRoomsTable();
+        if (result.status === "success") {
+            alert("Equipment updated successfully!");
+            bootstrap.Modal.getInstance(document.getElementById('editItemModal')).hide();
+            currentEditEquipmentId = null;
+            loadEquipment();
+        } else {
+            alert("Error: " + result.message);
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Failed to update equipment");
     }
 }
 
-// UTILITY FUNCTIONS
-function showAlert(message, type) {
-    // Create alert element
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type} alert-floating alert-dismissible fade show`;
-    alertDiv.role = 'alert';
-    alertDiv.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    `;
+// ==================== DELETE EQUIPMENT ====================
+async function deleteEquipment(equipmentId) {
+    if (!confirm('Are you sure you want to delete this equipment? This action cannot be undone.')) {
+        return;
+    }
 
-    // Add to body
-    document.body.appendChild(alertDiv);
+    try {
+        const response = await fetch("/SoftEngProject/src/php/admin/manage.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                action: "delete_equipment",
+                equipmentId: equipmentId
+            })
+        });
 
-    // Auto dismiss after 3 seconds
-    setTimeout(() => {
-        alertDiv.classList.remove('show');
-        setTimeout(() => alertDiv.remove(), 150);
-    }, 3000);
+        const result = await response.json();
+
+        if (result.status === "success") {
+            alert("Equipment deleted successfully!");
+            loadEquipment();
+        } else {
+            alert("Error: " + result.message);
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Failed to delete equipment");
+    }
 }
 
-// Optional: Functions to reload tables from backend
-function reloadItemsTable() {
-    // Fetch items from backend and update table
-    console.log('Reloading items table...');
+// ==================== ADD ROOM ====================
+async function addRoom() {
+    const roomName = document.getElementById('roomName').value.trim();
+    const building = document.getElementById('roomBuilding').value.trim();
+    const floor = document.getElementById('roomFloor').value.trim();
+    const capacity = parseInt(document.getElementById('roomCapacity').value);
+    const equipment = document.getElementById('roomEquipment').value.trim();
+    const status = document.getElementById('roomStatus').value;
+    const description = document.getElementById('roomDescription').value.trim();
+
+    if (!roomName || !capacity || !status) {
+        alert('Please fill in all required fields');
+        return;
+    }
+
+    try {
+        const response = await fetch("/SoftEngProject/src/php/admin/manage.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                action: "add_room",
+                roomName,
+                building,
+                floor,
+                capacity,
+                equipment,
+                status,
+                description
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.status === "success") {
+            alert("Room added successfully!");
+            bootstrap.Modal.getInstance(document.getElementById('addRoomModal')).hide();
+            document.getElementById('addRoomForm').reset();
+            loadRooms();
+        } else {
+            alert("Error: " + result.message);
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Failed to add room");
+    }
 }
 
-function reloadRoomsTable() {
-    // Fetch rooms from backend and update table
-    console.log('Reloading rooms table...');
+// ==================== VIEW ROOM ====================
+async function viewRoom(roomId) {
+    try {
+        const response = await fetch(`/SoftEngProject/src/php/admin/manage.php?action=get_room_details&id=${roomId}`);
+        const result = await response.json();
+
+        if (result.status === "success") {
+            const room = result.data;
+
+            document.querySelector('#viewRoomModal .modal-body').innerHTML = `
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>Room Code:</strong>
+                        <p>#ROOM-${String(room.roomId).padStart(3, '0')}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Room Name:</strong>
+                        <p>${room.roomName}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>Building:</strong>
+                        <p>${room.building || 'N/A'}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Floor:</strong>
+                        <p>${room.floor || 'N/A'}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>Capacity:</strong>
+                        <p>${room.capacity} persons</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Status:</strong>
+                        <p><span class="badge bg-${room.status === 'Available' ? 'success' : 'warning'}">${room.status}</span></p>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <strong>Equipment:</strong>
+                    <p>${room.equipment || 'No equipment listed'}</p>
+                </div>
+                <div class="mb-3">
+                    <strong>Description:</strong>
+                    <p>${room.description || 'No description available'}</p>
+                </div>
+            `;
+
+            new bootstrap.Modal(document.getElementById('viewRoomModal')).show();
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Failed to load room details");
+    }
+}
+
+// ==================== EDIT ROOM ====================
+let currentEditRoomId = null;
+
+async function editRoom(roomId) {
+    currentEditRoomId = roomId;
+
+    try {
+        const response = await fetch(`/SoftEngProject/src/php/admin/manage.php?action=get_room_details&id=${roomId}`);
+        const result = await response.json();
+
+        if (result.status === "success") {
+            const room = result.data;
+
+            document.getElementById('editRoomName').value = room.roomName;
+            document.getElementById('editRoomBuilding').value = room.building || '';
+            document.getElementById('editRoomFloor').value = room.floor || '';
+            document.getElementById('editRoomCapacity').value = room.capacity;
+            document.getElementById('editRoomEquipment').value = room.equipment || '';
+            document.getElementById('editRoomStatus').value = room.status;
+            document.getElementById('editRoomDescription').value = room.description || '';
+
+            new bootstrap.Modal(document.getElementById('editRoomModal')).show();
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Failed to load room details");
+    }
+}
+
+async function updateRoom() {
+    if (!currentEditRoomId) {
+        alert('No room selected');
+        return;
+    }
+
+    const roomName = document.getElementById('editRoomName').value.trim();
+    const building = document.getElementById('editRoomBuilding').value.trim();
+    const floor = document.getElementById('editRoomFloor').value.trim();
+    const capacity = parseInt(document.getElementById('editRoomCapacity').value);
+    const equipment = document.getElementById('editRoomEquipment').value.trim();
+    const status = document.getElementById('editRoomStatus').value;
+    const description = document.getElementById('editRoomDescription').value.trim();
+
+    if (!roomName || !capacity) {
+        alert('Please fill in all required fields');
+        return;
+    }
+
+    try {
+        const response = await fetch("/SoftEngProject/src/php/admin/manage.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                action: "update_room",
+                roomId: currentEditRoomId,
+                roomName,
+                building,
+                floor,
+                capacity,
+                equipment,
+                status,
+                description
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.status === "success") {
+            alert("Room updated successfully!");
+            bootstrap.Modal.getInstance(document.getElementById('editRoomModal')).hide();
+            currentEditRoomId = null;
+            loadRooms();
+        } else {
+            alert("Error: " + result.message);
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Failed to update room");
+    }
+}
+
+// ==================== DELETE ROOM ====================
+async function deleteRoom(roomId) {
+    if (!confirm('Are you sure you want to delete this room? This action cannot be undone.')) {
+        return;
+    }
+
+    try {
+        const response = await fetch("/SoftEngProject/src/php/admin/manage.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                action: "delete_room",
+                roomId: roomId
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.status === "success") {
+            alert("Room deleted successfully!");
+            loadRooms();
+        } else {
+            alert("Error: " + result.message);
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Failed to delete room");
+    }
+}
+
+// Sidebar toggle
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('active');
 }

@@ -50,6 +50,7 @@
             </ul>
         </div>
     </nav>
+
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -82,8 +83,6 @@
 
     <!-- Main Content -->
     <div class="main-content">
-
-
         <div class="tab-content">
             <!-- ITEMS SECTION -->
             <div class="tab-pane fade show active" id="items-section" role="tabpanel">
@@ -102,7 +101,8 @@
                         <button class="nav-link" id="rooms-tab" data-bs-toggle="tab" data-bs-target="#rooms-section"
                             type="button" role="tab">🏛️ Manage Rooms</button>
                     </li>
-                    <button class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#addItemModal">
+                    <button class="btn btn-success btn-lg ms-auto" data-bs-toggle="modal"
+                        data-bs-target="#addItemModal">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                             class="me-2">
@@ -125,99 +125,16 @@
                                 <th>Quantity</th>
                                 <th>Available</th>
                                 <th>Status</th>
-                                <th>Condition</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>#IT-001</td>
-                                <td>Canon EOS R5 Camera</td>
-                                <td>Camera Equipment</td>
-                                <td>Canon EOS R5</td>
-                                <td>5</td>
-                                <td>4</td>
-                                <td><span class="badge bg-success">Available</span></td>
-                                <td><span class="badge bg-info">Excellent</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#viewItemModal">View</button>
-                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                                        data-bs-target="#editItemModal">Edit</button>
-                                    <button class="btn btn-sm btn-danger"
-                                        onclick="deleteItem('#IT-001')">Delete</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#IT-002</td>
-                                <td>Dell XPS 13 Laptop</td>
-                                <td>Computers</td>
-                                <td>Dell XPS 13</td>
-                                <td>10</td>
-                                <td>8</td>
-                                <td><span class="badge bg-success">Available</span></td>
-                                <td><span class="badge bg-info">Good</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#viewItemModal">View</button>
-                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                                        data-bs-target="#editItemModal">Edit</button>
-                                    <button class="btn btn-sm btn-danger"
-                                        onclick="deleteItem('#IT-002')">Delete</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#IT-003</td>
-                                <td>Professional Tool Set</td>
-                                <td>Tools</td>
-                                <td>Craftsman Pro</td>
-                                <td>3</td>
-                                <td>2</td>
-                                <td><span class="badge bg-success">Available</span></td>
-                                <td><span class="badge bg-warning text-dark">Fair</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#viewItemModal">View</button>
-                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                                        data-bs-target="#editItemModal">Edit</button>
-                                    <button class="btn btn-sm btn-danger"
-                                        onclick="deleteItem('#IT-003')">Delete</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#IT-004</td>
-                                <td>Nikon Z9 Camera</td>
-                                <td>Camera Equipment</td>
-                                <td>Nikon Z9</td>
-                                <td>2</td>
-                                <td>1</td>
-                                <td><span class="badge bg-success">Available</span></td>
-                                <td><span class="badge bg-info">Excellent</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#viewItemModal">View</button>
-                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                                        data-bs-target="#editItemModal">Edit</button>
-                                    <button class="btn btn-sm btn-danger"
-                                        onclick="deleteItem('#IT-004')">Delete</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#IT-005</td>
-                                <td>LED Lighting Kit</td>
-                                <td>Lighting</td>
-                                <td>Godox SL-60W</td>
-                                <td>6</td>
-                                <td>5</td>
-                                <td><span class="badge bg-success">Available</span></td>
-                                <td><span class="badge bg-info">Good</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#viewItemModal">View</button>
-                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                                        data-bs-target="#editItemModal">Edit</button>
-                                    <button class="btn btn-sm btn-danger"
-                                        onclick="deleteItem('#IT-005')">Delete</button>
+                                <td colspan="8" class="text-center py-4">
+                                    <div class="spinner-border" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2">Loading equipment...</p>
                                 </td>
                             </tr>
                         </tbody>
@@ -235,22 +152,23 @@
                 <!-- Tabs for Items and Rooms -->
                 <ul class="nav nav-tabs mb-4" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="items-tab" data-bs-toggle="tab" data-bs-target="#items-section"
+                        <button class="nav-link" id="items-tab-2" data-bs-toggle="tab" data-bs-target="#items-section"
                             type="button" role="tab">📦 Manage Items</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="rooms-tab" data-bs-toggle="tab"
+                        <button class="nav-link active" id="rooms-tab-2" data-bs-toggle="tab"
                             data-bs-target="#rooms-section" type="button" role="tab">🏛️ Manage Rooms</button>
                     </li>
                     <!-- Add New Room Button -->
-                    <button class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#addItemModal">
+                    <button class="btn btn-success btn-lg ms-auto" data-bs-toggle="modal"
+                        data-bs-target="#addRoomModal">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                             class="me-2">
                             <line x1="12" y1="5" x2="12" y2="19"></line>
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                         </svg>
-                        Add New Item
+                        Add New Room
                     </button>
                 </ul>
 
@@ -264,95 +182,17 @@
                                 <th>Building</th>
                                 <th>Floor</th>
                                 <th>Capacity</th>
-                                <th>Equipment</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>#ROOM-302</td>
-                                <td>Audio Studio</td>
-                                <td>Main Building</td>
-                                <td>3rd Floor</td>
-                                <td>4 persons</td>
-                                <td>Microphones, Mixer, Monitors</td>
-                                <td><span class="badge bg-success">Available</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#viewRoomModal">View</button>
-                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                                        data-bs-target="#editRoomModal">Edit</button>
-                                    <button class="btn btn-sm btn-danger"
-                                        onclick="deleteRoom('#ROOM-302')">Delete</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#ROOM-405</td>
-                                <td>Video Production Room</td>
-                                <td>Main Building</td>
-                                <td>4th Floor</td>
-                                <td>6 persons</td>
-                                <td>Cameras, Lighting, Green Screen</td>
-                                <td><span class="badge bg-warning text-dark">In Use</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#viewRoomModal">View</button>
-                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                                        data-bs-target="#editRoomModal">Edit</button>
-                                    <button class="btn btn-sm btn-danger"
-                                        onclick="deleteRoom('#ROOM-405')">Delete</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#ROOM-203</td>
-                                <td>Photo Studio</td>
-                                <td>Arts Building</td>
-                                <td>2nd Floor</td>
-                                <td>3 persons</td>
-                                <td>Backdrop, Lights, Reflectors</td>
-                                <td><span class="badge bg-success">Available</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#viewRoomModal">View</button>
-                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                                        data-bs-target="#editRoomModal">Edit</button>
-                                    <button class="btn btn-sm btn-danger"
-                                        onclick="deleteRoom('#ROOM-203')">Delete</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#ROOM-101</td>
-                                <td>Meeting Room</td>
-                                <td>Main Building</td>
-                                <td>1st Floor</td>
-                                <td>10 persons</td>
-                                <td>Projector, Whiteboard, Conference Table</td>
-                                <td><span class="badge bg-success">Available</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#viewRoomModal">View</button>
-                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                                        data-bs-target="#editRoomModal">Edit</button>
-                                    <button class="btn btn-sm btn-danger"
-                                        onclick="deleteRoom('#ROOM-101')">Delete</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#ROOM-501</td>
-                                <td>Lab Space</td>
-                                <td>Science Building</td>
-                                <td>5th Floor</td>
-                                <td>8 persons</td>
-                                <td>Workstations, Tools, Safety Equipment</td>
-                                <td><span class="badge bg-success">Available</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#viewRoomModal">View</button>
-                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                                        data-bs-target="#editRoomModal">Edit</button>
-                                    <button class="btn btn-sm btn-danger"
-                                        onclick="deleteRoom('#ROOM-501')">Delete</button>
+                                <td colspan="7" class="text-center py-4">
+                                    <div class="spinner-border" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2">Loading rooms...</p>
                                 </td>
                             </tr>
                         </tbody>
@@ -375,12 +215,12 @@
                     <form id="addItemForm">
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="itemName" class="form-label">Item Name</label>
+                                <label for="itemName" class="form-label">Item Name *</label>
                                 <input type="text" class="form-control" id="itemName" required>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="itemCategory" class="form-label">Category</label>
-                                <select class="form-select" id="itemCategory" required>
+                                <select class="form-select" id="itemCategory">
                                     <option value="">Select Category</option>
                                     <option value="Camera Equipment">Camera Equipment</option>
                                     <option value="Computers">Computers</option>
@@ -394,30 +234,22 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="itemBrand" class="form-label">Brand/Model</label>
-                                <input type="text" class="form-control" id="itemBrand" required>
+                                <input type="text" class="form-control" id="itemBrand">
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="itemQuantity" class="form-label">Quantity</label>
+                                <label for="itemQuantity" class="form-label">Quantity *</label>
                                 <input type="number" class="form-control" id="itemQuantity" min="1" required>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="itemCondition" class="form-label">Condition</label>
-                                <select class="form-select" id="itemCondition" required>
+                                <select class="form-select" id="itemCondition">
                                     <option value="">Select Condition</option>
                                     <option value="Excellent">Excellent</option>
-                                    <option value="Good">Good</option>
+                                    <option value="Good" selected>Good</option>
                                     <option value="Fair">Fair</option>
                                     <option value="Poor">Poor</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="itemStatus" class="form-label">Status</label>
-                                <select class="form-select" id="itemStatus" required>
-                                    <option value="Available">Available</option>
-                                    <option value="Under Maintenance">Under Maintenance</option>
-                                    <option value="Retired">Retired</option>
                                 </select>
                             </div>
                         </div>
@@ -447,14 +279,14 @@
                     <form id="editItemForm">
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="editItemName" class="form-label">Item Name</label>
-                                <input type="text" class="form-control" id="editItemName" value="Canon EOS R5 Camera"
-                                    required>
+                                <label for="editItemName" class="form-label">Item Name *</label>
+                                <input type="text" class="form-control" id="editItemName" required>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="editItemCategory" class="form-label">Category</label>
-                                <select class="form-select" id="editItemCategory" required>
-                                    <option value="Camera Equipment" selected>Camera Equipment</option>
+                                <select class="form-select" id="editItemCategory">
+                                    <option value="">Select Category</option>
+                                    <option value="Camera Equipment">Camera Equipment</option>
                                     <option value="Computers">Computers</option>
                                     <option value="Tools">Tools</option>
                                     <option value="Lighting">Lighting</option>
@@ -466,38 +298,28 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="editItemBrand" class="form-label">Brand/Model</label>
-                                <input type="text" class="form-control" id="editItemBrand" value="Canon EOS R5"
-                                    required>
+                                <input type="text" class="form-control" id="editItemBrand">
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="editItemQuantity" class="form-label">Quantity</label>
-                                <input type="number" class="form-control" id="editItemQuantity" value="5" min="1"
-                                    required>
+                                <label for="editItemQuantity" class="form-label">Quantity *</label>
+                                <input type="number" class="form-control" id="editItemQuantity" min="1" required>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="editItemCondition" class="form-label">Condition</label>
-                                <select class="form-select" id="editItemCondition" required>
-                                    <option value="Excellent" selected>Excellent</option>
+                                <select class="form-select" id="editItemCondition">
+                                    <option value="">Select Condition</option>
+                                    <option value="Excellent">Excellent</option>
                                     <option value="Good">Good</option>
                                     <option value="Fair">Fair</option>
                                     <option value="Poor">Poor</option>
                                 </select>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="editItemStatus" class="form-label">Status</label>
-                                <select class="form-select" id="editItemStatus" required>
-                                    <option value="Available" selected>Available</option>
-                                    <option value="Under Maintenance">Under Maintenance</option>
-                                    <option value="Retired">Retired</option>
-                                </select>
-                            </div>
                         </div>
                         <div class="mb-3">
                             <label for="editItemDescription" class="form-label">Description</label>
-                            <textarea class="form-control" id="editItemDescription"
-                                rows="3">Professional full-frame mirrorless camera with 45MP sensor</textarea>
+                            <textarea class="form-control" id="editItemDescription" rows="3"></textarea>
                         </div>
                     </form>
                 </div>
@@ -518,57 +340,11 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <strong>Item ID:</strong>
-                            <p>#IT-001</p>
+                    <!-- Content will be populated dynamically -->
+                    <div class="text-center py-4">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <strong>Item Name:</strong>
-                            <p>Canon EOS R5 Camera</p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <strong>Category:</strong>
-                            <p>Camera Equipment</p>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <strong>Brand/Model:</strong>
-                            <p>Canon EOS R5</p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <strong>Quantity:</strong>
-                            <p>5</p>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <strong>Available:</strong>
-                            <p>4</p>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <strong>Borrowed:</strong>
-                            <p>1</p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <strong>Condition:</strong>
-                            <p><span class="badge bg-info">Excellent</span></p>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <strong>Status:</strong>
-                            <p><span class="badge bg-success">Available</span></p>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <strong>Description:</strong>
-                        <p>Professional full-frame mirrorless camera with 45MP sensor</p>
-                    </div>
-                    <div class="mb-3">
-                        <strong>Date Added:</strong>
-                        <p>January 15, 2024</p>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -591,33 +367,33 @@
                     <form id="addRoomForm">
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="roomName" class="form-label">Room Name</label>
+                                <label for="roomName" class="form-label">Room Name *</label>
                                 <input type="text" class="form-control" id="roomName" required>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="roomBuilding" class="form-label">Building</label>
-                                <input type="text" class="form-control" id="roomBuilding" required>
+                                <input type="text" class="form-control" id="roomBuilding">
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="roomFloor" class="form-label">Floor</label>
-                                <input type="text" class="form-control" id="roomFloor" required>
+                                <input type="text" class="form-control" id="roomFloor">
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="roomCapacity" class="form-label">Capacity (persons)</label>
+                                <label for="roomCapacity" class="form-label">Capacity (persons) *</label>
                                 <input type="number" class="form-control" id="roomCapacity" min="1" required>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label for="roomEquipment" class="form-label">Equipment</label>
                             <textarea class="form-control" id="roomEquipment" rows="2"
-                                placeholder="List available equipment separated by commas" required></textarea>
+                                placeholder="List available equipment separated by commas"></textarea>
                         </div>
                         <div class="mb-3">
-                            <label for="roomStatus" class="form-label">Status</label>
+                            <label for="roomStatus" class="form-label">Status *</label>
                             <select class="form-select" id="roomStatus" required>
-                                <option value="Available">Available</option>
+                                <option value="Available" selected>Available</option>
                                 <option value="Under Maintenance">Under Maintenance</option>
                                 <option value="Closed">Closed</option>
                             </select>
@@ -648,43 +424,39 @@
                     <form id="editRoomForm">
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="editRoomName" class="form-label">Room Name</label>
-                                <input type="text" class="form-control" id="editRoomName" value="Audio Studio" required>
+                                <label for="editRoomName" class="form-label">Room Name *</label>
+                                <input type="text" class="form-control" id="editRoomName" required>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="editRoomBuilding" class="form-label">Building</label>
-                                <input type="text" class="form-control" id="editRoomBuilding" value="Main Building"
-                                    required>
+                                <input type="text" class="form-control" id="editRoomBuilding">
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="editRoomFloor" class="form-label">Floor</label>
-                                <input type="text" class="form-control" id="editRoomFloor" value="3rd Floor" required>
+                                <input type="text" class="form-control" id="editRoomFloor">
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="editRoomCapacity" class="form-label">Capacity (persons)</label>
-                                <input type="number" class="form-control" id="editRoomCapacity" value="4" min="1"
-                                    required>
+                                <label for="editRoomCapacity" class="form-label">Capacity (persons) *</label>
+                                <input type="number" class="form-control" id="editRoomCapacity" min="1" required>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label for="editRoomEquipment" class="form-label">Equipment</label>
-                            <textarea class="form-control" id="editRoomEquipment" rows="2"
-                                required>Microphones, Mixer, Monitors</textarea>
+                            <textarea class="form-control" id="editRoomEquipment" rows="2"></textarea>
                         </div>
                         <div class="mb-3">
-                            <label for="editRoomStatus" class="form-label">Status</label>
+                            <label for="editRoomStatus" class="form-label">Status *</label>
                             <select class="form-select" id="editRoomStatus" required>
-                                <option value="Available" selected>Available</option>
+                                <option value="Available">Available</option>
                                 <option value="Under Maintenance">Under Maintenance</option>
                                 <option value="Closed">Closed</option>
                             </select>
                         </div>
                         <div class="mb-3">
                             <label for="editRoomDescription" class="form-label">Description</label>
-                            <textarea class="form-control" id="editRoomDescription"
-                                rows="3">Professional audio recording studio with soundproofing</textarea>
+                            <textarea class="form-control" id="editRoomDescription" rows="3"></textarea>
                         </div>
                     </form>
                 </div>
@@ -705,47 +477,11 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <strong>Room Code:</strong>
-                            <p>#ROOM-302</p>
+                    <!-- Content will be populated dynamically -->
+                    <div class="text-center py-4">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <strong>Room Name:</strong>
-                            <p>Audio Studio</p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <strong>Building:</strong>
-                            <p>Main Building</p>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <strong>Floor:</strong>
-                            <p>3rd Floor</p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <strong>Capacity:</strong>
-                            <p>4 persons</p>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <strong>Status:</strong>
-                            <p><span class="badge bg-success">Available</span></p>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <strong>Equipment:</strong>
-                        <p>Microphones, Mixer, Monitors</p>
-                    </div>
-                    <div class="mb-3">
-                        <strong>Description:</strong>
-                        <p>Professional audio recording studio with soundproofing</p>
-                    </div>
-                    <div class="mb-3">
-                        <strong>Date Added:</strong>
-                        <p>February 10, 2024</p>
                     </div>
                 </div>
                 <div class="modal-footer">

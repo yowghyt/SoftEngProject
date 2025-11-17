@@ -46,19 +46,21 @@ INSERT INTO `admin` (`adminId`, `email`, `fname`, `lname`, `passwordHash`) VALUE
 (1, '111@email.com', 'Sir', 'Dennis', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9'),
 (2, '112@email.com', 'Mark', 'Nicolas', '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918'),
 (3, '113@email.com', 'Ysac', 'Beset', '2873c302aea10e9a0d51662019901b990dd9e1baae43062223d0c3220133b686');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `equipment`
---
+-- ============================================
+-- UPDATED EQUIPMENT TABLE WITH NEW COLUMNS
+-- ============================================
 
 DROP TABLE IF EXISTS `equipment`;
 CREATE TABLE IF NOT EXISTS `equipment` (
   `equipmentId` int NOT NULL AUTO_INCREMENT,
-  `equipmentName` varchar(20) NOT NULL,
+  `equipmentName` varchar(100) NOT NULL,
   `quantity` int NOT NULL,
+  `available` int NOT NULL,
   `status` varchar(20) NOT NULL,
+  `category` varchar(50) DEFAULT NULL,
+  `brand` varchar(100) DEFAULT NULL,
+  `condition` varchar(20) DEFAULT 'Good',
+  `description` text,
   PRIMARY KEY (`equipmentId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -66,11 +68,10 @@ CREATE TABLE IF NOT EXISTS `equipment` (
 -- Dumping data for table `equipment`
 --
 
-INSERT INTO `equipment` (`equipmentId`, `equipmentName`, `quantity`, `status`) VALUES
-(1, 'Projector', 3, 'Available'),
-(2, 'Laptop', 5, 'Available'),
-(3, 'HDMI Cable', 10, 'Available');
-
+INSERT INTO `equipment` (`equipmentId`, `equipmentName`, `quantity`, `available`, `status`, `category`, `brand`, `condition`, `description`) VALUES
+(1, 'Projector', 3, 3, 'Available', 'Presentation', 'Epson EB-X41', 'Good', 'Portable projector for presentations and classroom use'),
+(2, 'Laptop', 5, 5, 'Available', 'Computers', 'Dell Latitude 5420', 'Good', 'Business laptops for student use with Windows 11'),
+(3, 'HDMI Cable', 10, 10, 'Available', 'Cables & Accessories', 'Generic', 'Good', 'Standard HDMI cables for connectivity, 2 meters length');
 -- --------------------------------------------------------
 
 --
@@ -180,11 +181,9 @@ INSERT INTO `request` (`requestId`, `userId`, `reservationId`, `status`, `reques
 (3, 2, 2, 'Pending', 'room'),
 (4, 3, 2, 'Pending', 'equipment');
 
--- --------------------------------------------------------
-
---
--- Table structure for table `room`
---
+-- ============================================
+-- UPDATED ROOM TABLE WITH NEW COLUMNS
+-- ============================================
 
 DROP TABLE IF EXISTS `room`;
 CREATE TABLE IF NOT EXISTS `room` (
@@ -192,6 +191,10 @@ CREATE TABLE IF NOT EXISTS `room` (
   `roomName` varchar(50) NOT NULL,
   `status` varchar(20) NOT NULL,
   `capacity` int NOT NULL,
+  `building` varchar(100) DEFAULT NULL,
+  `floor` varchar(50) DEFAULT NULL,
+  `equipment` text,
+  `description` text,
   PRIMARY KEY (`roomId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -199,10 +202,10 @@ CREATE TABLE IF NOT EXISTS `room` (
 -- Dumping data for table `room`
 --
 
-INSERT INTO `room` (`roomId`, `roomName`, `status`, `capacity`) VALUES
-(1, 'CL1', 'Available', 40),
-(2, 'CL2', 'Reserved', 35),
-(3, 'CL3', 'Available', 30);
+INSERT INTO `room` (`roomId`, `roomName`, `status`, `capacity`, `building`, `floor`, `equipment`, `description`) VALUES
+(1, 'CL1', 'Available', 40, 'Main Building', '1st Floor', 'Projector, Whiteboard, 40 Computers, Air Conditioning', 'Computer laboratory with modern desktop computers for programming and general use'),
+(2, 'CL2', 'Reserved', 35, 'Main Building', '2nd Floor', 'Smart Board, 35 Computers, Projector, Sound System', 'Computer laboratory equipped with smart board and multimedia capabilities'),
+(3, 'CL3', 'Available', 30, 'Main Building', '3rd Floor', 'Projector, Interactive Display, 30 Computers, Printer', 'Advanced computer laboratory for specialized courses and research');
 
 -- --------------------------------------------------------
 
