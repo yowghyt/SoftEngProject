@@ -1,49 +1,99 @@
 <?php
+// src/php/admin/get_borrower_history.php
+
+// Turn off error display
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+
 header('Content-Type: application/json');
-require_once __DIR__ . '../config/db_connect.php';
+header('Access-Control-Allow-Origin: *');
 
-$conn = Database::getInstance()->getConnection();
+// Try different paths for the config file
+$config_paths = [
+    __DIR__ . '/../config/db_connect.php',
+    __DIR__ . '/../../config/db_connect.php',
+    '../config/db_connect.php'
+];
 
-date_default_timezone_set('Asia/Manila');
-$today = date('Y-m-d');
-
-$sql = "
-    SELECT 
-        u.userId,
-        u.idNumber AS studentId,
-        CONCAT(u.fname, ' ', u.lname) AS borrowerName,
-        COUNT(er.reservationId) AS totalBorrows,
-        e.equipmentName,
-        er.status,
-        er.dueDate
-    FROM equipmentreservation er
-    JOIN users u ON er.userId = u.userId
-    JOIN equipment e ON er.equipmentId = e.equipmentId
-    GROUP BY u.userId, e.equipmentName, er.status, er.dueDate
-    ORDER BY u.userId ASC;
-";
-
-$result = $conn->query($sql);
-$borrowers = [];
-
-while ($row = $result->fetch_assoc()) {
-    $status = $row['status'];
-
-    // If due date is before today and not returned, mark delinquent
-    if ($row['dueDate'] < $today && strtolower($status) !== 'returned') {
-        $status = 'Delinquent';
+$config_loaded = false;
+foreach ($config_paths as $path) {
+    if (file_exists($path)) {
+        require_once $path;
+        $config_loaded = true;
+        break;
     }
-
-    $borrowers[] = [
-        'borrowerId' => sprintf('#BOR-%03d', $row['userId']),
-        'studentId' => $row['studentId'],
-        'name' => $row['borrowerName'],
-        'totalBorrows' => $row['totalBorrows'],
-        'itemBorrowed' => $row['equipmentName'],
-        'status' => $status,
-        'dueDate' => $row['dueDate']
-    ];
 }
 
-echo json_encode($borrowers);
-?>
+if (!$config_loaded) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Database config file not found'
+    ]);
+    exit;
+}
+
+try {
+    $db = Database::getInstance();
+    $conn = $db->getConnection();
+
+    $query = "
+        SELECT 
+            u.userId,
+            u.idNumber,
+            CONCAT(u.fname, ' ', u.lname) as fullName,
+            COUNT(er.reservationId) as totalBorrows,
+            SUM(CASE WHEN er.status = 'Approved' AND er.dueDate >= CURDATE() THEN 1 ELSE 0 END) as currentBorrows,
+            MAX(er.date) as lastBorrowed,
+            CASE 
+                WHEN SUM(CASE WHEN er.status = 'Approved' AND er.dueDate < CURDATE() THEN 1 ELSE 0 END) > 0 
+                THEN 'Delinquent'
+                WHEN SUM(CASE WHEN er.status = 'Approved' AND er.dueDate >= CURDATE() THEN 1 ELSE 0 END) > 0 
+                THEN 'Active'
+                ELSE 'Inactive'
+            END as status
+        FROM users u
+        LEFT JOIN equipmentreservation er ON u.userId = er.userId
+        GROUP BY u.userId, u.idNumber, u.fname, u.lname
+        ORDER BY totalBorrows DESC
+    ";
+
+    $result = $conn->query($query);
+    $borrowers = [];
+
+    while ($row = $result->fetch_assoc()) {
+        // Get currently borrowed items
+        $itemQuery = "
+            SELECT e.equipmentName 
+            FROM equipmentreservation er
+            JOIN equipment e ON er.equipmentId = e.equipmentId
+            WHERE er.userId = ? 
+            AND er.status = 'Approved' 
+            AND er.dueDate >= CURDATE()
+        ";
+
+        $stmt = $conn->prepare($itemQuery);
+        $stmt->bind_param('i', $row['userId']);
+        $stmt->execute();
+        $itemResult = $stmt->get_result();
+
+        $items = [];
+        while ($item = $itemResult->fetch_assoc()) {
+            $items[] = $item['equipmentName'];
+        }
+
+        $row['currentItems'] = implode(', ', $items);
+        $borrowers[] = $row;
+    }
+
+    echo json_encode([
+        'success' => true,
+        'data' => $borrowers
+    ]);
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Error fetching borrower history: ' . $e->getMessage()
+    ]);
+}
