@@ -175,6 +175,9 @@ function getKnowledgeCenterLogs($conn)
 // ==================== GET ACTIVE USERS ====================
 function getActiveUsers($conn)
 {
+
+    $today = date('Y-m-d');
+
     $sql = "
         SELECT 
             b.idLog,
@@ -187,6 +190,7 @@ function getActiveUsers($conn)
             'BYOD Lab' as labType
         FROM BYODlog b
         INNER JOIN users u ON b.userId = u.userId
+        WHERE b.date = '$today' /* ONLY TODAY'S BYOD LOGS */
         
         UNION ALL
         
@@ -201,6 +205,7 @@ function getActiveUsers($conn)
             'Knowledge Center' as labType
         FROM KnowledgeCenterlog k
         INNER JOIN users u ON k.userId = u.userId
+        WHERE k.date = '$today' /* ONLY TODAY'S KC LOGS */
         
         ORDER BY date DESC, timeIn DESC
     ";
