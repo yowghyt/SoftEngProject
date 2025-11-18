@@ -87,7 +87,7 @@ function displayLabLogs(logs, tabId) {
     const tbody = document.querySelector(`#${tabId} tbody`);
 
     if (logs.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4">No logs found for this lab</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4">No logs found for this lab</td></tr>';
         return;
     }
 
@@ -103,7 +103,6 @@ function displayLabLogs(logs, tabId) {
                 <td>${formatDate(log.date)}</td>
                 <td>${formatTime(log.timeIn)}</td>
                 <td>${log.roomName}</td>
-                <td><span class="badge bg-primary">Entry Log</span></td>
             </tr>
         `;
     }).join('');
@@ -131,7 +130,7 @@ function displayActiveUsers(logs) {
     const tbody = document.querySelector('#active-logs tbody');
 
     if (logs.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4">No students currently inside labs</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4">No students currently inside labs</td></tr>';
         return;
     }
 
@@ -146,7 +145,6 @@ function displayActiveUsers(logs) {
                 <td>${formatDate(log.date)}</td>
                 <td>${formatTime(log.timeIn)}</td>
                 <td>${log.labType} - ${log.roomName}</td>
-                <td><span class="badge bg-primary">Entry Log</span></td>
             </tr>
         `;
     }).join('');
@@ -235,7 +233,7 @@ function showEmptyState(tabId, message) {
         if (tabId === 'all-logs') {
             colspan = 6; 
         } else if (tabId === 'lab1-logs' || tabId === 'lab2-logs' || tabId === 'active-logs') {
-            colspan = 7;
+            colspan = 6;
         } else {
             colspan = 5; // Default fallback
         }
