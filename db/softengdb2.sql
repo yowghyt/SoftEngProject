@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Nov 18, 2025 at 11:17 AM
+-- Generation Time: Nov 18, 2025 at 01:15 PM
 -- Server version: 9.1.0
 -- PHP Version: 8.3.14
 
@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS `byodlog` (
 --
 
 INSERT INTO `byodlog` (`idLog`, `userId`, `date`, `timeIn`, `roomName`) VALUES
-(1, 1, '2025-10-16', '09:15:00', '426'),
+(1, 1, '2025-11-18', '09:15:00', '426'),
 (2, 2, '2025-10-16', '09:45:00', '426'),
 (3, 3, '2025-10-17', '10:30:00', '426'),
 (4, 1, '2025-10-18', '08:55:00', '426'),
@@ -125,7 +125,7 @@ CREATE TABLE IF NOT EXISTS `equipmentreservation` (
   PRIMARY KEY (`reservationId`),
   KEY `userId` (`userId`),
   KEY `equipmentId` (`equipmentId`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `equipmentreservation`
@@ -133,7 +133,8 @@ CREATE TABLE IF NOT EXISTS `equipmentreservation` (
 
 INSERT INTO `equipmentreservation` (`reservationId`, `userId`, `equipmentId`, `date`, `startTime`, `endTime`, `dueDate`, `status`, `purpose`) VALUES
 (1, 2, 1, '2025-10-18', '08:00:00', '10:00:00', '2025-10-19', 'Approved', 'Class report'),
-(2, 3, 2, '2025-10-19', '10:00:00', '12:00:00', '2025-10-19', 'Pending', 'Project demo');
+(2, 3, 2, '2025-10-19', '10:00:00', '12:00:00', '2025-10-19', 'Pending', 'Project demo'),
+(3, 4, 3, '2025-11-13', '10:00:00', '12:00:00', '2025-11-17', 'Approved', 'Final presentation practice');
 
 -- --------------------------------------------------------
 
@@ -206,7 +207,7 @@ CREATE TABLE IF NOT EXISTS `request` (
   PRIMARY KEY (`requestId`),
   KEY `userId` (`userId`),
   KEY `reservationId` (`reservationId`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `request`
@@ -216,7 +217,9 @@ INSERT INTO `request` (`requestId`, `userId`, `reservationId`, `status`, `reques
 (1, 2, 1, 'Approved', 'equipment'),
 (2, 3, 1, 'Approved', 'room'),
 (3, 2, 2, 'Pending', 'room'),
-(4, 3, 2, 'Pending', 'equipment');
+(4, 3, 2, 'Pending', 'equipment'),
+(5, 1, 4, 'Approved', 'room'),
+(6, 4, 3, 'Approved', 'equipment');
 
 -- --------------------------------------------------------
 
@@ -269,7 +272,7 @@ CREATE TABLE IF NOT EXISTS `roomreservation` (
   PRIMARY KEY (`reservationId`),
   KEY `userId` (`userId`),
   KEY `roomId` (`roomId`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `roomreservation`
@@ -277,7 +280,8 @@ CREATE TABLE IF NOT EXISTS `roomreservation` (
 
 INSERT INTO `roomreservation` (`reservationId`, `userId`, `roomId`, `date`, `startTime`, `endTime`, `capacityUsed`, `status`, `purpose`) VALUES
 (1, 3, 1, '2025-10-18', '09:00:00', '11:00:00', 20, 'Approved', 'Group study'),
-(2, 2, 2, '2025-10-19', '13:00:00', '15:00:00', 15, 'Pending', 'Presentation practice');
+(2, 2, 2, '2025-10-19', '13:00:00', '15:00:00', 15, 'Pending', 'Presentation practice'),
+(4, 1, 3, '2025-11-18', '14:00:00', '16:00:00', 10, 'Approved', 'Capstone Project Review');
 
 -- --------------------------------------------------------
 
@@ -341,7 +345,6 @@ ALTER TABLE `printlog`
 -- Constraints for table `request`
 --
 ALTER TABLE `request`
-  ADD CONSTRAINT `FKreserveIdEquip` FOREIGN KEY (`reservationId`) REFERENCES `equipmentreservation` (`reservationId`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   ADD CONSTRAINT `FKuserIdReq` FOREIGN KEY (`userId`) REFERENCES `users` (`userId`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 --

@@ -38,7 +38,6 @@ try {
         SELECT COUNT(DISTINCT er.userId) as active
         FROM equipmentreservation er
         WHERE er.status = 'Approved' 
-        AND er.dueDate >= CURDATE()
     ");
     $row = $result->fetch_assoc();
     $stats['activeBorrowers'] = (int)($row['active'] ?? 0);
@@ -53,7 +52,7 @@ try {
         SELECT COUNT(*) as count 
         FROM roomreservation 
         WHERE date = CURDATE() 
-        AND status = 'Approved'
+        AND status IN ('Approved', 'In Use')
     ");
     $row = $result->fetch_assoc();
     $stats['roomReservationsToday'] = (int)($row['count'] ?? 0);
