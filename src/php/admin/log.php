@@ -53,7 +53,6 @@ function getAllLogs($conn)
             CONCAT(u.fname, ' ', u.lname) as studentName,
             b.date,
             b.timeIn,
-            b.timeOut,
             b.roomName,
             'BYOD Lab' as labType
         FROM BYODlog b
@@ -68,7 +67,6 @@ function getAllLogs($conn)
             CONCAT(u.fname, ' ', u.lname) as studentName,
             k.date,
             k.timeIn,
-            k.timeOut,
             k.roomName,
             'Knowledge Center' as labType
         FROM KnowledgeCenterlog k
@@ -109,7 +107,6 @@ function getBYODLogs($conn)
             CONCAT(u.fname, ' ', u.lname) as studentName,
             b.date,
             b.timeIn,
-            b.timeOut,
             b.roomName
         FROM BYODlog b
         INNER JOIN users u ON b.userId = u.userId
@@ -148,7 +145,6 @@ function getKnowledgeCenterLogs($conn)
             CONCAT(u.fname, ' ', u.lname) as studentName,
             k.date,
             k.timeIn,
-            k.timeOut,
             k.roomName
         FROM KnowledgeCenterlog k
         INNER JOIN users u ON k.userId = u.userId
@@ -191,7 +187,6 @@ function getActiveUsers($conn)
             'BYOD Lab' as labType
         FROM BYODlog b
         INNER JOIN users u ON b.userId = u.userId
-        WHERE b.timeOut IS NULL
         
         UNION ALL
         
@@ -206,7 +201,6 @@ function getActiveUsers($conn)
             'Knowledge Center' as labType
         FROM KnowledgeCenterlog k
         INNER JOIN users u ON k.userId = u.userId
-        WHERE k.timeOut IS NULL
         
         ORDER BY date DESC, timeIn DESC
     ";
@@ -297,7 +291,7 @@ function exportToExcel($conn)
     $output = fopen('php://output', 'w');
 
     // Add CSV headers
-    fputcsv($output, ['Log ID', 'Student ID', 'Student Name', 'Lab Type', 'Room', 'Date', 'Time In', 'Time Out', 'Duration']);
+    fputcsv($output, ['Log ID', 'Student ID', 'Student Name', 'Lab Type', 'Room', 'Date', 'Time In']);
 
     // Get all logs
     $sql = "
@@ -308,8 +302,7 @@ function exportToExcel($conn)
             'BYOD Lab' as labType,
             b.roomName,
             b.date,
-            b.timeIn,
-            b.timeOut
+            b.timeIn
         FROM BYODlog b
         INNER JOIN users u ON b.userId = u.userId
         
@@ -322,8 +315,7 @@ function exportToExcel($conn)
             'Knowledge Center' as labType,
             k.roomName,
             k.date,
-            k.timeIn,
-            k.timeOut
+            k.timeIn
         FROM KnowledgeCenterlog k
         INNER JOIN users u ON k.userId = u.userId
         
@@ -334,15 +326,6 @@ function exportToExcel($conn)
 
     if ($result) {
         while ($row = $result->fetch_assoc()) {
-            $duration = '-';
-            if ($row['timeOut']) {
-                $timeIn = strtotime($row['timeIn']);
-                $timeOut = strtotime($row['timeOut']);
-                $diff = $timeOut - $timeIn;
-                $hours = floor($diff / 3600);
-                $minutes = floor(($diff % 3600) / 60);
-                $duration = "{$hours}h {$minutes}m";
-            }
 
             fputcsv($output, [
                 'LOG-' . str_pad($row['idLog'], 3, '0', STR_PAD_LEFT),
@@ -352,8 +335,6 @@ function exportToExcel($conn)
                 $row['roomName'],
                 $row['date'],
                 $row['timeIn'],
-                $row['timeOut'] ?? '-',
-                $duration
             ]);
         }
     }

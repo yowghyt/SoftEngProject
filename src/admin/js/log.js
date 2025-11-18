@@ -26,13 +26,11 @@ function displayAllLogs(logs) {
     const tbody = document.querySelector('#all-logs tbody');
 
     if (logs.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4">No lab entry logs found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4">No lab entry logs found</td></tr>';
         return;
     }
 
     tbody.innerHTML = logs.map((log, index) => {
-        const duration = calculateDuration(log.timeIn, log.timeOut);
-        const timeOut = log.timeOut ? formatTime(log.timeOut) : '-';
 
         return `
             <tr>
@@ -42,8 +40,6 @@ function displayAllLogs(logs) {
                 <td>${log.labType} - ${log.roomName}</td>
                 <td>${formatDate(log.date)}</td>
                 <td>${formatTime(log.timeIn)}</td>
-                <td>${timeOut}</td>
-                <td>${duration}</td>
             </tr>
         `;
     }).join('');
@@ -89,17 +85,11 @@ function displayLabLogs(logs, tabId) {
     const tbody = document.querySelector(`#${tabId} tbody`);
 
     if (logs.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4">No logs found for this lab</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4">No logs found for this lab</td></tr>';
         return;
     }
 
     tbody.innerHTML = logs.map((log) => {
-        const duration = calculateDuration(log.timeIn, log.timeOut);
-        const timeOut = log.timeOut ? formatTime(log.timeOut) : '-';
-        const statusBadge = log.timeOut
-            ? '<span class="badge bg-success">Left Room</span>'
-            : '<span class="badge bg-warning">Inside</span>';
-
         return `
             <tr>
                 <td>#LOG-${String(log.idLog).padStart(3, '0')}</td>
@@ -107,10 +97,8 @@ function displayLabLogs(logs, tabId) {
                 <td>${log.studentName}</td>
                 <td>${formatDate(log.date)}</td>
                 <td>${formatTime(log.timeIn)}</td>
-                <td>${timeOut}</td>
-                <td>${duration}</td>
                 <td>${log.roomName}</td>
-                <td>${statusBadge}</td>
+                <td><span class="badge bg-primary">Entry Log</span></td>
             </tr>
         `;
     }).join('');
@@ -138,12 +126,11 @@ function displayActiveUsers(logs) {
     const tbody = document.querySelector('#active-logs tbody');
 
     if (logs.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4">No students currently inside labs</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4">No students currently inside labs</td></tr>';
         return;
     }
 
     tbody.innerHTML = logs.map((log) => {
-        const duration = calculateDuration(log.timeIn, null);
 
         return `
             <tr>
@@ -152,10 +139,8 @@ function displayActiveUsers(logs) {
                 <td>${log.studentName}</td>
                 <td>${formatDate(log.date)}</td>
                 <td>${formatTime(log.timeIn)}</td>
-                <td>-</td>
-                <td>${duration}</td>
                 <td>${log.labType} - ${log.roomName}</td>
-                <td><span class="badge bg-warning">Inside</span></td>
+                <td><span class="badge bg-primary">Entry Log</span></td>
             </tr>
         `;
     }).join('');
@@ -215,31 +200,40 @@ function formatTime(timeString) {
     return `${displayHour}:${minutes} ${ampm}`;
 }
 
-function calculateDuration(timeIn, timeOut) {
-    if (!timeIn) return '-';
+// function calculateDuration(timeIn, timeOut) {
+//     if (!timeIn) return '-';
 
-    const inTime = new Date(`2000-01-01 ${timeIn}`);
-    const outTime = timeOut ? new Date(`2000-01-01 ${timeOut}`) : new Date();
+//     const inTime = new Date(`2000-01-01 ${timeIn}`);
+//     const outTime = timeOut ? new Date(`2000-01-01 ${timeOut}`) : new Date();
 
-    if (!timeOut) {
-        // Calculate current duration
-        const now = new Date();
-        const diff = now - inTime;
-        const hours = Math.floor(diff / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        return `${hours}h ${minutes}m`;
-    }
+//     if (!timeOut) {
+//         // Calculate current duration
+//         const now = new Date();
+//         const diff = now - inTime;
+//         const hours = Math.floor(diff / (1000 * 60 * 60));
+//         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+//         return `${hours}h ${minutes}m`;
+//     }
 
-    const diff = outTime - inTime;
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    return `${hours}h ${minutes}m`;
-}
+//     const diff = outTime - inTime;
+//     const hours = Math.floor(diff / (1000 * 60 * 60));
+//     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+//     return `${hours}h ${minutes}m`;
+// }
 
 function showEmptyState(tabId, message) {
     const tbody = document.querySelector(`#${tabId} tbody`);
     if (tbody) {
-        const colspan = tabId === 'all-logs' ? 8 : 9;
+        
+        let colspan;
+        if (tabId === 'all-logs') {
+            colspan = 6; 
+        } else if (tabId === 'lab1-logs' || tabId === 'lab2-logs' || tabId === 'active-logs') {
+            colspan = 7;
+        } else {
+            colspan = 5; // Default fallback
+        }
+        
         tbody.innerHTML = `<tr><td colspan="${colspan}" class="text-center py-4">${message}</td></tr>`;
     }
 }
