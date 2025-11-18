@@ -327,8 +327,10 @@ function exportToExcel($conn)
     if ($result) {
         while ($row = $result->fetch_assoc()) {
 
+            $logPrefix = ($row['labType'] == 'BYOD Lab') ? 'BYOD' : 'KC';
+
             fputcsv($output, [
-                'LOG-' . str_pad($row['idLog'], 3, '0', STR_PAD_LEFT),
+                $logPrefix . '-' . str_pad($row['idLog'], 3, '0', STR_PAD_LEFT),
                 $row['idNumber'],
                 $row['studentName'],
                 $row['labType'],

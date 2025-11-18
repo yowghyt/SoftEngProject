@@ -31,10 +31,12 @@ function displayAllLogs(logs) {
     }
 
     tbody.innerHTML = logs.map((log, index) => {
+        const labPrefix = log.labType.includes('BYOD') ? 'BYOD' : 'KC';
+        const logIdDisplay = `#${labPrefix}-${String(log.idLog).padStart(3, '0')}`;
 
         return `
             <tr>
-                <td>#LOG-${String(log.idLog).padStart(3, '0')}</td>
+                <td>${logIdDisplay}</td>
                 <td><strong>${log.idNumber}</strong></td>
                 <td>${log.studentName}</td>
                 <td>${log.labType} - ${log.roomName}</td>
@@ -89,10 +91,13 @@ function displayLabLogs(logs, tabId) {
         return;
     }
 
+    const labPrefix = tabId === 'lab1-logs' ? 'BYOD' : 'KC';
+
     tbody.innerHTML = logs.map((log) => {
+        const logIdDisplay = `#${labPrefix}-${String(log.idLog).padStart(3, '0')}`;
         return `
             <tr>
-                <td>#LOG-${String(log.idLog).padStart(3, '0')}</td>
+                <td>${logIdDisplay}</td>
                 <td><strong>${log.idNumber}</strong></td>
                 <td>${log.studentName}</td>
                 <td>${formatDate(log.date)}</td>
@@ -131,10 +136,11 @@ function displayActiveUsers(logs) {
     }
 
     tbody.innerHTML = logs.map((log) => {
-
+        const labPrefix = log.labType.includes('BYOD') ? 'BYOD' : 'KC';
+        const logIdDisplay = `#${labPrefix}-${String(log.idLog).padStart(3, '0')}`;
         return `
             <tr>
-                <td>#LOG-${String(log.idLog).padStart(3, '0')}</td>
+                <td>${logIdDisplay}</td>
                 <td><strong>${log.idNumber}</strong></td>
                 <td>${log.studentName}</td>
                 <td>${formatDate(log.date)}</td>
