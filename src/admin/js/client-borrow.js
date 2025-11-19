@@ -1,6 +1,45 @@
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-    
+    loadEquipmentItems();
+
+    function loadEquipmentItems() {
+    fetch("../php/admin/get_equipment.php")
+        .then(res => res.json())
+        .then(data => {
+            const container = document.getElementById("equipmentContainer");
+            container.innerHTML = ""; 
+
+            data.forEach(item => {
+                const statusBadge = item.status === "Available"
+                    ? `<span class="badge bg-success">Available</span>`
+                    : `<span class="badge bg-danger">Borrowed</span>`;
+
+                const disabledBtn = item.status === "Available"
+                    ? ""
+                    : "disabled";
+
+                container.innerHTML += `
+                    <div class="col-md-4 col-lg-3 mb-4">
+                        <div class="item-card">
+                            <div class="item-image">📦</div>
+                            <div class="item-body">
+                                <h5>${item.equipmentName}</h5>
+                                <p class="item-id">${item.equipmentId}</p>
+                                <p class="item-category"><span class="badge bg-primary">${item.category}</span></p>
+                                <div class="item-status">${statusBadge}</div>
+                                <button class="btn btn-primary w-100 mt-2" data-bs-toggle="modal" data-bs-target="#borrowModal" ${disabledBtn}>
+                                    Request Borrow
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            attachBorrowEventListeners();
+        });
+}
+
     // Create Borrow Modal HTML
     const borrowModalHTML = `
     <div class="modal fade" id="borrowModal" tabindex="-1" aria-labelledby="borrowModalLabel" aria-hidden="true">
@@ -13,13 +52,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="modal-body">
                     <form>
                         <div class="row">
+                        <div class="col-md-6 mb-3">
+                                <label class="form-label">Student ID <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="borrowStudentId" placeholder="Enter your student ID" required>
+                                <input type="hidden" id="realUserId">
+                            </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Student Name <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="borrowStudentName" placeholder="Enter your full name" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Student ID <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="borrowStudentId" placeholder="Enter your student ID" required>
                             </div>
                         </div>
                         <div class="mb-3">
@@ -126,32 +166,36 @@ document.addEventListener('DOMContentLoaded', function() {
     const borrowModal = new bootstrap.Modal(borrowModalElement);
     const reserveModal = new bootstrap.Modal(reserveModalElement);
     
+    borrowModalElement.addEventListener("hidden.bs.modal", function () {
+        document.getElementById("borrowStudentName").value = "";
+        document.getElementById("borrowStudentId").value = "";
+        document.getElementById("borrowPurpose").value = "";
+    });
     // Get all "Request Borrow" buttons
-    const borrowButtons = document.querySelectorAll('[data-bs-target="#borrowModal"]');
+    // const borrowButtons = document.querySelectorAll('[data-bs-target="#borrowModal"]');
     
     // Get all "Reserve Now" buttons
     const reserveButtons = document.querySelectorAll('[data-bs-target="#reserveModal"]');
     
-    // Handle borrow button clicks
+function attachBorrowEventListeners() {
+    const borrowButtons = document.querySelectorAll('[data-bs-target="#borrowModal"]');
+
     borrowButtons.forEach(button => {
         button.addEventListener('click', function(e) {
             e.preventDefault();
             
-            // Get the item card parent
             const itemCard = this.closest('.item-card');
-            
-            // Extract item details
+
             const itemName = itemCard.querySelector('h5').textContent;
             const itemId = itemCard.querySelector('.item-id').textContent;
-            
-            // Populate modal with item details
+
             document.getElementById('borrowItemName').value = itemName;
             document.getElementById('borrowItemId').value = itemId;
-            
-            // Show the modal
+
             borrowModal.show();
         });
     });
+}
     
     // Handle reserve button clicks
     reserveButtons.forEach(button => {
@@ -173,24 +217,56 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Handle borrow form submission
-    document.getElementById('submitBorrowBtn').addEventListener('click', function() {
-        const duration = document.getElementById('borrowDuration').value;
-        const purpose = document.getElementById('borrowPurpose').value;
-        
-        if (!purpose.trim()) {
-            alert('Please provide a purpose for borrowing');
+     document.getElementById("submitBorrowBtn").addEventListener("click", function () {
+        const userId = document.getElementById("realUserId") ? document.getElementById("realUserId").value : '';
+        const equipmentId = document.getElementById("borrowItemId").value;
+        const duration = parseInt(document.getElementById("borrowDuration").value);
+        const purpose = document.getElementById("borrowPurpose").value.trim();
+
+        if (!userId) {
+            alert("Please enter a valid student ID (lookup must find the student).");
             return;
         }
-        
-        // Success message
-        alert('Borrow request submitted successfully!');
-        
-        // Close modal
-        borrowModal.hide();
-        
-        // Reset form
-        document.getElementById('borrowPurpose').value = '';
-        document.getElementById('borrowDuration').selectedIndex = 2; // Reset to 7 days
+        if (!equipmentId || !duration || !purpose) {
+            alert("Please fill all required fields.");
+            return;
+        }
+
+        fetch("../php/admin/submit_request.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams({
+                userId,
+                equipmentId,
+                duration,
+                purpose
+            })
+        })
+        .then(res => res.text())
+        .then(txt => {
+            console.log('RAW RESPONSE:', txt);
+            let data;
+            try {
+                data = JSON.parse(txt);
+            } catch (e) {
+                alert('Invalid JSON from server:\n' + txt);
+                return;
+            }
+
+            if (data.success) {
+                alert('Borrow request submitted!');
+                borrowModal.hide();
+                loadEquipmentItems();
+            } else {
+                alert('Error: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(err => {
+            console.error('Submit error:', err);
+            alert('Network error while submitting request.');
+        });
     });
     
     // Handle reserve form submission
@@ -290,4 +366,34 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+     function enableStudentAutoFill() {
+        const nameInput = document.getElementById("borrowStudentName");
+        const idInput = document.getElementById("borrowStudentId");
+
+        if (!nameInput || !idInput) return;
+
+        function lookupStudent(query) {
+            if (query.length < 2) return;
+
+            fetch(`../php/admin/lookup_student.php?query=${query}`)
+                .then(res => res.json())
+                .then(data => {
+                   if (data.error) return;
+
+            if (data.fullname) nameInput.value = data.fullname;
+            if (data.idNumber) idInput.value = data.idNumber;
+
+            // get userId
+            if (data.userId) {
+                document.getElementById("realUserId").value = data.userId;
+            }
+        });
+        }
+
+        nameInput.addEventListener("input", () => lookupStudent(nameInput.value));
+        idInput.addEventListener("input", () => lookupStudent(idInput.value));
+    }
+
+    enableStudentAutoFill();
 });

@@ -22,7 +22,7 @@
  * header('Content-Type: application/json');
  * echo json_encode($data);
  */
-require_once __DIR__ . '../config/db_connect.php';
+require_once __DIR__ . '/../config/db_connect.php';
 
 $conn = Database::getInstance()->getConnection();
 /**
@@ -34,10 +34,14 @@ function fetchAvailableItems($conn) {
         SELECT equipmentId, equipmentName, category, status
         FROM equipment
         WHERE status = 'available'
-        ORDER BY equipmentName ASC
+        ORDER BY equipmentName DESC
     ";
     $result = $conn->query($sql);
-    return $result->fetch_all(MYSQLI_ASSOC);
+     $items = [];
+    while ($row = $result->fetch_assoc()) {
+        $items[] = $row;
+    }
+    return $items;
 }
 
 /**
@@ -64,30 +68,45 @@ function fetchAvailableRooms($conn) {
 function submitBorrowRequest($conn, $userId, $equipmentId, $duration, $purpose) {
     $conn->begin_transaction();
     try {
-        // Create an equipment reservation record
         $stmt = $conn->prepare("
-            INSERT INTO equipmentreservation (userId, equipmentId, date, dueDate, status)
-            VALUES (?, ?, CURDATE(), DATE_ADD(CURDATE(), INTERVAL ? DAY), 'Pending')
+            INSERT INTO equipmentreservation 
+    (reservationId, userId, equipmentId, date, startTime, endTime, dueDate, status, purpose)
+VALUES 
+    (NULL, ?, ?, CURDATE(), CURTIME(), CURTIME(), DATE_ADD(CURDATE(), INTERVAL ? DAY), 'Pending', ?)
         ");
-        $stmt->bind_param('iii', $userId, $equipmentId, $duration);
-        $stmt->execute();
+        if (!$stmt) {
+            throw new Exception('Prepare failed (reservation): ' . $conn->error);
+        }
+        $stmt->bind_param('iiis', $userId, $equipmentId, $duration, $purpose);
+        if (!$stmt->execute()) {
+            throw new Exception('Execute failed (reservation): ' . $stmt->error);
+        }
         $reservationId = $conn->insert_id;
-
-        // Add corresponding request entry
         $stmt2 = $conn->prepare("
-            INSERT INTO request (userId, reservationId, requestType, purpose, status)
-            VALUES (?, ?, 'equipment', ?, 'Pending')
+            INSERT INTO request (userId, reservationId, requestType, status)
+            VALUES (?, ?, 'equipment', 'Pending')
         ");
-        $stmt2->bind_param('iis', $userId, $reservationId, $purpose);
-        $stmt2->execute();
-
+        if (!$stmt2) {
+            throw new Exception('Prepare failed (request): ' . $conn->error);
+        }
+        $stmt2->bind_param('ii', $userId, $reservationId);
+        if (!$stmt2->execute()) {
+            throw new Exception('Execute failed (request): ' . $stmt2->error);
+        }
         $conn->commit();
         return true;
+
     } catch (Exception $e) {
         $conn->rollback();
-        return false;
+
+        echo json_encode([
+            "success" => false,
+            "error" => $e->getMessage()
+        ]);
+        exit;
     }
 }
+
 
 /**
  * Get all borrow records for a given user (active and past)
@@ -200,5 +219,35 @@ function fetchMyPendingRequests($conn, $userId) {
     $stmt->execute();
     $result = $stmt->get_result();
     return $result->fetch_all(MYSQLI_ASSOC);
+}
+
+/**
+ * Look for student details by ID number or name
+ */
+function lookupStudent($conn, $query) {
+    $sql = "
+        SELECT userId, idNumber, fname, lname
+        FROM users
+        WHERE idNumber = ?
+           OR fname LIKE ?
+           OR lname LIKE ?
+        LIMIT 1
+    ";
+
+    $stmt = $conn->prepare($sql);
+    $like = "%$query%";
+    $stmt->bind_param("sss", $query, $like, $like);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($row = $result->fetch_assoc()) {
+        return [
+            "userId" => $row["userId"],
+             "idNumber" => $row["idNumber"],
+            "fullname" => $row["fname"] . " " . $row["lname"]
+        ];
+    }
+
+    return null;
 }
 ?>
