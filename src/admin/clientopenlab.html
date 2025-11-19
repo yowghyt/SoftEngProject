@@ -99,48 +99,50 @@
             <p class="text-muted">Scan your ID or enter manually to log your visit</p>
         </div>
 
-        <div class="row">
-            <div class="col-lg-6 mb-4">
-                <div class="entry-card">
-                    <div class="entry-header bg-success">
-                        <h4>🟢 Time In</h4>
-                        <p class="mb-0">Log your entry to the lab</p>
-                    </div>
-                    <div class="entry-body">
-                        <form id="timeInForm">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Student ID Number</label>
-                                <input type="text" class="form-control form-control-lg" id="timeInStudentId" placeholder="Enter your Student ID (e.g., 2241586)" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Full Name</label>
-                                <input type="text" class="form-control form-control-lg" id="timeInName" placeholder="Enter your full name" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Purpose of Visit</label>
-                                <select class="form-select form-select-lg" id="timeInPurpose" required>
-                                    <option value="">Select purpose...</option>
-                                    <option>Study/Research</option>
-                                    <option>Project Work</option>
-                                    <option>Equipment Use</option>
-                                    <option>Class Activity</option>
-                                    <option>Meeting</option>
-                                    <option>Other</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Additional Notes (Optional)</label>
-                                <textarea class="form-control" id="timeInNotes" rows="2" placeholder="Any additional information..."></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-success btn-lg w-100">
-                                <strong>✓ Log Time In</strong>
-                            </button>
-                        </form>
-                    </div>
-                </div>
+ <div class="row">
+    <div class="col-lg-6 mb-4 mx-auto">
+        <div class="entry-card">
+            <div class="entry-header bg-success">
+                <h4>🟢 Time In</h4>
+                <p class="mb-0">Log your entry to the lab</p>
             </div>
+            <div class="entry-body">
+                <form id="timeInForm">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Student ID Number</label>
+                        <input type="text" class="form-control form-control-lg" id="timeInStudentId" placeholder="Enter your Student ID (e.g., 2241586)" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Full Name</label>
+                        <input type="text" class="form-control form-control-lg" id="timeInName" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Purpose of Visit</label>
+                        <select class="form-select form-select-lg" id="timeInPurpose" required>
+                            <option value="">Select purpose...</option>
+                            <option>Study/Research</option>
+                            <option>Project Work</option>
+                            <option>Equipment Use</option>
+                            <option>Class Activity</option>
+                            <option>Meeting</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Additional Notes (Optional)</label>
+                        <textarea class="form-control" id="timeInNotes" rows="2" placeholder="Any additional information..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success btn-lg w-100">
+                        <strong>✓ Log Time In</strong>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
-            <div class="col-lg-6 mb-4">
+
+            <!-- <div class="col-lg-6 mb-4">
                 <div class="entry-card">
                     <div class="entry-header bg-danger">
                         <h4>🔴 Time Out</h4>
@@ -167,7 +169,7 @@
                         </form>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
     </section>
 
@@ -185,8 +187,6 @@
                         <th>Student ID</th>
                         <th>Name</th>
                         <th>Time In</th>
-                        <th>Duration</th>
-                        <th>Purpose</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -196,7 +196,6 @@
                         <td><strong>2241586</strong></td>
                         <td>Juan Dela Cruz</td>
                         <td>08:30 AM</td>
-                        <td><span class="badge bg-info">2h 15m</span></td>
                         <td>Project Work</td>
                         <td><span class="badge bg-success">Inside</span></td>
                         <td>
@@ -207,7 +206,6 @@
                         <td><strong>2241587</strong></td>
                         <td>Maria Santos</td>
                         <td>09:15 AM</td>
-                        <td><span class="badge bg-info">1h 30m</span></td>
                         <td>Study/Research</td>
                         <td><span class="badge bg-success">Inside</span></td>
                         <td>
@@ -218,7 +216,6 @@
                         <td><strong>2241589</strong></td>
                         <td>Ana Garcia</td>
                         <td>10:00 AM</td>
-                        <td><span class="badge bg-info">45m</span></td>
                         <td>Equipment Use</td>
                         <td><span class="badge bg-success">Inside</span></td>
                         <td>
@@ -229,7 +226,6 @@
                         <td><strong>2241590</strong></td>
                         <td>Carlos Morales</td>
                         <td>10:30 AM</td>
-                        <td><span class="badge bg-info">15m</span></td>
                         <td>Class Activity</td>
                         <td><span class="badge bg-success">Inside</span></td>
                         <td>
@@ -240,7 +236,6 @@
                         <td><strong>2241591</strong></td>
                         <td>Rosa Fernandez</td>
                         <td>07:45 AM</td>
-                        <td><span class="badge bg-warning text-dark">3h 00m</span></td>
                         <td>Project Work</td>
                         <td><span class="badge bg-success">Inside</span></td>
                         <td>
@@ -251,7 +246,6 @@
                         <td><strong>2241594</strong></td>
                         <td>John Martinez</td>
                         <td>09:45 AM</td>
-                        <td><span class="badge bg-info">1h 00m</span></td>
                         <td>Meeting</td>
                         <td><span class="badge bg-success">Inside</span></td>
                         <td>
@@ -262,7 +256,6 @@
                         <td><strong>2241595</strong></td>
                         <td>Lisa Chen</td>
                         <td>08:00 AM</td>
-                        <td><span class="badge bg-warning text-dark">2h 45m</span></td>
                         <td>Study/Research</td>
                         <td><span class="badge bg-success">Inside</span></td>
                         <td>
@@ -273,7 +266,6 @@
                         <td><strong>2241596</strong></td>
                         <td>Miguel Santos</td>
                         <td>10:15 AM</td>
-                        <td><span class="badge bg-info">30m</span></td>
                         <td>Equipment Use</td>
                         <td><span class="badge bg-success">Inside</span></td>
                         <td>
@@ -315,8 +307,6 @@
                         <th>Student ID</th>
                         <th>Name</th>
                         <th>Time In</th>
-                        <th>Time Out</th>
-                        <th>Duration</th>
                         <th>Purpose</th>
                         <th>Status</th>
                     </tr>
@@ -327,8 +317,6 @@
                         <td><strong>2241592</strong></td>
                         <td>David Kim</td>
                         <td>07:00 AM</td>
-                        <td>09:30 AM</td>
-                        <td>2h 30m</td>
                         <td>Study/Research</td>
                         <td><span class="badge bg-secondary">Completed</span></td>
                     </tr>
@@ -337,8 +325,6 @@
                         <td><strong>2241591</strong></td>
                         <td>Rosa Fernandez</td>
                         <td>07:45 AM</td>
-                        <td>-</td>
-                        <td>3h 00m</td>
                         <td>Project Work</td>
                         <td><span class="badge bg-success">Inside</span></td>
                     </tr>
@@ -347,8 +333,6 @@
                         <td><strong>2241595</strong></td>
                         <td>Lisa Chen</td>
                         <td>08:00 AM</td>
-                        <td>-</td>
-                        <td>2h 45m</td>
                         <td>Study/Research</td>
                         <td><span class="badge bg-success">Inside</span></td>
                     </tr>
@@ -357,8 +341,6 @@
                         <td><strong>2241586</strong></td>
                         <td>Juan Dela Cruz</td>
                         <td>08:30 AM</td>
-                        <td>-</td>
-                        <td>2h 15m</td>
                         <td>Project Work</td>
                         <td><span class="badge bg-success">Inside</span></td>
                     </tr>
@@ -367,8 +349,6 @@
                         <td><strong>2241593</strong></td>
                         <td>Jose Reyes</td>
                         <td>08:45 AM</td>
-                        <td>10:15 AM</td>
-                        <td>1h 30m</td>
                         <td>Equipment Use</td>
                         <td><span class="badge bg-secondary">Completed</span></td>
                     </tr>
@@ -377,8 +357,6 @@
                         <td><strong>2241587</strong></td>
                         <td>Maria Santos</td>
                         <td>09:15 AM</td>
-                        <td>-</td>
-                        <td>1h 30m</td>
                         <td>Study/Research</td>
                         <td><span class="badge bg-success">Inside</span></td>
                     </tr>
@@ -387,8 +365,6 @@
                         <td><strong>2241594</strong></td>
                         <td>John Martinez</td>
                         <td>09:45 AM</td>
-                        <td>-</td>
-                        <td>1h 00m</td>
                         <td>Meeting</td>
                         <td><span class="badge bg-success">Inside</span></td>
                     </tr>
@@ -397,8 +373,6 @@
                         <td><strong>2241589</strong></td>
                         <td>Ana Garcia</td>
                         <td>10:00 AM</td>
-                        <td>-</td>
-                        <td>45m</td>
                         <td>Equipment Use</td>
                         <td><span class="badge bg-success">Inside</span></td>
                     </tr>
@@ -407,8 +381,6 @@
                         <td><strong>2241596</strong></td>
                         <td>Miguel Santos</td>
                         <td>10:15 AM</td>
-                        <td>-</td>
-                        <td>30m</td>
                         <td>Equipment Use</td>
                         <td><span class="badge bg-success">Inside</span></td>
                     </tr>
@@ -417,8 +389,6 @@
                         <td><strong>2241590</strong></td>
                         <td>Carlos Morales</td>
                         <td>10:30 AM</td>
-                        <td>-</td>
-                        <td>15m</td>
                         <td>Class Activity</td>
                         <td><span class="badge bg-success">Inside</span></td>
                     </tr>
