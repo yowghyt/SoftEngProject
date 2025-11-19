@@ -49,12 +49,14 @@ function fetchAvailableItems($conn) {
  */
 function fetchAvailableRooms($conn) {
     $sql = "
-        SELECT roomId, roomName, roomCode, capacity, status
+        SELECT roomId, roomName, status, capacity, building, floor, equipment, description
         FROM room
-        WHERE status = 'available'
+        WHERE status = 'Available'
         ORDER BY roomName ASC
     ";
     $result = $conn->query($sql);
+    if (!$result) return [];
+
     return $result->fetch_all(MYSQLI_ASSOC);
 }
 
@@ -149,28 +151,46 @@ function fetchUserBorrows($conn, $userId) {
 function submitRoomReservation($conn, $userId, $roomId, $date, $start, $end, $people, $purpose) {
     $conn->begin_transaction();
     try {
-        // Create room reservation
         $stmt = $conn->prepare("
-            INSERT INTO roomreservation (userId, roomId, date, startTime, endTime, capacityUsed, status)
-            VALUES (?, ?, ?, ?, ?, ?, 'Pending')
+            INSERT INTO roomreservation
+                (userId, roomId, date, startTime, endTime, capacityUsed, status, purpose)
+            VALUES (?, ?, ?, ?, ?, ?, 'Pending', ?)
         ");
-        $stmt->bind_param('iisssi', $userId, $roomId, $date, $start, $end, $people);
-        $stmt->execute();
+        if (!$stmt) {
+            throw new Exception('Prepare failed (roomreservation): ' . $conn->error);
+        }
+        $stmt->bind_param('iisssis', $userId, $roomId, $date, $start, $end, $people, $purpose);
+
+        if (!$stmt->execute()) {
+            throw new Exception('Execute failed (roomreservation): ' . $stmt->error);
+        }
+
         $reservationId = $conn->insert_id;
 
-        // Add corresponding request
         $stmt2 = $conn->prepare("
-            INSERT INTO request (userId, reservationId, requestType, purpose, status)
-            VALUES (?, ?, 'room', ?, 'Pending')
+            INSERT INTO request (userId, reservationId, requestType, status)
+            VALUES (?, ?, 'room', 'Pending')
         ");
-        $stmt2->bind_param('iis', $userId, $reservationId, $purpose);
-        $stmt2->execute();
+        if (!$stmt2) {
+            throw new Exception('Prepare failed (request): ' . $conn->error);
+        }
+
+        $stmt2->bind_param('ii', $userId, $reservationId);
+
+        if (!$stmt2->execute()) {
+            throw new Exception('Execute failed (request): ' . $stmt2->error);
+        }
 
         $conn->commit();
         return true;
+
     } catch (Exception $e) {
         $conn->rollback();
-        return false;
+        echo json_encode([
+            "success" => false,
+            "error" => $e->getMessage()
+        ]);
+        exit;
     }
 }
 
@@ -220,6 +240,7 @@ function fetchMyPendingRequests($conn, $userId) {
     $result = $stmt->get_result();
     return $result->fetch_all(MYSQLI_ASSOC);
 }
+
 
 /**
  * Look for student details by ID number or name
