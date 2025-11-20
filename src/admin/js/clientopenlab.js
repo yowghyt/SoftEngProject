@@ -157,3 +157,84 @@ function setupFilters() {
     document.getElementById('lab1-tab')?.addEventListener('click', loadBYODLogs);
     document.getElementById('lab2-tab')?.addEventListener('click', loadKnowledgeCenterLogs);
 }
+
+//=============Student Name Autofill===========================
+ function enableTimeInAutoFill() {
+    // Get the input fields from the Time-In form
+    const studentIdInput = document.getElementById("timeInStudentId");
+    const fullNameInput  = document.getElementById("timeInFullName");
+
+    // Optional: hidden field to store the actual database user ID (if needed later)
+    let hiddenUserId = document.getElementById("timeInUserId");
+    if (!hiddenUserId) {
+        hiddenUserId = document.createElement("input");
+        hiddenUserId.type = "hidden";
+        hiddenUserId.id = "timeInUserId";
+        hiddenUserId.name = "userId"; // useful when submitting the form
+        document.getElementById("timeInForm").appendChild(hiddenUserId);
+    }
+
+    // Skip if elements don't exist
+    if (!studentIdInput || !fullNameInput) return;
+
+    // Debounce timer to avoid too many requests while typing
+    let timeout;
+
+    function lookupStudent(query) {
+        if (!query || query.trim().length < 2) {
+            clearTimeout(timeout);
+            return;
+        }
+
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            fetch(`../php/admin/lookup_student.php?query=${encodeURIComponent(query.trim())}`)
+                .then(res => {
+                    if (!res.ok) throw new Error("Network error");
+                    return res.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        console.warn("Lookup error:", data.error);
+                        return;
+                    }
+
+                    // Fill the fields if data is returned
+                    if (data.fullname) {
+                        fullNameInput.value = data.fullname;
+                    }
+                    if (data.idNumber) {
+                        studentIdInput.value = data.idNumber;
+                    }
+                    if (data.userId) {
+                        hiddenUserId.value = data.userId;
+                    }
+                })
+                .catch(err => {
+                    console.error("Fetch error:", err);
+                });
+        }, 400); // 400ms delay after user stops typing
+    }
+
+    // Trigger lookup when typing in either field
+    studentIdInput.addEventListener("input", () => {
+        lookupStudent(studentIdInput.value);
+    });
+
+    fullNameInput.addEventListener("input", () => {
+        lookupStudent(fullNameInput.value);
+    });
+
+    // Optional: Clear name when ID is manually cleared
+    studentIdInput.addEventListener("change", () => {
+        if (!studentIdInput.value.trim()) {
+            fullNameInput.value = "";
+            hiddenUserId.value = "";
+        }
+    });
+}
+
+// Run when DOM is fully loaded
+document.addEventListener("DOMContentLoaded", () => {
+    enableTimeInAutoFill();
+});
