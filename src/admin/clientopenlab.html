@@ -122,6 +122,16 @@
                 <input type="text" class="form-control form-control-lg" id="timeInFirstName" placeholder="Enter your first name" required>
             </div>
 
+            
+            <div class="mb-3">
+                 <label class="form-label fw-bold">Room Number</label>
+                 <select class="form-select form-select-lg" id="timeInRoom" required>
+                     <option value="">Select room...</option>
+                     <option value="424">424 (Knowledge Center)</option>
+                      <option value="426">426 (BYOD Lab)</option>
+               </select>
+            </div>
+
                     <div class="mb-3">
                         <label class="form-label fw-bold">Purpose of Visit</label>
                         <select class="form-select form-select-lg" id="timeInPurpose" required>
@@ -179,10 +189,10 @@
         </div>
     </section>
 
-    <!-- Current Visitors Section -->
+    <!-- Per day lab visitors -->
     <section id="current-visitors" class="mb-5">
         <div class="section-header mb-4">
-            <h2>👥 Currently Inside the Lab</h2>
+            <h2>👥 Today's Log</h2>
             <p class="text-muted">Real-time list of students currently in the laboratory</p>
         </div>
 
@@ -252,7 +262,7 @@
         </div>
     </section>
 
-    <!-- Today's Complete Log -->
+    <!-- Today's Complete Log 
     <section id="history" class="mb-5">
         <div class="section-header mb-4">
             <h2>📋 Today's Complete Entry Log</h2>
@@ -292,7 +302,6 @@
                         <td>David Kim</td>
                         <td>07:00 AM</td>
                         <td>Study/Research</td>
-                       <!-- <td><span class="badge bg-secondary">Completed</span></td> -->
                     </tr>
                     <tr data-status="inside">
                         <td>#002</td>
@@ -362,7 +371,7 @@
         </div>
     </section>
 </div>
-
+-->
 <!-- Footer -->
 <footer class="text-light py-4">
     <div class="container text-center">
@@ -372,6 +381,62 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N" crossorigin="anonymous"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    loadCurrentVisitors();
+    startClock();
+});
+
+function loadCurrentVisitors() {
+    fetch("../src/php/admin/log.php?action=get_byod_logs")
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.getElementById("currentVisitorsTable");
+            tableBody.innerHTML = "";
+
+            if (!data.data || data.data.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">No visitors currently inside.</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            data.data.forEach(row => {
+                const tr = document.createElement("tr");
+
+                tr.innerHTML = `
+                    <td><strong>${row.userId}</strong></td>
+                    <td>${row.firstName} ${row.lastName}</td>
+                    <td>${formatTime(row.timeIn)}</td>
+                    <td>${row.purpose}</td>
+                `;
+
+                tableBody.appendChild(tr);
+            });
+        })
+        .catch(err => console.error("Error loading visitors:", err));
+}
+
+function formatTime(timeString) {
+    const [hours, minutes] = timeString.split(":");
+    const hour = parseInt(hours);
+    const suffix = hour >= 12 ? "PM" : "AM";
+    const hour12 = hour % 12 || 12;
+    return `${hour12}:${minutes} ${suffix}`;
+}
+
+// Clock UI
+function startClock() {
+    setInterval(() => {
+        const now = new Date();
+        document.getElementById("current-time").innerText =
+            `⏰ ${now.toLocaleTimeString()}`;
+    }, 1000);
+}
+</script>
 
 </body>
 </html>
