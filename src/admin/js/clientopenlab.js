@@ -65,8 +65,15 @@ function displayTodayLogs(logs, tabId) {
     }
 
     tbody.innerHTML = logs.map(log => {
-        const labPrefix = log.labType && log.labType.includes("BYOD") ? "BYOD" : "KC";
-        const logIdDisplay = `#${labPrefix}-${String(log.idLog).padStart(3, '0')}`;
+        // const labPrefix = log.labType && log.labType.includes("BYOD") ? "BYOD" : "KC";
+        let prefix = "BYOD"; // default
+
+        if (tabId === '#lab1-logs' || log.roomName === '426') {
+            prefix = "BYOD";
+        } else if (tabId === '#lab2-logs' || log.roomName === '424') {
+            prefix = "KC";
+        }
+        const logIdDisplay = `#${prefix}-${String(log.idLog).padStart(3, '0')}`;
 
         return `
             <tr>
