@@ -1,87 +1,159 @@
 document.addEventListener("DOMContentLoaded", () => {
-    fetchCurrentVisitors();
+    updateClock();
+    setInterval(updateClock, 1000);
 
-    // Refresh every 30 seconds
-    setInterval(fetchCurrentVisitors, 30000);
-
-    function fetchCurrentVisitors() {
-        fetch("php/get_current_visitors.php")
-            .then(response => response.json())
-            .then(data => {
-                const tbody = document.querySelector("#currentVisitorsTable");
-                tbody.innerHTML = "";
-
-                let totalVisitors = data.length;
-                let totalDurationMinutes = 0;
-
-                data.forEach(visitor => {
-                    // Parse timeIn with date
-                    const timeInDate = new Date(visitor.date + "T" + visitor.timeIn);
-                    const now = new Date();
-                    const durationMinutes = Math.floor((now - timeInDate) / (1000 * 60));
-                    totalDurationMinutes += durationMinutes;
-
-                    const durationStr = formatDuration(durationMinutes);
-                    const timeInFormatted = formatTo12Hour(visitor.timeIn); // convert to 12-hour
-
-                    const row = document.createElement("tr");
-                    row.innerHTML = `
-                        <td><strong>${visitor.studentId}</strong></td>
-                        <td>${visitor.name}</td>
-                        <td>${timeInFormatted}</td>
-                        <td>${visitor.purpose}</td>
-                        <td><span class="badge bg-success">${visitor.status}</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-danger" onclick="forceTimeOut('${visitor.studentId}')">Force Time Out</button>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
-                });
-
-                // Update quick stats
-                document.getElementById("inside-count").textContent = totalVisitors;
-                document.getElementById("today-count").textContent = totalVisitors;
-                const avgMinutes = totalVisitors > 0 ? Math.floor(totalDurationMinutes / totalVisitors) : 0;
-                document.getElementById("avg-duration").textContent = formatDuration(avgMinutes);
-                document.getElementById("capacity-current").textContent = totalVisitors;
-            })
-            .catch(err => console.error("Error fetching visitors:", err));
-    }
-
-    function formatDuration(minutes) {
-        const hrs = Math.floor(minutes / 60);
-        const mins = minutes % 60;
-        return `${hrs}h ${mins}m`;
-    }
-
-    function formatTo12Hour(time24) {
-        const [hourStr, minuteStr] = time24.split(":");
-        let hour = parseInt(hourStr);
-        const minute = minuteStr;
-        const ampm = hour >= 12 ? "PM" : "AM";
-        hour = hour % 12;
-        if (hour === 0) hour = 12;
-        return `${hour}:${minute} ${ampm}`;
-    }
+    loadTodayLogs();      // All logs tab
+    loadBYODLogs();       // Pre-load BYOD tab
+    loadKnowledgeCenterLogs(); // Pre-load KC tab
+    loadActiveUsers();    // if you add that tab later
+    loadStatistics();
+    setupFilters();
 });
 
-// Force Time Out (example)
-function forceTimeOut(studentId) {
-    if (!confirm(`Force Time Out for Student ID ${studentId}?`)) return;
+// ==================== CLOCK ====================
+function updateClock() {
+    const now = new Date();
+    document.getElementById("current-date").textContent = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    document.getElementById("current-time").textContent = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+}
 
-    fetch("php/force_time_out.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ studentId })
-    })
-    .then(res => res.json())
-    .then(res => {
-        if (res.success) {
-            alert(`Student ID ${studentId} has been timed out.`);
-            document.dispatchEvent(new Event("DOMContentLoaded")); // refresh table
+// ==================== LOAD ALL TODAY'S LOGS ====================
+async function loadTodayLogs() {
+    try {
+        const response = await fetch("/SoftEngProject/src/php/admin/log.php?action=get_today_logs");
+        const result = await response.json();
+
+        if (result.status === "success") {
+            displayTodayLogs(result.data, '#all-logs');
         } else {
-            alert(`Error: ${res.message}`);
+            showEmptyState('all-logs', 'Failed to load logs');
         }
-    })
-    .catch(err => console.error(err));
+    } catch (error) {
+        console.error("Error loading today logs:", error);
+        showEmptyState('all-logs', 'Error loading data');
+    }
+}
+
+// ==================== LOAD BYOD LOGS (TODAY ONLY) ====================
+async function loadBYODLogs() {
+    try {
+        const response = await fetch("/SoftEngProject/src/php/admin/log.php?action=get_byod_logs");
+        const result = await response.json();
+
+        if (result.status === "success") {
+            const today = new Date().toISOString().split("T")[0];
+            const todayLogs = result.data.filter(log => log.date === today);
+            displayTodayLogs(todayLogs, '#lab1-logs');
+        } else {
+            showEmptyState('lab1-logs', 'No BYOD logs');
+        }
+    } catch (error) {
+        console.error(error);
+        showEmptyState('lab1-logs', 'Error loading BYOD logs');
+    }
+}
+
+// ==================== LOAD KNOWLEDGE CENTER LOGS (TODAY ONLY) ====================
+async function loadKnowledgeCenterLogs() {
+    try {
+        const response = await fetch("/SoftEngProject/src/php/admin/log.php?action=get_kc_logs");
+        const result = await response.json();
+
+        if (result.status === "success") {
+            const today = new Date().toISOString().split("T")[0];
+            const todayLogs = result.data.filter(log => log.date === today);
+            displayTodayLogs(todayLogs, '#lab2-logs');
+        } else {
+            showEmptyState('lab2-logs', 'No KC logs');
+        }
+    } catch (error) {
+        console.error(error);
+        showEmptyState('lab2-logs', 'Error loading KC logs');
+    }
+}
+
+// ==================== DISPLAY LOGS (REUSABLE) ====================
+function displayTodayLogs(logs, tabId) {
+    const tbody = document.querySelector(`${tabId} tbody`);
+    if (!tbody) return;
+
+    if (logs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">No records yet</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = logs.map(log => {
+        const labPrefix = log.labType && log.labType.includes("BYOD") ? "BYOD" : "KC";
+        const logIdDisplay = `#${labPrefix}-${String(log.idLog).padStart(3, '0')}`;
+
+        return `
+            <tr>
+                <td>${logIdDisplay}</td>
+                <td><strong>${log.idNumber || log.studentId}</strong></td>
+                <td>${log.studentName || `${log.firstName} ${log.lastName}`}</td>
+                ${tabId === '#all-logs' ? `<td>${log.labType} - ${log.roomName}</td>` : ''}
+                <td>${formatDate(log.date)}</td>
+                <td>${formatTime(log.timeIn)}</td>
+                ${tabId !== '#all-logs' ? `<td>${log.roomName || log.room}</td>` : ''}
+                <td>${log.purpose || '-'}</td>
+            </tr>`;
+    }).join('');
+}
+
+// ==================== LOAD STATISTICS ====================
+async function loadStatistics() {
+    try {
+        const response = await fetch("/SoftEngProject/src/php/admin/log.php?action=get_statistics");
+        const result = await response.json();
+
+        if (result.status === "success") {
+            const s = result.data;
+
+            // Correct mapping to your 4 cards
+            document.getElementById("inside-count").textContent     = (s.byod_inside || 0) + (s.kc_inside || 0); // total active
+            document.getElementById("today-count").textContent       = s.total_today || 0;
+            document.getElementById("avg-duration").textContent      = s.avg_duration ? `${s.avg_duration}h` : '0h';
+            document.getElementById("capacity-current").textContent = (s.byod_inside || 0) + (s.kc_inside || 0);
+
+            // Optional: show separate BYOD / KC inside if you want
+            // document.getElementById("some-id").textContent = s.byod_inside;
+        }
+    } catch (error) {
+        console.error("Error loading statistics:", error);
+    }
+}
+
+// ==================== ACTIVE USERS (if you add the tab later) ====================
+async function loadActiveUsers() {
+    // similar to loadTodayLogs but add filter timeOut IS NULL
+    // implement when needed
+}
+
+// ==================== HELPER FUNCTIONS ====================
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function formatTime(timeString) {
+    if (!timeString) return '-';
+    const [hours, minutes] = timeString.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour % 12 || 12;
+    return `${displayHour}:${minutes} ${ampm}`;
+}
+
+function showEmptyState(tabId, message) {
+    const tbody = document.querySelector(`#${tabId.replace('#', '')} tbody`);
+    if (tbody) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">${message}</td></tr>`;
+    }
+}
+
+// ==================== TAB FILTERS (refresh on click if you want) ====================
+function setupFilters() {
+    document.getElementById('all-logs-tab')?.addEventListener('click', loadTodayLogs);
+    document.getElementById('lab1-tab')?.addEventListener('click', loadBYODLogs);
+    document.getElementById('lab2-tab')?.addEventListener('click', loadKnowledgeCenterLogs);
 }

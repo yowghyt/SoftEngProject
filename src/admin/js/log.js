@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadAllLogs();
     loadStatistics();
     setupFilters();
+    loadTodayLogs();
 });
 
 // ==================== LOAD ALL LOGS ====================
@@ -273,4 +274,46 @@ async function exportToExcel() {
 // Sidebar toggle
 function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('active');
+}
+
+//======================GET TODAYS LOG =================
+async function loadTodayLogs() {
+    try {
+        const response = await fetch("/SoftEngProject/src/php/admin/log.php?action=get_today_logs");
+        const result = await response.json();
+
+        if (result.status === "success") {
+            displayTodayLogs(result.data);
+        } else {
+            console.error("Error loading today logs");
+        }
+    } catch (error) {
+        console.error("Error:", error);
+    }
+}
+
+function displayTodayLogs(logs) {
+    const tbody = document.querySelector('#all-logs tbody');
+
+    if (!tbody) return;
+
+    if (logs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4">No logs today</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = logs.map(log => {
+        const labPrefix = log.labType.includes("BYOD") ? "BYOD" : "KC";
+        const logIdDisplay = `#${labPrefix}-${String(log.idLog).padStart(3, '0')}`;
+
+        return `
+        <tr>
+            <td>${logIdDisplay}</td>
+            <td><strong>${log.idNumber}</strong></td>
+            <td>${log.studentName}</td>
+            <td>${log.labType} - ${log.roomName}</td>
+            <td>${formatDate(log.date)}</td>
+            <td>${formatTime(log.timeIn)}</td>
+        </tr>`;
+    }).join('');
 }

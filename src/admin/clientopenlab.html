@@ -54,7 +54,6 @@
             <div class="stat-card stat-in">
                 <div class="stat-icon">👥</div>
                 <div class="stat-content">
-                    <h6>Currently Inside</h6>
                     <h3 id="inside-count">8</h3>
                     <small class="text-muted">Active visitors</small>
                 </div>
@@ -156,222 +155,143 @@
         </div>
     </div>
 </div>
+    <!-- Per day lab visitors -->
+  <!-- Lab Entry Logs Table -->        <section class="mb-5">
+            <div class="section-header mb-4">
+                <h2>🔬 Today's Log</h2>
+                <p class="text-muted">Complete day log of student entries</p>
+            </div>
 
+            <ul class="nav nav-tabs mb-4" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="all-logs-tab" data-bs-toggle="tab" data-bs-target="#all-logs"
+                        type="button" role="tab">All Logs</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="lab1-tab" data-bs-toggle="tab" data-bs-target="#lab1-logs"
+                        type="button" role="tab">BYOD Lab</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="lab2-tab" data-bs-toggle="tab" data-bs-target="#lab2-logs"
+                        type="button" role="tab">Knowledge Center</button>
+                </li>
+            </ul>
 
-            <!-- <div class="col-lg-6 mb-4">
-                <div class="entry-card">
-                    <div class="entry-header bg-danger">
-                        <h4>🔴 Time Out</h4>
-                        <p class="mb-0">Log your exit from the lab</p>
-                    </div>
-                    <div class="entry-body">
-                        <form id="timeOutForm">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Student ID Number</label>
-                                <input type="text" class="form-control form-control-lg" id="timeOutStudentId" placeholder="Enter your Student ID" required>
-                            </div>
-                            <div class="mb-4">
-                                <div class="alert alert-info">
-                                    <strong>Quick Checkout:</strong> Just enter your Student ID and click Time Out. Your session will be automatically closed.
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Feedback (Optional)</label>
-                                <textarea class="form-control" id="timeOutFeedback" rows="3" placeholder="How was your experience? Any issues to report?"></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-danger btn-lg w-100">
-                                <strong>✓ Log Time Out</strong>
-                            </button>
-                        </form>
+            <div class="tab-content">
+                <!-- All Logs -->
+                <div class="tab-pane fade show active" id="all-logs" role="tabpanel">
+                    <div class="table-responsive">
+                        <table class="table table-hover admin-table">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Log ID</th>
+                                    <th>Student ID</th>
+                                    <th>Student Name</th>
+                                    <th>Lab</th>
+                                    <th>Date</th>
+                                    <th>Time In</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <div class="spinner-border" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2">Loading lab logs...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            </div> -->
-        </div>
-    </section>
 
-    <!-- Per day lab visitors -->
-    <section id="current-visitors" class="mb-5">
-        <div class="section-header mb-4">
-            <h2>👥 Today's Log</h2>
-            <p class="text-muted">Real-time list of students currently in the laboratory</p>
-        </div>
+                <!-- BYOD Lab Logs -->
+                <div class="tab-pane fade" id="lab1-logs" role="tabpanel">
+                    <div class="table-responsive">
+                        <table class="table table-hover admin-table">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Log ID</th>
+                                    <th>Student ID</th>
+                                    <th>Student Name</th>
+                                    <th>Date</th>
+                                    <th>Time In</th>
+                                    <th>Room</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <div class="spinner-border" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2">Loading BYOD lab logs...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-        <div class="table-responsive">
-            <table class="table table-hover lab-table">
-                <thead class="table-light">
-                    <tr>
-                        <th>Student ID</th>
-                        <th>Name</th>
-                        <th>Time In</th>
-                        <th>Purpose</th>
-                      <!--  <th>Actions</th> -->
-                    </tr>
-                </thead>
-                <tbody id="currentVisitorsTable">
-                    <tr>
-                        <td><strong>2241586</strong></td>
-                        <td>Juan Dela Cruz</td>
-                        <td>08:30 AM</td>
-                        <td>Project Work</td>
-                     <!-- <td><span class="badge bg-success">Inside</span></td> -->
-                    </tr>
-                    <tr>
-                        <td><strong>2241587</strong></td>
-                        <td>Maria Santos</td>
-                        <td>09:15 AM</td>
-                        <td>Study/Research</td>
-                    </tr>
-                    <tr>
-                        <td><strong>2241589</strong></td>
-                        <td>Ana Garcia</td>
-                        <td>10:00 AM</td>
-                        <td>Equipment Use</td>
-                    </tr>
-                    <tr>
-                        <td><strong>2241590</strong></td>
-                        <td>Carlos Morales</td>
-                        <td>10:30 AM</td>
-                        <td>Class Activity</td>
-                    </tr>
-                    <tr>
-                        <td><strong>2241591</strong></td>
-                        <td>Rosa Fernandez</td>
-                        <td>07:45 AM</td>
-                        <td>Project Work</td>
-                    </tr>
-                    <tr>
-                        <td><strong>2241594</strong></td>
-                        <td>John Martinez</td>
-                        <td>09:45 AM</td>
-                        <td>Meeting</td>
-                    </tr>
-                    <tr>
-                        <td><strong>2241595</strong></td>
-                        <td>Lisa Chen</td>
-                        <td>08:00 AM</td>
-                        <td>Study/Research</td>
-                    </tr>
-                    <tr>
-                        <td><strong>2241596</strong></td>
-                        <td>Miguel Santos</td>
-                        <td>10:15 AM</td>
-                        <td>Equipment Use</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
+                <!-- Knowledge Center Logs -->
+                <div class="tab-pane fade" id="lab2-logs" role="tabpanel">
+                    <div class="table-responsive">
+                        <table class="table table-hover admin-table">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Log ID</th>
+                                    <th>Student ID</th>
+                                    <th>Student Name</th>
+                                    <th>Date</th>
+                                    <th>Time In</th>
+                                    <th>Room</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <div class="spinner-border" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2">Loading Knowledge Center logs...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-    <!-- Today's Complete Log 
-    <section id="history" class="mb-5">
-        <div class="section-header mb-4">
-            <h2>📋 Today's Complete Entry Log</h2>
-            <p class="text-muted">Full history of all entries and exits for <span id="log-date">October 16, 2025</span></p>
-        </div>
-
-        <div class="mb-3">
-            <div class="btn-group" role="group">
-                <button type="button" class="btn btn-outline-primary active" onclick="filterLog('all')">All</button>
-                <button type="button" class="btn btn-outline-primary" onclick="filterLog('completed')">Completed</button>
-                <button type="button" class="btn btn-outline-primary" onclick="filterLog('inside')">Still Inside</button>
+                <!-- Currently Inside -->
+                <div class="tab-pane fade" id="active-logs" role="tabpanel">
+                    <div class="table-responsive">
+                        <table class="table table-hover admin-table">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Log ID</th>
+                                    <th>Student ID</th>
+                                    <th>Student Name</th>
+                                    <th>Date</th>
+                                    <th>Time In</th>
+                                    <th>Lab & Room</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <div class="spinner-border" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2">Loading active users...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-            <button class="btn btn-success float-end" onclick="exportLog()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
-                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-                    <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
-                </svg>
-                Export Today's Log
-            </button>
-        </div>
-
-        <div class="table-responsive">
-            <table class="table table-hover lab-table">
-                <thead class="table-light">
-                    <tr>
-                        <th>Entry #</th>
-                        <th>Student ID</th>
-                        <th>Name</th>
-                        <th>Time In</th>
-                        <th>Purpose</th>
-                    </tr>
-                </thead>
-                <tbody id="historyTable">
-                    <tr data-status="completed">
-                        <td>#001</td>
-                        <td><strong>2241592</strong></td>
-                        <td>David Kim</td>
-                        <td>07:00 AM</td>
-                        <td>Study/Research</td>
-                    </tr>
-                    <tr data-status="inside">
-                        <td>#002</td>
-                        <td><strong>2241591</strong></td>
-                        <td>Rosa Fernandez</td>
-                        <td>07:45 AM</td>
-                        <td>Project Work</td>
-                
-                    </tr>
-                    <tr data-status="inside">
-                        <td>#003</td>
-                        <td><strong>2241595</strong></td>
-                        <td>Lisa Chen</td>
-                        <td>08:00 AM</td>
-                        <td>Study/Research</td>
-                    </tr>
-                    <tr data-status="inside">
-                        <td>#004</td>
-                        <td><strong>2241586</strong></td>
-                        <td>Juan Dela Cruz</td>
-                        <td>08:30 AM</td>
-                        <td>Project Work</td>
-                    </tr>
-                    <tr data-status="completed">
-                        <td>#005</td>
-                        <td><strong>2241593</strong></td>
-                        <td>Jose Reyes</td>
-                        <td>08:45 AM</td>
-                    </tr>
-                    <tr data-status="inside">
-                        <td>#006</td>
-                        <td><strong>2241587</strong></td>
-                        <td>Maria Santos</td>
-                        <td>09:15 AM</td>
-                        <td>Study/Research</td>
-                    </tr>
-                    <tr data-status="inside">
-                        <td>#007</td>
-                        <td><strong>2241594</strong></td>
-                        <td>John Martinez</td>
-                        <td>09:45 AM</td>
-                        <td>Meeting</td>
-                    </tr>
-                    <tr data-status="inside">
-                        <td>#008</td>
-                        <td><strong>2241589</strong></td>
-                        <td>Ana Garcia</td>
-                        <td>10:00 AM</td>
-                        <td>Equipment Use</td>
-                    </tr>
-                    <tr data-status="inside">
-                        <td>#009</td>
-                        <td><strong>2241596</strong></td>
-                        <td>Miguel Santos</td>
-                        <td>10:15 AM</td>
-                        <td>Equipment Use</td>
-                    </tr>
-                    <tr data-status="inside">
-                        <td>#010</td>
-                        <td><strong>2241590</strong></td>
-                        <td>Carlos Morales</td>
-                        <td>10:30 AM</td>
-                        <td>Class Activity</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
-</div>
--->
+        </section>
+    </div>
 <!-- Footer -->
 <footer class="text-light py-4">
     <div class="container text-center">
@@ -381,62 +301,9 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N" crossorigin="anonymous"></script>
-
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    loadCurrentVisitors();
-    startClock();
-});
-
-function loadCurrentVisitors() {
-    fetch("../src/php/admin/log.php?action=get_byod_logs")
-        .then(response => response.json())
-        .then(data => {
-            const tableBody = document.getElementById("currentVisitorsTable");
-            tableBody.innerHTML = "";
-
-            if (!data.data || data.data.length === 0) {
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="4" class="text-center text-muted">No visitors currently inside.</td>
-                    </tr>
-                `;
-                return;
-            }
-
-            data.data.forEach(row => {
-                const tr = document.createElement("tr");
-
-                tr.innerHTML = `
-                    <td><strong>${row.userId}</strong></td>
-                    <td>${row.firstName} ${row.lastName}</td>
-                    <td>${formatTime(row.timeIn)}</td>
-                    <td>${row.purpose}</td>
-                `;
-
-                tableBody.appendChild(tr);
-            });
-        })
-        .catch(err => console.error("Error loading visitors:", err));
-}
-
-function formatTime(timeString) {
-    const [hours, minutes] = timeString.split(":");
-    const hour = parseInt(hours);
-    const suffix = hour >= 12 ? "PM" : "AM";
-    const hour12 = hour % 12 || 12;
-    return `${hour12}:${minutes} ${suffix}`;
-}
-
-// Clock UI
-function startClock() {
-    setInterval(() => {
-        const now = new Date();
-        document.getElementById("current-time").innerText =
-            `⏰ ${now.toLocaleTimeString()}`;
-    }, 1000);
-}
-</script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+    <script src="../admin/js/clientopenlab.js"></script>
 </body>
 </html>
