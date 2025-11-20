@@ -159,10 +159,6 @@
 
             <ul class="nav nav-tabs mb-4" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="all-logs-tab" data-bs-toggle="tab" data-bs-target="#all-logs"
-                        type="button" role="tab">All Logs</button>
-                </li>
-                <li class="nav-item" role="presentation">
                     <button class="nav-link" id="lab1-tab" data-bs-toggle="tab" data-bs-target="#lab1-logs"
                         type="button" role="tab">BYOD Lab</button>
                 </li>
@@ -171,36 +167,9 @@
                         type="button" role="tab">Knowledge Center</button>
                 </li>
             </ul>
-
+ 
             <div class="tab-content">
-                <!-- All Logs -->
-                <div class="tab-pane fade show active" id="all-logs" role="tabpanel">
-                    <div class="table-responsive">
-                        <table class="table table-hover admin-table">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>Log ID</th>
-                                    <th>Student ID</th>
-                                    <th>Student Name</th>
-                                    <th>Lab</th>
-                                    <th>Date</th>
-                                    <th>Time In</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td colspan="6" class="text-center py-4">
-                                        <div class="spinner-border" role="status">
-                                            <span class="visually-hidden">Loading...</span>
-                                        </div>
-                                        <p class="mt-2">Loading lab logs...</p>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
+        
                 <!-- BYOD Lab Logs -->
                 <div class="tab-pane fade" id="lab1-logs" role="tabpanel">
                     <div class="table-responsive">
@@ -300,5 +269,36 @@
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
     <script src="../admin/js/clientopenlab.js"></script>
+
+    <script>
+
+try {
+    const response = await fetch('/SoftEngProject/src/php/admin/add_logs.php', {
+        method: 'POST',
+        body: formData
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+        alert('✅ ' + result.message);
+
+        this.reset();
+        document.getElementById('timeInStudentId').focus();
+
+        if (typeof loadTodayLogs === 'function') loadTodayLogs();
+        if (typeof loadBYODLogs === 'function') loadBYODLogs();
+        if (typeof loadKnowledgeCenterLogs === 'function') loadKnowledgeCenterLogs();
+        if (typeof loadStatistics === 'function') loadStatistics();
+
+    } else {
+        alert('❌ ' + (result.message || 'Failed to log time in'));
+    }
+} catch (err) {
+    console.error(err);
+    alert('🌐 Cannot connect to server. Check your internet or PHP files.');
+}
+
+</script>
 </body>
 </html>

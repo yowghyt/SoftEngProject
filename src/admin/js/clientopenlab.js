@@ -2,10 +2,9 @@ document.addEventListener("DOMContentLoaded", () => {
     updateClock();
     setInterval(updateClock, 1000);
 
-    loadTodayLogs();      // All logs tab
-    loadBYODLogs();       // Pre-load BYOD tab
-    loadKnowledgeCenterLogs(); // Pre-load KC tab
-    loadActiveUsers();    // if you add that tab later
+    loadBYODLogs();    
+    loadKnowledgeCenterLogs();
+    loadActiveUsers();
     loadStatistics();
     setupFilters();
 });
@@ -15,23 +14,6 @@ function updateClock() {
     const now = new Date();
     document.getElementById("current-date").textContent = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     document.getElementById("current-time").textContent = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-}
-
-// ==================== LOAD ALL TODAY'S LOGS ====================
-async function loadTodayLogs() {
-    try {
-        const response = await fetch("/SoftEngProject/src/php/admin/log.php?action=get_today_logs");
-        const result = await response.json();
-
-        if (result.status === "success") {
-            displayTodayLogs(result.data, '#all-logs');
-        } else {
-            showEmptyState('all-logs', 'Failed to load logs');
-        }
-    } catch (error) {
-        console.error("Error loading today logs:", error);
-        showEmptyState('all-logs', 'Error loading data');
-    }
 }
 
 // ==================== LOAD BYOD LOGS (TODAY ONLY) ====================
@@ -220,7 +202,7 @@ function setupFilters() {
     studentIdInput.addEventListener("input", () => {
         lookupStudent(studentIdInput.value);
     });
-
+ 
     fullNameInput.addEventListener("input", () => {
         lookupStudent(fullNameInput.value);
     });
