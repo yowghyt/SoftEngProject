@@ -269,36 +269,36 @@
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
     <script src="../admin/js/clientopenlab.js"></script>
+<script>
+document.getElementById("timeInForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
 
-    <script>
+    const formData = new FormData();
+    formData.append("student_id", document.getElementById("timeInStudentId").value);
+    formData.append("full_name", document.getElementById("timeInFullName").value);
+    formData.append("room", document.getElementById("timeInRoom").value);
 
-try {
-    const response = await fetch('/SoftEngProject/src/php/admin/add_logs.php', {
-        method: 'POST',
-        body: formData
-    });
+    try {
+        const response = await fetch('../php/admin/add_logs.php', {
+            method: 'POST',
+            body: formData
+        });
 
-    const result = await response.json();
+        const result = await response.json();
 
-    if (result.success) {
-        alert('✅ ' + result.message);
+        if (result.success) {
+            alert("✅ " + result.message);
+            this.reset();
+        } else {
+            alert("❌ " + result.message);
+        }
 
-        this.reset();
-        document.getElementById('timeInStudentId').focus();
-
-        if (typeof loadTodayLogs === 'function') loadTodayLogs();
-        if (typeof loadBYODLogs === 'function') loadBYODLogs();
-        if (typeof loadKnowledgeCenterLogs === 'function') loadKnowledgeCenterLogs();
-        if (typeof loadStatistics === 'function') loadStatistics();
-
-    } else {
-        alert('❌ ' + (result.message || 'Failed to log time in'));
+    } catch (error) {
+        console.error(error);
+        alert("🌐 Server connection error.");
     }
-} catch (err) {
-    console.error(err);
-    alert('🌐 Cannot connect to server. Check your internet or PHP files.');
-}
-
+});
 </script>
+
 </body>
 </html>

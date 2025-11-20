@@ -3,6 +3,12 @@ header("Content-Type: application/json");
 require_once "../config/db_connect.php";
 
 try {
+    $conn = Database::getInstance()->getConnection();
+
+    if ($conn->connect_error) {
+        throw new Exception("Database connection failed: " . $conn->connect_error);
+    }
+
     // 1. Inputs from form
     $studentId = $_POST["student_id"] ?? null;
     $fullName  = $_POST["full_name"] ?? null;
@@ -14,9 +20,12 @@ try {
     }
 
     // 2. Find user in DB
-    $stmt = $pdo->prepare("SELECT userId FROM users WHERE idNumber = ?");
-    $stmt->execute([$studentId]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    $stmt = $conn->prepare("SELECT userId FROM users WHERE idNumber = ?");
+    $stmt->bind_param("s", $studentId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $user = $result->fetch_assoc();
+    $stmt->close();
 
     if (!$user) {
         echo json_encode(["success" => false, "message" => "Student not found in database"]);
@@ -39,10 +48,17 @@ try {
     $sql = "INSERT INTO $table (userId, date, timeIn, roomName)
             VALUES (?, CURDATE(), CURTIME(), ?)";
 
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$userId, $room]);
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("is", $userId, $room);
 
-    echo json_encode(["success" => true, "message" => "Time In logged successfully"]);
+   if (!$stmt->execute()) {
+        // If execute fails, it MUST be a database error (like FK violation)
+        throw new Exception("Log insertion failed. MySQL Error: " . $conn->error);
+    }
+    
+    $stmt->close(); // Close the second statement
+
+    echo json_encode(["success" => true, "message" => "Time In logged successfully for user ID {$userId}"]);
     exit;
 
 } catch (Exception $e) {
