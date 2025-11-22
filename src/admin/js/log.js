@@ -261,6 +261,167 @@ function setupFilters() {
     });
 }
 
+// ==================== FILTER FUNCTIONS ====================
+let allLogsData = []; 
+
+async function loadAllLogs() {
+    try {
+        const response = await fetch("/SoftEngProject/src/php/admin/log.php?action=get_all_logs");
+        const result = await response.json();
+
+        if (result.status === "success") {
+            allLogsData = result.data; 
+            displayAllLogs(result.data);
+        } else {
+            console.error("Error:", result.message);
+            showEmptyState('all-logs', 'Failed to load logs');
+        }
+    } catch (error) {
+        console.error("Error loading logs:", error);
+        showEmptyState('all-logs', 'Failed to load logs');
+    }
+}
+
+// Apply Filters Function
+function applyFilters() {
+    const filterLab = document.getElementById('filterLab').value.toLowerCase();
+    const filterDate = document.getElementById('filterDate').value;
+    const filterStatus = document.getElementById('filterStatus').value;
+    const searchStudent = document.getElementById('searchStudent').value.toLowerCase().trim();
+
+    let filteredLogs = [...allLogsData];
+
+    // Filter by Lab
+    if (filterLab) {
+        filteredLogs = filteredLogs.filter(log => {
+            if (filterLab === 'byod') {
+                return log.labType.toLowerCase().includes('byod');
+            } else if (filterLab === 'kc') {
+                return log.labType.toLowerCase().includes('knowledge');
+            }
+            return true;
+        });
+    }
+
+    // Filter by Date
+    if (filterDate) {
+        filteredLogs = filteredLogs.filter(log => {
+            const logDate = new Date(log.date).toISOString().split('T')[0];
+            return logDate === filterDate;
+        });
+    }
+
+    // Filter by Status
+    if (filterStatus) {
+        if (filterStatus === 'inside') {
+            filteredLogs = filteredLogs.filter(log => !log.timeOut || log.timeOut === null);
+        } else if (filterStatus === 'completed') {
+            filteredLogs = filteredLogs.filter(log => log.timeOut && log.timeOut !== null);
+        }
+    }
+
+    // Search by Student ID or Name
+    if (searchStudent) {
+        filteredLogs = filteredLogs.filter(log => {
+            const idMatch = log.idNumber.toLowerCase().includes(searchStudent);
+            const nameMatch = log.studentName.toLowerCase().includes(searchStudent);
+            return idMatch || nameMatch;
+        });
+    }
+
+    displayAllLogs(filteredLogs);
+
+    // Show filter count
+    const totalCount = allLogsData.length;
+    const filteredCount = filteredLogs.length;
+    
+    if (filteredCount < totalCount) {
+        showFilterNotification(filteredCount, totalCount);
+    }
+}
+
+// Reset Filters Function
+function resetFilters() {
+    document.getElementById('filterLab').value = '';
+    document.getElementById('filterDate').value = '';
+    document.getElementById('filterStatus').value = '';
+    document.getElementById('searchStudent').value = '';
+
+    displayAllLogs(allLogsData);
+
+    // Remove any filter notification
+    const notification = document.querySelector('.filter-notification');
+    if (notification) {
+        notification.remove();
+    }
+}
+
+// Show filter notification
+function showFilterNotification(filtered, total) {
+    const existingNotification = document.querySelector('.filter-notification');
+    if (existingNotification) {
+        existingNotification.remove();
+    }
+
+    // Create new notification
+    const notification = document.createElement('div');
+    notification.className = 'alert alert-info filter-notification mt-3';
+    notification.innerHTML = `
+        <strong>Filtered Results:</strong> Showing ${filtered} of ${total} total logs
+        <button type="button" class="btn-close float-end" onclick="resetFilters()"></button>
+    `;
+
+    // Insert before the table
+    const tableContainer = document.querySelector('#all-logs .table-responsive');
+    if (tableContainer) {
+        tableContainer.parentNode.insertBefore(notification, tableContainer);
+    }
+}
+
+// Real-time search 
+function setupRealtimeFilters() {
+    const searchInput = document.getElementById('searchStudent');
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce(applyFilters, 300));
+    }
+
+    const filterDate = document.getElementById('filterDate');
+    if (filterDate) {
+        filterDate.addEventListener('change', applyFilters);
+    }
+
+    const filterLab = document.getElementById('filterLab');
+    if (filterLab) {
+        filterLab.addEventListener('change', applyFilters);
+    }
+
+    const filterStatus = document.getElementById('filterStatus');
+    if (filterStatus) {
+        filterStatus.addEventListener('change', applyFilters);
+    }
+}
+
+// Debounce helper for search input
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    loadAllLogs();
+    loadStatistics();
+    setupFilters();
+    loadTodayLogs();
+    setupRealtimeFilters(); 
+});
+
 // ==================== EXPORT FUNCTIONALITY ====================
 async function exportToExcel() {
     try {
