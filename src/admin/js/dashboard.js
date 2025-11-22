@@ -162,9 +162,14 @@ async function loadActiveRooms() {
                     <td>${formatTime(room.endTime)}</td>
                     <td><span class="badge ${statusClass}">${room.actualStatus}</span></td>
                     <td>
-                        <button class="btn btn-sm btn-primary" onclick="viewRoomDetails(${room.reservationId})">
-                            Details
-                        </button>
+                        <div style="display: flex; gap: 5px;">
+                            <button class="btn btn-sm btn-primary" onclick="viewRoomDetails(${room.reservationId})">
+                                Details
+                            </button>
+                            <button class="btn btn-sm btn-success" onclick="completeRoomReservation(${room.reservationId}, '${room.roomName}')">
+                                Complete
+                            </button>
+                        </div>
                     </td>
                 `;
 
@@ -294,11 +299,41 @@ function viewBorrowerHistory(userId) {
 
 function returnItem(reservationId, equipmentName) {
     if (confirm(`Are you sure you want to mark "${equipmentName}" as returned?\n\nReservation ID: ${reservationId}`)) {
-        // TODO: Implement actual return functionality
-        alert(`Item "${equipmentName}" has been marked as returned.\n\nThis will:\n- Update the reservation status\n- Make the equipment available\n- Record the return date`);
+        // Show loading state
+        const button = event.target;
+        const originalText = button.textContent;
+        button.disabled = true;
+        button.textContent = 'Processing...';
         
-        // Reload the borrowed items table
-        loadBorrowedItems();
+        // Call the API to return the item
+        fetch('/SoftEngProject/src/php/admin/return_item.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                reservationId: reservationId
+            })
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                alert(`Success! "${equipmentName}" has been marked as returned.`);
+                // Reload the borrowed items table and stats
+                loadBorrowedItems();
+                loadDashboardStats();
+            } else {
+                alert(`Error: ${result.message}`);
+                button.disabled = false;
+                button.textContent = originalText;
+            }
+        })
+        .catch(error => {
+            console.error('Error returning item:', error);
+            alert('An error occurred while processing the return. Please try again.');
+            button.disabled = false;
+            button.textContent = originalText;
+        });
     }
 }
 
