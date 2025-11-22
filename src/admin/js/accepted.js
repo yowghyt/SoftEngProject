@@ -127,6 +127,7 @@ async function approveEquipment(reservationId) {
             alert("Equipment request approved successfully!");
             loadEquipmentRequests();
             loadRoomRequests(); // Reload both to update counts
+            updatePendingCountBadge();
         } else {
             alert("Error: " + result.message);
         }
@@ -159,6 +160,7 @@ async function rejectEquipment(reservationId) {
             alert("Equipment request rejected");
             loadEquipmentRequests();
             loadRoomRequests(); // Reload both to update counts
+            updatePendingCountBadge();
         } else {
             alert("Error: " + result.message);
         }
@@ -192,6 +194,7 @@ async function approveRoom(reservationId) {
             alert("Room request approved successfully!");
             loadEquipmentRequests(); // Reload both to update counts
             loadRoomRequests();
+            updatePendingCountBadge();
         } else {
             alert("Error: " + result.message);
         }
@@ -224,6 +227,7 @@ async function rejectRoom(reservationId) {
             alert("Room request rejected");
             loadEquipmentRequests(); // Reload both to update counts
             loadRoomRequests();
+            updatePendingCountBadge();
         } else {
             alert("Error: " + result.message);
         }
