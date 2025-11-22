@@ -96,22 +96,50 @@ function approveEquipmentRequest($conn, $data)
         return;
     }
 
-    $stmt = $conn->prepare("UPDATE equipmentreservation SET status = 'Approved' WHERE reservationId = ?");
+    // 1. Get equipmentId from this reservation
+    $stmt = $conn->prepare("SELECT equipmentId FROM equipmentreservation WHERE reservationId = ?");
     $stmt->bind_param("i", $reservationId);
+    $stmt->execute();
+    $equipmentRow = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
 
-    if ($stmt->execute()) {
-        echo json_encode([
-            "status" => "success",
-            "message" => "Equipment request approved successfully"
-        ]);
-    } else {
-        echo json_encode([
-            "status" => "error",
-            "message" => "Failed to approve request: " . $stmt->error
-        ]);
+    if (!$equipmentRow) {
+        echo json_encode(["status" => "error", "message" => "Equipment not found for reservation"]);
+        return;
     }
 
+    $equipmentId = $equipmentRow['equipmentId'];
+
+    // 2. Approve request
+    $stmt = $conn->prepare("UPDATE equipmentreservation SET status = 'Approved' WHERE reservationId = ?");
+    $stmt->bind_param("i", $reservationId);
+    $stmt->execute();
     $stmt->close();
+
+    // 3. Reduce equipment quantity
+    $stmt = $conn->prepare("
+        UPDATE equipment
+        SET quantity = quantity - 1
+        WHERE equipmentId = ? AND quantity > 0
+    ");
+    $stmt->bind_param("i", $equipmentId);
+    $stmt->execute();
+    $stmt->close();
+
+    // 4. If quantity becomes 0 → mark as Borrowed/Unavailable
+    $stmt = $conn->prepare("
+        UPDATE equipment
+        SET status = 'Borrowed'
+        WHERE equipmentId = ? AND quantity = 0
+    ");
+    $stmt->bind_param("i", $equipmentId);
+    $stmt->execute();
+    $stmt->close();
+
+    echo json_encode([
+        "status" => "success",
+        "message" => "Equipment request approved & quantity updated"
+    ]);
 }
 
 function rejectEquipmentRequest($conn, $data)
