@@ -103,9 +103,21 @@ function approveEquipmentRequest($conn, $data)
     $equipmentRow = $stmt->get_result()->fetch_assoc();
     $stmt->close();
 
-    if (!$equipmentRow) {
-        echo json_encode(["status" => "error", "message" => "Equipment not found for reservation"]);
-        return;
+    if ($stmt->execute()) {
+        // Keep the request table in sync (if a request row exists for this reservation)
+        $sync = $conn->prepare("UPDATE request SET status = 'Approved' WHERE reservationId = ? AND requestType = 'equipment'");
+        $sync->bind_param("i", $reservationId);
+        $sync->execute();
+        $sync->close();
+        echo json_encode([
+            "status" => "success",
+            "message" => "Equipment request approved successfully"
+        ]);
+    } else {
+        echo json_encode([
+            "status" => "error",
+            "message" => "Failed to approve request: " . $stmt->error
+        ]);
     }
 
     $equipmentId = $equipmentRow['equipmentId'];
@@ -155,6 +167,11 @@ function rejectEquipmentRequest($conn, $data)
     $stmt->bind_param("i", $reservationId);
 
     if ($stmt->execute()) {
+        // Keep the request table in sync (if a request row exists for this reservation)
+        $sync = $conn->prepare("UPDATE request SET status = 'Rejected' WHERE reservationId = ? AND requestType = 'equipment'");
+        $sync->bind_param("i", $reservationId);
+        $sync->execute();
+        $sync->close();
         echo json_encode([
             "status" => "success",
             "message" => "Equipment request rejected"
@@ -224,6 +241,11 @@ function approveRoomRequest($conn, $data)
     $stmt->bind_param("i", $reservationId);
 
     if ($stmt->execute()) {
+        // Keep the request table in sync (if a request row exists for this reservation)
+        $sync = $conn->prepare("UPDATE request SET status = 'Approved' WHERE reservationId = ? AND requestType = 'room'");
+        $sync->bind_param("i", $reservationId);
+        $sync->execute();
+        $sync->close();
         echo json_encode([
             "status" => "success",
             "message" => "Room request approved successfully"
@@ -251,6 +273,11 @@ function rejectRoomRequest($conn, $data)
     $stmt->bind_param("i", $reservationId);
 
     if ($stmt->execute()) {
+        // Keep the request table in sync (if a request row exists for this reservation)
+        $sync = $conn->prepare("UPDATE request SET status = 'Rejected' WHERE reservationId = ? AND requestType = 'room'");
+        $sync->bind_param("i", $reservationId);
+        $sync->execute();
+        $sync->close();
         echo json_encode([
             "status" => "success",
             "message" => "Room request rejected"
