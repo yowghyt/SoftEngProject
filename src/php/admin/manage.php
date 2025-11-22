@@ -117,7 +117,7 @@ function addEquipment($conn, $data) {
     $quantity = $data['quantity'] ?? 0;
     $status = $data['status'] ?? 'Available';
     
-    // Optional fields (not in current schema, but can be added later)
+    // Optional fields
     $category = $data['category'] ?? null;
     $brand = $data['brand'] ?? null;
     $condition = $data['condition'] ?? null;
@@ -139,7 +139,8 @@ function addEquipment($conn, $data) {
     // Build SQL based on available columns
     if (in_array('category', $columns) && in_array('brand', $columns)) {
         $stmt = $conn->prepare("INSERT INTO equipment (equipmentName, quantity, status, category, brand, `condition`, description) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sissss", $equipmentName, $quantity, $status, $category, $brand, $condition, $description);
+        // FIX: Changed "sissss" to "sisssss" (7 parameters need 7 type chars)
+        $stmt->bind_param("sisssss", $equipmentName, $quantity, $status, $category, $brand, $condition, $description);
     } else {
         // Use basic columns only
         $stmt = $conn->prepare("INSERT INTO equipment (equipmentName, quantity, status) VALUES (?, ?, ?)");

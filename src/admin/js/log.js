@@ -282,7 +282,7 @@ async function loadAllLogs() {
     }
 }
 
-// Apply Filters Function
+// Apply Filters Function 
 function applyFilters() {
     const filterLab = document.getElementById('filterLab').value.toLowerCase();
     const filterDate = document.getElementById('filterDate').value;
