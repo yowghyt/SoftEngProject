@@ -231,56 +231,30 @@ function getActiveUsers($conn)
 }
 
 // ==================== GET STATISTICS ====================
+// ==================== GET STATISTICS ====================
 function getStatistics($conn)
 {
-    // Count currently inside BYOD
-    $byodInsideQuery = "SELECT COUNT(*) as count FROM BYODlog WHERE timeOut IS NULL";
-    $byodInsideResult = $conn->query($byodInsideQuery);
-    $byodInside = $byodInsideResult->fetch_assoc()['count'];
-
-    // Count currently inside Knowledge Center
-    $kcInsideQuery = "SELECT COUNT(*) as count FROM KnowledgeCenterlog WHERE timeOut IS NULL";
-    $kcInsideResult = $conn->query($kcInsideQuery);
-    $kcInside = $kcInsideResult->fetch_assoc()['count'];
-
-    // Count total entries today
     $today = date('Y-m-d');
-    $totalTodayQuery = "
-        SELECT COUNT(*) as count FROM (
-            SELECT idLog FROM BYODlog WHERE date = '$today'
-            UNION ALL
-            SELECT idLog FROM KnowledgeCenterlog WHERE date = '$today'
-        ) as combined
-    ";
-    $totalTodayResult = $conn->query($totalTodayQuery);
-    $totalToday = $totalTodayResult->fetch_assoc()['count'];
+    
+    // Count BYOD entries today
+    $byodInsideQuery = "SELECT COUNT(*) as count FROM BYODlog WHERE date = '$today'";
+    $byodInsideResult = $conn->query($byodInsideQuery);
+    $byodInside = $byodInsideResult ? $byodInsideResult->fetch_assoc()['count'] : 0;
 
-    // Calculate average duration (only for completed sessions today)
-    $avgDurationQuery = "
-        SELECT AVG(TIMESTAMPDIFF(MINUTE, timeIn, timeOut)) as avg_minutes FROM (
-            SELECT timeIn, timeOut FROM BYODlog 
-            WHERE date = '$today' AND timeOut IS NOT NULL
-            UNION ALL
-            SELECT timeIn, timeOut FROM KnowledgeCenterlog 
-            WHERE date = '$today' AND timeOut IS NOT NULL
-        ) as combined
-        WHERE timeOut IS NOT NULL
-    ";
-    $avgDurationResult = $conn->query($avgDurationQuery);
-    $avgMinutes = $avgDurationResult->fetch_assoc()['avg_minutes'] ?? 0;
+    // Count Knowledge Center entries today
+    $kcInsideQuery = "SELECT COUNT(*) as count FROM KnowledgeCenterlog WHERE date = '$today'";
+    $kcInsideResult = $conn->query($kcInsideQuery);
+    $kcInside = $kcInsideResult ? $kcInsideResult->fetch_assoc()['count'] : 0;
 
-    // Convert to hours and minutes
-    $avgHours = floor($avgMinutes / 60);
-    $avgMins = $avgMinutes % 60;
-    $avgDuration = $avgMinutes > 0 ? "{$avgHours}h {$avgMins}m" : "0h";
+    // Count total entries today (both labs combined)
+    $totalToday = $byodInside + $kcInside;
 
     echo json_encode([
         "status" => "success",
         "data" => [
-            "byod_inside" => $byodInside,
-            "kc_inside" => $kcInside,
-            "total_today" => $totalToday,
-            "avg_duration" => $avgDuration
+            "byod_inside" => (int)$byodInside,
+            "kc_inside" => (int)$kcInside,
+            "total_today" => (int)$totalToday
         ]
     ]);
 }

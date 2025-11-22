@@ -1,17 +1,99 @@
+// ==================== INITIALIZATION ====================
 document.addEventListener("DOMContentLoaded", () => {
     loadAllLogs();
     loadStatistics();
     setupFilters();
     loadTodayLogs();
+    setupRealtimeFilters();
+    
+    // Start real-time statistics polling (every 5 seconds)
+    startRealtimeStats();
 });
 
+// ==================== REAL-TIME STATISTICS ====================
+let statsInterval = null;
+
+function startRealtimeStats() {
+    // Clear any existing interval
+    if (statsInterval) {
+        clearInterval(statsInterval);
+    }
+    
+    // Poll every 5 seconds (adjust as needed)
+    statsInterval = setInterval(() => {
+        loadStatistics();
+    }, 5000); // 5000ms = 5 seconds
+}
+
+function stopRealtimeStats() {
+    if (statsInterval) {
+        clearInterval(statsInterval);
+        statsInterval = null;
+    }
+}
+
+// Optional: Stop polling when tab is not visible to save resources
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        stopRealtimeStats();
+    } else {
+        loadStatistics(); // Immediate update when tab becomes visible
+        startRealtimeStats();
+    }
+});
+
+// ==================== LOAD STATISTICS ====================
+async function loadStatistics() {
+    try {
+        const response = await fetch("/SoftEngProject/src/php/admin/log.php?action=get_statistics");
+        const result = await response.json();
+
+        if (result.status === "success") {
+            updateStatistics(result.data);
+        } else {
+            console.error("Error loading statistics:", result.message);
+        }
+    } catch (error) {
+        console.error("Error loading statistics:", error);
+    }
+}
+
+function updateStatistics(stats) {
+    const statCards = document.querySelectorAll('.stat-card h3');
+
+    if (statCards[0]) {
+        animateStatUpdate(statCards[0], stats.byod_inside || 0);
+    }
+    if (statCards[1]) {
+        animateStatUpdate(statCards[1], stats.kc_inside || 0);
+    }
+    if (statCards[2]) {
+        animateStatUpdate(statCards[2], stats.total_today || 0);
+    }
+}
+
+// Optional: Add a subtle animation when stats update
+function animateStatUpdate(element, newValue) {
+    const oldValue = parseInt(element.textContent) || 0;
+    if (oldValue !== newValue) {
+        element.textContent = newValue;
+        element.classList.add('stat-updated');
+        setTimeout(() => {
+            element.classList.remove('stat-updated');
+        }, 500);
+    }
+}
+
 // ==================== LOAD ALL LOGS ====================
+let allLogsData = [];
+
 async function loadAllLogs() {
     try {
         const response = await fetch("/SoftEngProject/src/php/admin/log.php?action=get_all_logs");
         const result = await response.json();
 
         if (result.status === "success") {
+            allLogsData = result.data;
             displayAllLogs(result.data);
         } else {
             console.error("Error:", result.message);
@@ -31,7 +113,7 @@ function displayAllLogs(logs) {
         return;
     }
 
-    tbody.innerHTML = logs.map((log, index) => {
+    tbody.innerHTML = logs.map((log) => {
         const labPrefix = log.labType.includes('BYOD') ? 'BYOD' : 'KC';
         const logIdDisplay = `#${labPrefix}-${String(log.idLog).padStart(3, '0')}`;
 
@@ -151,39 +233,6 @@ function displayActiveUsers(logs) {
     }).join('');
 }
 
-// ==================== LOAD STATISTICS ====================
-async function loadStatistics() {
-    try {
-        const response = await fetch("/SoftEngProject/src/php/admin/log.php?action=get_statistics");
-        const result = await response.json();
-
-        if (result.status === "success") {
-            updateStatistics(result.data);
-        } else {
-            console.error("Error loading statistics:", result.message);
-        }
-    } catch (error) {
-        console.error("Error loading statistics:", error);
-    }
-}
-
-function updateStatistics(stats) {
-    const statCards = document.querySelectorAll('.stat-card h3');
-
-    if (statCards[0]) {
-        statCards[0].textContent = stats.byod_inside || 0;
-    }
-    if (statCards[1]) {
-        statCards[1].textContent = stats.kc_inside || 0;
-    }
-    if (statCards[2]) {
-        statCards[2].textContent = stats.total_today || 0;
-    }
-    if (statCards[3]) {
-        statCards[3].textContent = stats.avg_duration || '0h';
-    }
-}
-
 // ==================== HELPER FUNCTIONS ====================
 function formatDate(dateString) {
     const date = new Date(dateString);
@@ -205,84 +254,30 @@ function formatTime(timeString) {
     return `${displayHour}:${minutes} ${ampm}`;
 }
 
-// function calculateDuration(timeIn, timeOut) {
-//     if (!timeIn) return '-';
-
-//     const inTime = new Date(`2000-01-01 ${timeIn}`);
-//     const outTime = timeOut ? new Date(`2000-01-01 ${timeOut}`) : new Date();
-
-//     if (!timeOut) {
-//         // Calculate current duration
-//         const now = new Date();
-//         const diff = now - inTime;
-//         const hours = Math.floor(diff / (1000 * 60 * 60));
-//         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-//         return `${hours}h ${minutes}m`;
-//     }
-
-//     const diff = outTime - inTime;
-//     const hours = Math.floor(diff / (1000 * 60 * 60));
-//     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-//     return `${hours}h ${minutes}m`;
-// }
-
 function showEmptyState(tabId, message) {
     const tbody = document.querySelector(`#${tabId} tbody`);
     if (tbody) {
-        
-        let colspan;
-        if (tabId === 'all-logs') {
-            colspan = 6; 
-        } else if (tabId === 'lab1-logs' || tabId === 'lab2-logs' || tabId === 'active-logs') {
-            colspan = 6;
-        } else {
-            colspan = 5; // Default fallback
-        }
-        
+        let colspan = 6;
         tbody.innerHTML = `<tr><td colspan="${colspan}" class="text-center py-4">${message}</td></tr>`;
     }
 }
 
 // ==================== FILTER SETUP ====================
 function setupFilters() {
-    // Load BYOD logs when tab is clicked
     document.getElementById('lab1-tab')?.addEventListener('click', () => {
         loadBYODLogs();
     });
 
-    // Load Knowledge Center logs when tab is clicked
     document.getElementById('lab2-tab')?.addEventListener('click', () => {
         loadKnowledgeCenterLogs();
     });
 
-    // Load active users when tab is clicked
     document.getElementById('active-tab')?.addEventListener('click', () => {
         loadActiveUsers();
     });
 }
 
 // ==================== FILTER FUNCTIONS ====================
-let allLogsData = []; 
-
-async function loadAllLogs() {
-    try {
-        const response = await fetch("/SoftEngProject/src/php/admin/log.php?action=get_all_logs");
-        const result = await response.json();
-
-        if (result.status === "success") {
-            allLogsData = result.data; 
-            displayAllLogs(result.data);
-        } else {
-            console.error("Error:", result.message);
-            showEmptyState('all-logs', 'Failed to load logs');
-        }
-    } catch (error) {
-        console.error("Error loading logs:", error);
-        showEmptyState('all-logs', 'Failed to load logs');
-    }
-}
-
-// Apply Filters Function 
 function applyFilters() {
     const filterLab = document.getElementById('filterLab').value.toLowerCase();
     const filterDate = document.getElementById('filterDate').value;
@@ -291,7 +286,6 @@ function applyFilters() {
 
     let filteredLogs = [...allLogsData];
 
-    // Filter by Lab
     if (filterLab) {
         filteredLogs = filteredLogs.filter(log => {
             if (filterLab === 'byod') {
@@ -303,7 +297,6 @@ function applyFilters() {
         });
     }
 
-    // Filter by Date
     if (filterDate) {
         filteredLogs = filteredLogs.filter(log => {
             const logDate = new Date(log.date).toISOString().split('T')[0];
@@ -311,7 +304,6 @@ function applyFilters() {
         });
     }
 
-    // Filter by Status
     if (filterStatus) {
         if (filterStatus === 'inside') {
             filteredLogs = filteredLogs.filter(log => !log.timeOut || log.timeOut === null);
@@ -320,7 +312,6 @@ function applyFilters() {
         }
     }
 
-    // Search by Student ID or Name
     if (searchStudent) {
         filteredLogs = filteredLogs.filter(log => {
             const idMatch = log.idNumber.toLowerCase().includes(searchStudent);
@@ -331,7 +322,6 @@ function applyFilters() {
 
     displayAllLogs(filteredLogs);
 
-    // Show filter count
     const totalCount = allLogsData.length;
     const filteredCount = filteredLogs.length;
     
@@ -340,7 +330,6 @@ function applyFilters() {
     }
 }
 
-// Reset Filters Function
 function resetFilters() {
     document.getElementById('filterLab').value = '';
     document.getElementById('filterDate').value = '';
@@ -349,21 +338,18 @@ function resetFilters() {
 
     displayAllLogs(allLogsData);
 
-    // Remove any filter notification
     const notification = document.querySelector('.filter-notification');
     if (notification) {
         notification.remove();
     }
 }
 
-// Show filter notification
 function showFilterNotification(filtered, total) {
     const existingNotification = document.querySelector('.filter-notification');
     if (existingNotification) {
         existingNotification.remove();
     }
 
-    // Create new notification
     const notification = document.createElement('div');
     notification.className = 'alert alert-info filter-notification mt-3';
     notification.innerHTML = `
@@ -371,14 +357,12 @@ function showFilterNotification(filtered, total) {
         <button type="button" class="btn-close float-end" onclick="resetFilters()"></button>
     `;
 
-    // Insert before the table
     const tableContainer = document.querySelector('#all-logs .table-responsive');
     if (tableContainer) {
         tableContainer.parentNode.insertBefore(notification, tableContainer);
     }
 }
 
-// Real-time search 
 function setupRealtimeFilters() {
     const searchInput = document.getElementById('searchStudent');
     if (searchInput) {
@@ -401,7 +385,6 @@ function setupRealtimeFilters() {
     }
 }
 
-// Debounce helper for search input
 function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {
@@ -414,14 +397,6 @@ function debounce(func, wait) {
     };
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    loadAllLogs();
-    loadStatistics();
-    setupFilters();
-    loadTodayLogs();
-    setupRealtimeFilters(); 
-});
-
 // ==================== EXPORT FUNCTIONALITY ====================
 async function exportToExcel() {
     try {
@@ -432,12 +407,11 @@ async function exportToExcel() {
     }
 }
 
-// Sidebar toggle
 function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('active');
 }
 
-//======================GET TODAYS LOG =================
+// ==================== GET TODAYS LOG ====================
 async function loadTodayLogs() {
     try {
         const response = await fetch("/SoftEngProject/src/php/admin/log.php?action=get_today_logs");
