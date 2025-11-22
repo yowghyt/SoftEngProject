@@ -4,9 +4,9 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeApp() {
+    createModals();
     loadEquipmentItems();
     loadRooms();
-    createModals();
     enableStudentAutoFill();
     initializeSmoothScroll();
     
@@ -422,12 +422,18 @@ function createModals() {
     document.getElementById('reserveDate').setAttribute('min', today);
 
     // Modal reset listeners
-    document.getElementById('borrowModal').addEventListener('hidden.bs.modal', resetBorrowModal);
-    document.getElementById('reserveModal').addEventListener('hidden.bs.modal', resetReserveModal);
+    const borrowModalEl = document.getElementById('borrowModal');
+    const reserveModalEl = document.getElementById('reserveModal');
+    if (borrowModalEl) borrowModalEl.addEventListener('hidden.bs.modal', resetBorrowModal);
+    if (reserveModalEl) reserveModalEl.addEventListener('hidden.bs.modal', resetReserveModal);
 
     // Submit listeners
-    document.getElementById('submitBorrowBtn').addEventListener('click', handleBorrowSubmit);
-    document.getElementById('submitReserveBtn').addEventListener('click', handleReserveSubmit);
+    const submitBorrowEl = document.getElementById('submitBorrowBtn');
+    const submitReserveEl = document.getElementById('submitReserveBtn');
+    if (submitBorrowEl) submitBorrowEl.addEventListener('click', handleBorrowSubmit);
+    if (submitReserveEl) submitReserveEl.addEventListener('click', handleReserveSubmit);
+
+
 }
 
 // ============ EVENT LISTENERS ============
@@ -455,15 +461,23 @@ function attachReserveEventListeners() {
 
 // ============ FORM HANDLERS ============
 function handleBorrowSubmit() {
-    const userId = document.getElementById('realUserId').value;
-    const studentId = document.getElementById('borrowStudentId').value.trim();
-    const studentName = document.getElementById('borrowStudentName').value.trim();
-    const itemId = document.getElementById('borrowItemId').value;
-    const duration = document.getElementById('borrowDuration').value;
-    const purpose = document.getElementById('borrowPurpose').value.trim();
+    const userId = document.getElementById('realUserId') ? document.getElementById('realUserId').value : '';
+    const studentId = document.getElementById('borrowStudentId') ? document.getElementById('borrowStudentId').value.trim() : '';
+    const studentName = document.getElementById('borrowStudentName') ? document.getElementById('borrowStudentName').value.trim() : '';
+    const itemId = document.getElementById('borrowItemId') ? document.getElementById('borrowItemId').value : '';
+    const duration = document.getElementById('borrowDuration') ? document.getElementById('borrowDuration').value : '';
+    const purpose = document.getElementById('borrowPurpose') ? document.getElementById('borrowPurpose').value.trim() : '';
+
+    // handleBorrowSubmit: invoked
 
     if (!studentId || !studentName || !purpose) {
         alert('Please fill all required fields.');
+        return;
+    }
+
+    // check realUserId based on lookup function
+    if (!userId) {
+        alert('Student not recognized. Please enter your Student ID or Name and select your record so we can verify your account before submitting.');
         return;
     }
 
@@ -471,10 +485,18 @@ function handleBorrowSubmit() {
     btn.disabled = true;
     btn.textContent = 'Submitting...';
 
-    fetch("../php/admin/submit_borrow.php", {
+    const bodyParams = new URLSearchParams({ 
+        userId, 
+        equipmentId: itemId, 
+        duration, 
+        purpose
+    });
+
+    // sending fetch to submit_request.php
+    fetch("../php/admin/submit_request.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ userId, itemId, duration, purpose })
+        body: bodyParams
     })
     .then(res => res.json())
     .then(data => {
@@ -486,7 +508,9 @@ function handleBorrowSubmit() {
             alert('Error: ' + (data.error || 'Unknown error'));
         }
     })
-    .catch(err => alert('Failed to submit request.'))
+    .catch(err => {
+        alert('Failed to submit request. ' + (err && err.message ? err.message : ''));
+    })
     .finally(() => {
         btn.disabled = false;
         btn.textContent = 'Submit Request';
