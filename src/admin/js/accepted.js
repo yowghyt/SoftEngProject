@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     loadEquipmentRequests();
     loadRoomRequests();
+    updatePendingCountBadge();
 });
 
 // ==================== LOAD EQUIPMENT REQUESTS ====================
@@ -303,6 +304,61 @@ Status: ${data.status}
     } catch (error) {
         console.error("Error:", error);
         alert("Failed to load details");
+    }
+}
+
+// ==================== GET COMBINED COUNT & UPDATE BADGE ====================
+// Fetches both equipment and room pending counts and returns the sum
+async function getCombinedPendingCount() {
+    let borrowCount = 0;
+    let roomCount = 0;
+
+    try {
+        // Fetch both counts concurrently
+        const [borrowResponse, roomResponse] = await Promise.all([
+            fetch("/SoftEngProject/src/php/admin/pending.php?action=get_equipment_requests"), // Fetches equipment count
+            fetch("/SoftEngProject/src/php/admin/pending.php?action=get_room_requests") // Fetches room count
+        ]);
+        
+        const [borrowResult, roomResult] = await Promise.all([
+            borrowResponse.json(),
+            roomResponse.json()
+        ]);
+        
+        if (borrowResult.status === "success") {
+            borrowCount = borrowResult.count;
+        }
+        
+        if (roomResult.status === "success") {
+            roomCount = roomResult.count;
+        }
+
+        return borrowCount + roomCount; 
+    } catch (error) {
+        console.error("Error loading combined pending requests:", error);
+        return 0; 
+    }
+}
+
+// Updates the sidebar badge with the total count
+async function updatePendingCountBadge() {
+    const totalCount = await getCombinedPendingCount();
+    const badge = document.getElementById('pendingCountBadge');
+
+    if (badge) {
+        badge.textContent = totalCount;
+        
+        // This ensures the badge is visible if there are requests
+        if (totalCount > 0) {
+            badge.style.display = 'inline-block';
+            badge.classList.remove('bg-secondary');
+            badge.classList.add('bg-danger');
+        } else {
+            // Optional: Change color or hide if count is zero
+            badge.style.display = 'inline-block'; // Keep it visible even if 0, like your image
+            badge.classList.remove('bg-danger');
+            badge.classList.add('bg-secondary');
+        }
     }
 }
 

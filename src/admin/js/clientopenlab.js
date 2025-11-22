@@ -65,7 +65,6 @@ function displayTodayLogs(logs, tabId) {
     }
 
     tbody.innerHTML = logs.map(log => {
-        // const labPrefix = log.labType && log.labType.includes("BYOD") ? "BYOD" : "KC";
         let prefix = "BYOD"; // default
 
         if (tabId === '#lab1-logs' || log.roomName === '426') {
