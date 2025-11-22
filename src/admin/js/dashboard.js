@@ -90,6 +90,8 @@ async function loadBorrowedItems() {
             }
 
             result.data.forEach(item => {
+                console.log('Creating row for item:', item);
+                
                 const row = document.createElement('tr');
 
                 const statusClass = item.actualStatus === 'Overdue' ? 'bg-danger' : 'bg-success';
@@ -103,13 +105,18 @@ async function loadBorrowedItems() {
                     <td>${formatDate(item.dueDate)}</td>
                     <td><span class="badge ${statusClass}">${item.actualStatus}</span></td>
                     <td>
-                        <button class="btn btn-sm ${buttonClass}" onclick="viewItemDetails(${item.reservationId})">
+                        <button class="btn btn-sm ${buttonClass} me-1" onclick="viewItemDetails(${item.reservationId})">
                             ${buttonText}
+                        </button>
+                        <button class="btn btn-sm btn-secondary" onclick="returnItem(${item.reservationId}, '${item.equipmentName.replace(/'/g, "\\'")}')">
+                            Return
                         </button>
                     </td>
                 `;
 
                 tbody.appendChild(row);
+                
+                console.log('Row added with Return button');
             });
         } else {
             console.error('Error loading borrowed items:', result.message);
@@ -215,7 +222,7 @@ async function loadBorrowerHistory() {
                         <button class="btn btn-sm btn-primary" onclick="viewBorrowerDetails(${borrower.userId})">
                             View
                         </button>
-                        <button class="btn btn-sm btn-secondary" onclick="viewBorrowerHistory(${borrower.userId})">
+                        <button class="btn btn-sm btn-secondary ms-1" onclick="viewBorrowerHistory(${borrower.userId})">
                             History
                         </button>
                     </td>
@@ -283,6 +290,16 @@ function viewBorrowerDetails(userId) {
 
 function viewBorrowerHistory(userId) {
     alert(`Viewing borrowing history for user ID: ${userId}\n\nThis feature will show:\n- All past borrowings\n- Return dates\n- Late returns\n- Frequency of borrowing`);
+}
+
+function returnItem(reservationId, equipmentName) {
+    if (confirm(`Are you sure you want to mark "${equipmentName}" as returned?\n\nReservation ID: ${reservationId}`)) {
+        // TODO: Implement actual return functionality
+        alert(`Item "${equipmentName}" has been marked as returned.\n\nThis will:\n- Update the reservation status\n- Make the equipment available\n- Record the return date`);
+        
+        // Reload the borrowed items table
+        loadBorrowedItems();
+    }
 }
 
 // ==================== SIDEBAR TOGGLE ====================
