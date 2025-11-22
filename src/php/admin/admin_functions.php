@@ -163,10 +163,18 @@ function approveRequest($conn, $requestId)
             $updateER = $conn->prepare("UPDATE equipmentreservation SET status = 'Approved' WHERE reservationId = ?");
             $updateER->bind_param('i', $req['reservationId']);
             $updateER->execute();
+            // Ensure the corresponding request row (if any) is also synced by reservationId + type
+            $syncReq = $conn->prepare("UPDATE request SET status = 'Approved' WHERE reservationId = ? AND requestType = 'equipment'");
+            $syncReq->bind_param('i', $req['reservationId']);
+            $syncReq->execute();
         } else if ($req['requestType'] === 'room') {
             $updateRR = $conn->prepare("UPDATE roomreservation SET status = 'Approved' WHERE reservationId = ?");
             $updateRR->bind_param('i', $req['reservationId']);
             $updateRR->execute();
+            // Ensure the corresponding request row (if any) is also synced by reservationId + type
+            $syncReq = $conn->prepare("UPDATE request SET status = 'Approved' WHERE reservationId = ? AND requestType = 'room'");
+            $syncReq->bind_param('i', $req['reservationId']);
+            $syncReq->execute();
         }
 
         $conn->commit();
@@ -198,10 +206,18 @@ function rejectRequest($conn, $requestId, $reason = '')
             $updateER = $conn->prepare("UPDATE equipmentreservation SET status = 'Rejected' WHERE reservationId = ?");
             $updateER->bind_param('i', $req['reservationId']);
             $updateER->execute();
+                // Ensure the corresponding request row (if any) is also synced by reservationId + type
+                $syncReq = $conn->prepare("UPDATE request SET status = 'Rejected' WHERE reservationId = ? AND requestType = 'equipment'");
+                $syncReq->bind_param('i', $req['reservationId']);
+                $syncReq->execute();
         } else if ($req['requestType'] === 'room') {
             $updateRR = $conn->prepare("UPDATE roomreservation SET status = 'Rejected' WHERE reservationId = ?");
             $updateRR->bind_param('i', $req['reservationId']);
             $updateRR->execute();
+                // Ensure the corresponding request row (if any) is also synced by reservationId + type
+                $syncReq = $conn->prepare("UPDATE request SET status = 'Rejected' WHERE reservationId = ? AND requestType = 'room'");
+                $syncReq->bind_param('i', $req['reservationId']);
+                $syncReq->execute();
         }
 
         $conn->commit();
