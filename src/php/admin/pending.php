@@ -103,47 +103,33 @@ function approveEquipmentRequest($conn, $data)
     $equipmentRow = $stmt->get_result()->fetch_assoc();
     $stmt->close();
 
-    if ($stmt->execute()) {
-        // Keep the request table in sync (if a request row exists for this reservation)
-        $sync = $conn->prepare("UPDATE request SET status = 'Approved' WHERE reservationId = ? AND requestType = 'equipment'");
-        $sync->bind_param("i", $reservationId);
-        $sync->execute();
-        $sync->close();
-        echo json_encode([
-            "status" => "success",
-            "message" => "Equipment request approved successfully"
-        ]);
-    } else {
-        echo json_encode([
-            "status" => "error",
-            "message" => "Failed to approve request: " . $stmt->error
-        ]);
+    if (!$equipmentRow) {
+        echo json_encode(["status" => "error", "message" => "Reservation not found"]);
+        return;
     }
 
     $equipmentId = $equipmentRow['equipmentId'];
 
-    // 2. Approve request
+    // 2. Approve request in request table
+    $sync = $conn->prepare("UPDATE request SET status = 'Approved' WHERE reservationId = ? AND requestType = 'equipment'");
+    $sync->bind_param("i", $reservationId);
+    $sync->execute();
+    $sync->close();
+
+    // 3. Approve equipment reservation
     $stmt = $conn->prepare("UPDATE equipmentreservation SET status = 'Approved' WHERE reservationId = ?");
     $stmt->bind_param("i", $reservationId);
     $stmt->execute();
     $stmt->close();
 
-    // 3. Reduce equipment quantity
-    $stmt = $conn->prepare("
-        UPDATE equipment
-        SET quantity = quantity - 1
-        WHERE equipmentId = ? AND quantity > 0
-    ");
+    // 4. Reduce equipment quantity
+    $stmt = $conn->prepare("UPDATE equipment SET quantity = quantity - 1 WHERE equipmentId = ? AND quantity > 0");
     $stmt->bind_param("i", $equipmentId);
     $stmt->execute();
     $stmt->close();
 
-    // 4. If quantity becomes 0 → mark as Borrowed/Unavailable
-    $stmt = $conn->prepare("
-        UPDATE equipment
-        SET status = 'Borrowed'
-        WHERE equipmentId = ? AND quantity = 0
-    ");
+    // 5. If quantity becomes 0 → mark as Borrowed/Unavailable
+    $stmt = $conn->prepare("UPDATE equipment SET status = 'Borrowed' WHERE equipmentId = ? AND quantity = 0");
     $stmt->bind_param("i", $equipmentId);
     $stmt->execute();
     $stmt->close();
