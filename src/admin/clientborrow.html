@@ -46,121 +46,91 @@
         </div>
 
         <!-- Search and Filter -->
-        <div class="row mb-4">
-            <div class="col-md-6 mb-3">
-                <input type="text" class="form-control" placeholder="Search items by name or ID...">
-            </div>
-            <div class="col-md-3 mb-3">
-                <select class="form-select">
-                    <option selected>All Categories</option>
-                    <option>Cameras</option>
-                    <option>Laptops</option>
-                    <option>Audio Equipment</option>
-                    <option>Lighting</option>
-                    <option>Tools</option>
-                </select>
-            </div>
-            <div class="col-md-3 mb-3">
-                <select class="form-select">
-                    <option selected>Sort by: Name</option>
-                    <option>Sort by: Availability</option>
-                    <option>Sort by: Category</option>
-                </select>
+        <div class="filter-bar mb-4">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <input type="text" class="form-control" id="equipmentSearch" placeholder="Search items by name or ID...">
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="categoryFilter">
+                        <option selected>All Categories</option>
+                        <option>Presentation</option>
+                        <option>Computers</option>
+                        <option>Cables & Accessories</option>
+                        <option>Audio Equipment</option>
+                        <option>Cameras</option>
+                        <option>Tools</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="sortFilter">
+                        <option selected>Sort by: Name</option>
+                        <option>Sort by: Availability</option>
+                        <option>Sort by: Category</option>
+                    </select>
+                </div>
             </div>
         </div>
 
         <!-- Items Grid -->
-         <div class="row" id="equipmentContainer"></div>
-        
+        <div class="row mt-4 pt-2" id="equipmentContainer">
+            <!-- Equipment cards will be loaded here dynamically -->
+        </div>
     </section>
 
     <!-- Room Reservations Section -->
     <section id="rooms" class="mb-5">
-        <div class="row" id="roomContainer"></div>
-        <!-- <div class="section-header mb-4">
-            <h2>🏛️ Reserve Rooms</h2>
-            <p class="text-muted">Book rooms for your projects and activities</p>
+        <div class="section-header mb-4">
+            <h2>🏫 Reserve Rooms</h2>
+            <p class="text-muted">Book a room for your meetings or study sessions</p>
         </div>
 
-        <div class="row">
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="room-card">
-                    <div class="room-header">
-                        <h5>Audio Studio</h5>
-                        <span class="badge bg-success">Available</span>
-                    </div>
-                    <div class="room-body">
-                        <p><strong>Room Code:</strong> #ROOM-302</p>
-                        <p><strong>Capacity:</strong> 4 persons</p>
-                        <p><strong>Equipment:</strong> Audio interface, Mics, Monitors</p>
-                        <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#reserveModal">Reserve Now</button>
-                    </div>
+        <!-- Room Filter -->
+        <div class="filter-bar mb-4">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" class="form-control" id="roomSearch" placeholder="Search rooms...">
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="buildingFilter">
+                        <option selected>All Buildings</option>
+                        <option>Fr. Seraphin Devesse Building</option>
+                        <option>Main Building</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="floorFilter">
+                        <option selected>All Floors</option>
+                        <option>1st Floor</option>
+                        <option>2nd Floor</option>
+                        <option>3rd Floor</option>
+                        <option>4th Floor</option>
+                        <option>5th Floor</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" id="capacityFilter">
+                        <option selected>Capacity</option>
+                        <option>1-10</option>
+                        <option>11-20</option>
+                        <option>21-40</option>
+                        <option>40+</option>
+                    </select>
                 </div>
             </div>
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="room-card">
-                    <div class="room-header">
-                        <h5>Video Production Room</h5>
-                        <span class="badge bg-warning">In Use</span>
-                    </div>
-                    <div class="room-body">
-                        <p><strong>Room Code:</strong> #ROOM-405</p>
-                        <p><strong>Capacity:</strong> 6 persons</p>
-                        <p><strong>Equipment:</strong> Green screen, Cameras, Lights</p>
-                        <button class="btn btn-secondary w-100" disabled>Currently In Use</button>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="room-card">
-                    <div class="room-header">
-                        <h5>Photo Studio</h5>
-                        <span class="badge bg-success">Available</span>
-                    </div>
-                    <div class="room-body">
-                        <p><strong>Room Code:</strong> #ROOM-203</p>
-                        <p><strong>Capacity:</strong> 3 persons</p>
-                        <p><strong>Equipment:</strong> Backdrops, Lights, Props</p>
-                        <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#reserveModal">Reserve Now</button>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="room-card">
-                    <div class="room-header">
-                        <h5>Meeting Room</h5>
-                        <span class="badge bg-success">Available</span>
-                    </div>
-                    <div class="room-body">
-                        <p><strong>Room Code:</strong> #ROOM-101</p>
-                        <p><strong>Capacity:</strong> 10 persons</p>
-                        <p><strong>Equipment:</strong> Projector, Whiteboard</p>
-                        <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#reserveModal">Reserve Now</button>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="room-card">
-                    <div class="room-header">
-                        <h5>Lab Space</h5>
-                        <span class="badge bg-success">Available</span>
-                    </div>
-                    <div class="room-body">
-                        <p><strong>Room Code:</strong> #ROOM-501</p>
-                        <p><strong>Capacity:</strong> 8 persons</p>
-                        <p><strong>Equipment:</strong> Workstations, Tools</p>
-                        <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#reserveModal">Reserve Now</button>
-                    </div>
-                </div>
-            </div>
-        </div> -->
+        </div>
+
+        <!-- Rooms Grid -->
+        <div class="row mt-4 pt-2" id="roomContainer">
+            <!-- Room cards will be loaded here dynamically -->
+        </div>
     </section>
 </div>
 
 <!-- Footer -->
-<footer class="bg-dark text-white mt-5 py-4">
+<footer class="bg-dark text-white py-4">
     <div class="container text-center">
-        <p>&copy; 2025 Custodian Borrowing System - Student Portal. All rights reserved.</p>
+        <p class="mb-1">&copy; 2025 Custodian Borrowing System - Student Portal</p>
         <small class="text-muted">Tarlac City, Central Luzon | Need help? Contact the admin</small>
     </div>
 </footer>
