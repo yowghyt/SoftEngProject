@@ -59,6 +59,7 @@ function fetchBorrowedItems($conn)
         FROM equipmentreservation er
         JOIN equipment e ON er.equipmentId = e.equipmentId
         JOIN users u ON er.userId = u.userId
+        WHERE er.status = 'Approved'
         ORDER BY er.date DESC
     ";
 
@@ -276,4 +277,58 @@ function fetchEquipment($conn)
     $sql = "SELECT * FROM equipment ORDER BY equipmentName ASC";
     $result = $conn->query($sql);
     return $result->fetch_all(MYSQLI_ASSOC);
+}
+
+// In admin_functions.php
+
+/**
+ * Handles the return of an equipment item transactionally.
+ * Updates reservation status to 'Returned' and increments the available quantity.
+ */
+function handleEquipmentReturn($conn, $reservationId)
+{
+    // Start Transaction
+    $conn->begin_transaction();
+
+    try {
+        // 1. Get the equipmentId and quantity borrowed for the approved reservation
+        $stmt = $conn->prepare("SELECT equipmentId, quantity FROM equipmentreservation WHERE reservationId = ? AND status = 'Approved'");
+        $stmt->bind_param("i", $reservationId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows === 0) {
+            throw new Exception("Reservation not found, not approved, or already returned.");
+        }
+        
+        $reservation = $result->fetch_assoc();
+        $equipmentId = $reservation['equipmentId'];
+        $quantity = $reservation['quantity'];
+        $stmt->close();
+        
+        // 2. Update the reservation status to 'Returned' and set the actual return date
+        $stmt = $conn->prepare("UPDATE equipmentreservation SET status = 'Returned', actualReturnDate = NOW() WHERE reservationId = ?");
+        $stmt->bind_param("i", $reservationId);
+        if (!$stmt->execute()) {
+            throw new Exception("Failed to update reservation status: " . $conn->error);
+        }
+        $stmt->close();
+
+        // 3. Increment the AVAILABLE equipment quantity (CORRECTED LINE)
+        $stmt = $conn->prepare("UPDATE equipment SET available = available + ? WHERE equipmentId = ?");
+        $stmt->bind_param("ii", $quantity, $equipmentId);
+        if (!$stmt->execute()) {
+            throw new Exception("Failed to update available quantity: " . $conn->error);
+        }
+        $stmt->close();
+
+        // Commit the transaction if all steps succeeded
+        $conn->commit();
+        return ["status" => "success", "message" => "Item successfully marked as returned and inventory updated."];
+
+    } catch (Exception $e) {
+        // Rollback the transaction if any step failed
+        $conn->rollback();
+        return ["status" => "error", "message" => "Transaction failed: " . $e->getMessage()];
+    }
 }

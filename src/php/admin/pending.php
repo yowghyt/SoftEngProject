@@ -31,6 +31,9 @@ switch ($action) {
     case 'reject_equipment':
         rejectEquipmentRequest($conn, $data);
         break;
+    case 'return_equipment':
+        returnEquipmentRequest($conn, $data);
+        break;
     case 'approve_room':
         approveRoomRequest($conn, $data);
         break;
@@ -123,13 +126,13 @@ function approveEquipmentRequest($conn, $data)
     $stmt->close();
 
     // 4. Reduce equipment quantity
-    $stmt = $conn->prepare("UPDATE equipment SET quantity = quantity - 1 WHERE equipmentId = ? AND quantity > 0");
+    $stmt = $conn->prepare("UPDATE equipment SET available = available - 1 WHERE equipmentId = ? AND available > 0");
     $stmt->bind_param("i", $equipmentId);
     $stmt->execute();
     $stmt->close();
 
     // 5. If quantity becomes 0 → mark as Borrowed/Unavailable
-    $stmt = $conn->prepare("UPDATE equipment SET status = 'Borrowed' WHERE equipmentId = ? AND quantity = 0");
+    $stmt = $conn->prepare("UPDATE equipment SET status = 'Borrowed' WHERE equipmentId = ? AND available = 0");
     $stmt->bind_param("i", $equipmentId);
     $stmt->execute();
     $stmt->close();
@@ -170,6 +173,70 @@ function rejectEquipmentRequest($conn, $data)
     }
 
     $stmt->close();
+}
+
+function returnEquipmentRequest($conn, $data)
+{
+    $reservationId = $data['reservationId'] ?? 0;
+
+    if (!$reservationId) {
+        echo json_encode(["status" => "error", "message" => "Reservation ID required"]);
+        return;
+    }
+    // 1. Get equipmentId from this reservation
+    $stmt = $conn->prepare("SELECT equipmentId FROM equipmentreservation WHERE reservationId = ?");
+    $stmt->bind_param("i", $reservationId);
+    $stmt->execute();
+    $equipmentRow = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    if (!$equipmentRow) {
+        echo json_encode(["status" => "error", "message" => "Reservation not found"]);
+        return;
+    }
+
+    $equipmentId = $equipmentRow['equipmentId'];
+
+    // Use transaction to ensure consistency
+    $conn->begin_transaction();
+
+    // 2. Mark reservation as Returned
+    $stmt = $conn->prepare("UPDATE equipmentreservation SET status = 'Returned' WHERE reservationId = ?");
+    $stmt->bind_param("i", $reservationId);
+    $ok1 = $stmt->execute();
+    $stmt->close();
+
+    // 3. Update request row to Completed (if exists)
+    $sync = $conn->prepare("UPDATE request SET status = 'Completed' WHERE reservationId = ? AND requestType = 'equipment'");
+    $sync->bind_param("i", $reservationId);
+    $ok2 = $sync->execute();
+    $sync->close();
+
+    // 4. Increment equipment available count
+    $stmt = $conn->prepare("UPDATE equipment SET available = available + 1 WHERE equipmentId = ?");
+    $stmt->bind_param("i", $equipmentId);
+    $ok3 = $stmt->execute();
+    $stmt->close();
+
+    // 5. If available > 0, set equipment status to 'Available'
+    $stmt = $conn->prepare("UPDATE equipment SET status = 'Available' WHERE equipmentId = ? AND available > 0");
+    $stmt->bind_param("i", $equipmentId);
+    $ok4 = $stmt->execute();
+    $stmt->close();
+
+    if ($ok1 && $ok2 && $ok3 && $ok4) {
+        $conn->commit();
+        echo json_encode([
+            "status" => "success",
+            "message" => "Equipment marked as returned and availability updated"
+        ]);
+    } else {
+        $conn->rollback();
+        echo json_encode([
+            "status" => "error",
+            "message" => "Failed to complete return."
+        ]);
+    }
 }
 
 // ==================== ROOM REQUESTS ====================
