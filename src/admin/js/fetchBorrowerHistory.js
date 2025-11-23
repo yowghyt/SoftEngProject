@@ -18,23 +18,13 @@ document.addEventListener("DOMContentLoaded", () => {
       if (data.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="7" class="text-center py-4">No borrower history found.</td>
+            <td colspan="6" class="text-center py-4">No borrower history found.</td>
           </tr>
         `;
         return;
       }
 
       data.forEach(item => {
-        // Status Badge
-        let statusBadge = "";
-        if (item.status === "Active") {
-          statusBadge = `<span class="badge bg-success">Active</span>`;
-        } else if (item.status === "Delinquent") {
-          statusBadge = `<span class="badge bg-danger">Delinquent</span>`;
-        } else {
-          statusBadge = `<span class="badge bg-secondary">Inactive</span>`;
-        }
-
         // Last Borrowed Date
         let last = item.lastBorrowed
           ? new Date(item.lastBorrowed).toLocaleDateString()
@@ -48,7 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
             <td>${item.totalBorrows}</td>
             <td>${item.currentBorrows} (${item.currentItems || "None"})</td>
             <td>${last}</td>
-            <td>${statusBadge}</td>
           </tr>
         `;
 
