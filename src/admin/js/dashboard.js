@@ -138,7 +138,7 @@ async function loadActiveRooms() {
             if (result.data.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="6" class="text-center text-muted py-4">No active room reservations</td>
+                            <td colspan="7" class="text-center text-muted py-4">No active room reservations</td>
                     </tr>
                 `;
                 return;
@@ -153,6 +153,7 @@ async function loadActiveRooms() {
                 row.innerHTML = `
                     <td>${room.roomName}</td>
                     <td>${room.userName} (${room.idNumber})</td>
+                    <td>${formatDate(room.date)}</td>
                     <td>${formatTime(room.startTime)}</td>
                     <td>${formatTime(room.endTime)}</td>
                     <td><span class="badge ${statusClass}">${room.actualStatus}</span></td>
@@ -249,7 +250,7 @@ function formatTime(timeString) {
 function showEmptyState(sectionId, message) {
     const tbody = document.querySelector(`#${sectionId} tbody`);
     if (tbody) {
-        const colspan = sectionId === 'inventory' ? 6 : sectionId === 'rooms' ? 6 : 8;
+        const colspan = sectionId === 'inventory' ? 6 : sectionId === 'rooms' ? 7 : 8;
         tbody.innerHTML = `
             <tr>
                 <td colspan="${colspan}" class="text-center text-muted py-4">${message}</td>
