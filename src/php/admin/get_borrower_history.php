@@ -37,15 +37,15 @@ try {
     $db = Database::getInstance();
     $conn = $db->getConnection();
 
-    // Updated query - only counts Approved borrows
+    // Count all reservations for totalBorrows and use the latest reservation date for lastBorrowed
     $query = "
         SELECT 
             u.userId,
             u.idNumber,
             CONCAT(u.fname, ' ', u.lname) AS fullName,
-            COUNT(CASE WHEN er.status = 'Approved' THEN 1 END) AS totalBorrows,
+            COUNT(er.reservationId) AS totalBorrows,
             COUNT(CASE WHEN er.status = 'Approved' AND er.dueDate >= CURDATE() THEN 1 END) AS currentBorrows,
-            MAX(CASE WHEN er.status = 'Approved' THEN er.date END) AS lastBorrowed
+            MAX(er.date) AS lastBorrowed
         FROM users u
         LEFT JOIN equipmentreservation er ON u.userId = er.userId
         GROUP BY u.userId, u.idNumber, u.fname, u.lname
