@@ -1,7 +1,7 @@
 <?php
 // src/php/admin/get_borrower_history.php
 
-// Turn off error display
+// Turn off error display for security
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 ini_set('log_errors', 1);
@@ -37,21 +37,15 @@ try {
     $db = Database::getInstance();
     $conn = $db->getConnection();
 
+    // Updated query - only counts Approved borrows
     $query = "
         SELECT 
             u.userId,
             u.idNumber,
-            CONCAT(u.fname, ' ', u.lname) as fullName,
-            COUNT(er.reservationId) as totalBorrows,
-            SUM(CASE WHEN er.status = 'Approved' AND er.dueDate >= CURDATE() THEN 1 ELSE 0 END) as currentBorrows,
-            MAX(er.date) as lastBorrowed,
-            CASE 
-                WHEN SUM(CASE WHEN er.status = 'Approved' AND er.dueDate < CURDATE() THEN 1 ELSE 0 END) > 0 
-                THEN 'Delinquent'
-                WHEN SUM(CASE WHEN er.status = 'Approved' AND er.dueDate >= CURDATE() THEN 1 ELSE 0 END) > 0 
-                THEN 'Active'
-                ELSE 'Inactive'
-            END as status
+            CONCAT(u.fname, ' ', u.lname) AS fullName,
+            COUNT(CASE WHEN er.status = 'Approved' THEN 1 END) AS totalBorrows,
+            COUNT(CASE WHEN er.status = 'Approved' AND er.dueDate >= CURDATE() THEN 1 END) AS currentBorrows,
+            MAX(CASE WHEN er.status = 'Approved' THEN er.date END) AS lastBorrowed
         FROM users u
         LEFT JOIN equipmentreservation er ON u.userId = er.userId
         GROUP BY u.userId, u.idNumber, u.fname, u.lname
@@ -62,14 +56,14 @@ try {
     $borrowers = [];
 
     while ($row = $result->fetch_assoc()) {
-        // Get currently borrowed items
+        // Get currently borrowed items (only Approved and not overdue)
         $itemQuery = "
             SELECT e.equipmentName 
             FROM equipmentreservation er
             JOIN equipment e ON er.equipmentId = e.equipmentId
             WHERE er.userId = ? 
-            AND er.status = 'Approved' 
-            AND er.dueDate >= CURDATE()
+              AND er.status = 'Approved' 
+              AND er.dueDate >= CURDATE()
         ";
 
         $stmt = $conn->prepare($itemQuery);
@@ -81,8 +75,10 @@ try {
         while ($item = $itemResult->fetch_assoc()) {
             $items[] = $item['equipmentName'];
         }
+        $stmt->close();
 
         $row['currentItems'] = implode(', ', $items);
+
         $borrowers[] = $row;
     }
 
