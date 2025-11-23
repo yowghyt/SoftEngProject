@@ -223,14 +223,7 @@ async function loadBorrowerHistory() {
                     <td>${currentItems}</td>
                     <td>${borrower.lastBorrowed ? formatDate(borrower.lastBorrowed) : 'Never'}</td>
                     <td><span class="badge ${statusClass}">${borrower.status}</span></td>
-                    <td>
-                        <button class="btn btn-sm btn-primary" onclick="viewBorrowerDetails(${borrower.userId})">
-                            View
-                        </button>
-                        <button class="btn btn-sm btn-secondary ms-1" onclick="viewBorrowerHistory(${borrower.userId})">
-                            History
-                        </button>
-                    </td>
+                    
                 `;
 
                 tbody.appendChild(row);
