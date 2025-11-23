@@ -108,7 +108,7 @@ async function loadBorrowedItems() {
                         <button class="btn btn-sm ${buttonClass} me-1" onclick="viewItemDetails(${item.reservationId})">
                             ${buttonText}
                         </button>
-                        <button class="btn btn-sm btn-secondary" onclick="returnItem(this, ${item.reservationId}, '${item.equipmentName.replace(/'/g, "\\'")}')">
+                        <button class="btn btn-sm btn-secondary" onclick="returnItem(${item.reservationId}, '${item.equipmentName.replace(/'/g, "\\'")}')">
                             Return
                         </button>
                     </td>
@@ -222,7 +222,8 @@ async function loadBorrowerHistory() {
                     <td>${borrower.totalBorrows}</td>
                     <td>${currentItems}</td>
                     <td>${borrower.lastBorrowed ? formatDate(borrower.lastBorrowed) : 'Never'}</td>
-                    
+                    <td><span class="badge ${statusClass}">${borrower.status}</span></td>
+
                 `;
 
                 tbody.appendChild(row);
@@ -289,34 +290,30 @@ function viewBorrowerHistory(userId) {
     alert(`Viewing borrowing history for user ID: ${userId}\n\nThis feature will show:\n- All past borrowings\n- Return dates\n- Late returns\n- Frequency of borrowing`);
 }
 
-// In dashboard.js
-
-function returnItem(button, reservationId, equipmentName) {
+function returnItem(reservationId, equipmentName) {
     if (confirm(`Are you sure you want to mark "${equipmentName}" as returned?\n\nReservation ID: ${reservationId}`)) {
         // Show loading state
+        const button = event.target;
         const originalText = button.textContent;
         button.disabled = true;
         button.textContent = 'Processing...';
         
-        // Call the pending.php endpoint with the new action
-        fetch('/SoftEngProject/src/php/admin/pending.php', {
+        // Call the API to return the item
+        fetch('/SoftEngProject/src/php/admin/return_item.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                action: 'return_equipment', 
                 reservationId: reservationId
             })
         })
         .then(response => response.json())
         .then(result => {
-            // pending.php uses 'status' in its response
-            if (result.status === "success") { 
+            if (result.success) {
                 alert(`Success! "${equipmentName}" has been marked as returned.`);
-                // 1. Reload the borrowed items table (removes item from list)
+                // Reload the borrowed items table and stats
                 loadBorrowedItems();
-                // 2. Reload dashboard stats (updates inventory count on stat cards)
                 loadDashboardStats();
             } else {
                 alert(`Error: ${result.message}`);
