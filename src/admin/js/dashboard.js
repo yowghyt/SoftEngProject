@@ -222,7 +222,6 @@ async function loadBorrowerHistory() {
                     <td>${borrower.totalBorrows}</td>
                     <td>${currentItems}</td>
                     <td>${borrower.lastBorrowed ? formatDate(borrower.lastBorrowed) : 'Never'}</td>
-                    <td><span class="badge ${statusClass}">${borrower.status}</span></td>
                     
                 `;
 
