@@ -95,8 +95,6 @@ async function loadBorrowedItems() {
                 const row = document.createElement('tr');
 
                 const statusClass = item.actualStatus === 'Overdue' ? 'bg-danger' : 'bg-success';
-                const buttonClass = item.actualStatus === 'Overdue' ? 'btn-danger' : 'btn-primary';
-                const buttonText = item.actualStatus === 'Overdue' ? 'Alert' : 'Details';
 
                 row.innerHTML = `
                     <td>#ITM-${String(item.equipmentId).padStart(3, '0')}</td>
@@ -105,10 +103,7 @@ async function loadBorrowedItems() {
                     <td>${formatDate(item.dueDate)}</td>
                     <td><span class="badge ${statusClass}">${item.actualStatus}</span></td>
                     <td>
-                        <button class="btn btn-sm ${buttonClass} me-1" onclick="viewItemDetails(${item.reservationId})">
-                            ${buttonText}
-                        </button>
-                        <button class="btn btn-sm btn-secondary" onclick="returnItem(${item.reservationId}, '${item.equipmentName.replace(/'/g, "\\'")}')">
+                        <button class="btn btn-sm btn-secondary" onclick="returnItem(this, ${item.reservationId}, '${item.equipmentName.replace(/'/g, "\\'")}')">
                             Return
                         </button>
                     </td>
@@ -162,14 +157,9 @@ async function loadActiveRooms() {
                     <td>${formatTime(room.endTime)}</td>
                     <td><span class="badge ${statusClass}">${room.actualStatus}</span></td>
                     <td>
-                        <div style="display: flex; gap: 5px;">
-                            <button class="btn btn-sm btn-primary" onclick="viewRoomDetails(${room.reservationId})">
-                                Details
-                            </button>
-                            <button class="btn btn-sm btn-success" onclick="completeRoomReservation(${room.reservationId}, '${room.roomName}')">
-                                Complete
-                            </button>
-                        </div>
+                        <button class="btn btn-sm btn-success" onclick="completeRoomReservation(${room.reservationId}, '${room.roomName}')">
+                            Complete
+                        </button>
                     </td>
                 `;
 
@@ -209,9 +199,6 @@ async function loadBorrowerHistory() {
             result.data.forEach((borrower, index) => {
                 const row = document.createElement('tr');
 
-                const statusClass = borrower.status === 'Delinquent' ? 'bg-danger' :
-                    borrower.status === 'Active' ? 'bg-success' : 'bg-secondary';
-
                 const currentItems = borrower.currentBorrows > 0 ?
                     `${borrower.currentBorrows} item(s)` : 'None';
 
@@ -222,8 +209,6 @@ async function loadBorrowerHistory() {
                     <td>${borrower.totalBorrows}</td>
                     <td>${currentItems}</td>
                     <td>${borrower.lastBorrowed ? formatDate(borrower.lastBorrowed) : 'Never'}</td>
-                    <td><span class="badge ${statusClass}">${borrower.status}</span></td>
-
                 `;
 
                 tbody.appendChild(row);
@@ -273,46 +258,28 @@ function showEmptyState(sectionId, message) {
     }
 }
 
-// ==================== DETAIL VIEW FUNCTIONS ====================
-function viewItemDetails(reservationId) {
-    alert(`Viewing details for equipment reservation ID: ${reservationId}\n\nThis feature will show:\n- Equipment details\n- Borrower information\n- Borrow/return dates\n- Purpose of borrowing`);
-}
-
-function viewRoomDetails(reservationId) {
-    alert(`Viewing details for room reservation ID: ${reservationId}\n\nThis feature will show:\n- Room information\n- User details\n- Time slot\n- Purpose of reservation`);
-}
-
-function viewBorrowerDetails(userId) {
-    alert(`Viewing profile for user ID: ${userId}\n\nThis feature will show:\n- Student information\n- Contact details\n- Current borrowed items\n- Borrowing history`);
-}
-
-function viewBorrowerHistory(userId) {
-    alert(`Viewing borrowing history for user ID: ${userId}\n\nThis feature will show:\n- All past borrowings\n- Return dates\n- Late returns\n- Frequency of borrowing`);
-}
-
-function returnItem(reservationId, equipmentName) {
+// ==================== RETURN ITEM FUNCTION ====================
+function returnItem(button, reservationId, equipmentName) {
     if (confirm(`Are you sure you want to mark "${equipmentName}" as returned?\n\nReservation ID: ${reservationId}`)) {
         // Show loading state
-        const button = event.target;
         const originalText = button.textContent;
         button.disabled = true;
         button.textContent = 'Processing...';
         
-        // Call the API to return the item
-        fetch('/SoftEngProject/src/php/admin/return_item.php', {
+        fetch('/SoftEngProject/src/php/admin/pending.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
+                action: 'return_equipment', 
                 reservationId: reservationId
             })
         })
         .then(response => response.json())
         .then(result => {
-            if (result.success) {
+            if (result.status === "success") { 
                 alert(`Success! "${equipmentName}" has been marked as returned.`);
-                // Reload the borrowed items table and stats
                 loadBorrowedItems();
                 loadDashboardStats();
             } else {
@@ -326,6 +293,36 @@ function returnItem(reservationId, equipmentName) {
             alert('An error occurred while processing the return. Please try again.');
             button.disabled = false;
             button.textContent = originalText;
+        });
+    }
+}
+
+// ==================== COMPLETE ROOM RESERVATION FUNCTION ====================
+function completeRoomReservation(reservationId, roomName) {
+    if (confirm(`Mark room reservation "${roomName}" as completed?\n\nReservation ID: ${reservationId}`)) {
+        fetch('/SoftEngProject/src/php/admin/pending.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'complete_room_reservation',
+                reservationId: reservationId
+            })
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === "success") {
+                alert(`Room reservation for "${roomName}" has been marked as completed.`);
+                loadActiveRooms();
+                loadDashboardStats();
+            } else {
+                alert(`Error: ${result.message}`);
+            }
+        })
+        .catch(error => {
+            console.error('Error completing room reservation:', error);
+            alert('An error occurred while completing the reservation. Please try again.');
         });
     }
 }
