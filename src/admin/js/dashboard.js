@@ -158,11 +158,7 @@ async function loadActiveRooms() {
                     <td>${formatTime(room.startTime)}</td>
                     <td>${formatTime(room.endTime)}</td>
                     <td><span class="badge ${statusClass}">${room.actualStatus}</span></td>
-                    <td>
-                        <button class="btn btn-sm btn-success" onclick="completeRoomReservation(${room.reservationId}, '${room.roomName}')">
-                            Complete
-                        </button>
-                    </td>
+                
                 `;
 
                 tbody.appendChild(row);
