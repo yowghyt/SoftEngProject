@@ -49,7 +49,7 @@
             </ul>
         </div>
     </nav>
-    
+
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -217,6 +217,14 @@
                     <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all-borrowers"
                         type="button" role="tab">All Borrowers</button>
                 </li>
+
+                <!-- ✅ NEW TAB ADDED -->
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="reservations-tab" data-bs-toggle="tab"
+                        data-bs-target="#all-reservations" type="button" role="tab">
+                        All Reservations
+                    </button>
+                </li>
             </ul>
 
             <div class="tab-content">
@@ -247,6 +255,36 @@
                         </table>
                     </div>
                 </div>
+
+                <!-- ✅ NEW TAB CONTENT: ALL RESERVATIONS -->
+                <div class="tab-pane fade" id="all-reservations" role="tabpanel">
+                    <div class="table-responsive">
+                        <table class="table table-hover admin-table">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Reservation ID</th>
+                                    <th>Room</th>
+                                    <th>Name</th>
+                                    <th>Date</th>
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reservationHistoryTable">
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2">Loading reservation history...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
             </div>
         </section>
     </main>
