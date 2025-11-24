@@ -21,9 +21,9 @@ if (!$userId || !$equipmentId || !$duration || !$purpose) {
 }
 
 // call the function; it will echo error JSON and exit on failure
-$success = submitBorrowRequest($conn, (int)$userId, (int)$equipmentId, (int)$duration, $purpose);
+$reservationId = submitBorrowRequest($conn, (int)$userId, (int)$equipmentId, (int)$duration, $purpose);
 
-if ($success === true) {
-    echo json_encode(["success" => true]);
+if ($reservationId) {
+    echo json_encode(["success" => true, "reservationId" => $reservationId]);
 }
 ?>

@@ -78,6 +78,22 @@ function fetchAvailableRooms($conn) {
 function submitBorrowRequest($conn, $userId, $equipmentId, $duration, $purpose) {
     $conn->begin_transaction();
     try {
+        // Prevent a user from borrowing the same equipment while they already have
+        // a pending or approved reservation for it (one-to-one constraint)
+        $check = $conn->prepare("SELECT COUNT(*) as cnt FROM equipmentreservation WHERE userId = ? AND equipmentId = ? AND status IN ('Pending','Approved')");
+        if (!$check) {
+            throw new Exception('Prepare failed (check existing): ' . $conn->error);
+        }
+        $check->bind_param('ii', $userId, $equipmentId);
+        if (!$check->execute()) {
+            throw new Exception('Execute failed (check existing): ' . $check->error);
+        }
+        $res = $check->get_result();
+        $row = $res->fetch_assoc();
+        $check->close();
+        if ($row && intval($row['cnt']) > 0) {
+            throw new Exception('You already have an active or pending reservation for this item.');
+        }
         $stmt = $conn->prepare("
             INSERT INTO equipmentreservation 
     (reservationId, userId, equipmentId, date, startTime, endTime, dueDate, status, purpose)
@@ -190,7 +206,7 @@ function submitRoomReservation($conn, $userId, $roomId, $date, $start, $end, $pe
         }
 
         $conn->commit();
-        return true;
+        return $reservationId;
 
     } catch (Exception $e) {
         $conn->rollback();
