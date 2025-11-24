@@ -211,26 +211,28 @@ function loadEquipmentItems() {
                 const disabledBtn = item.status === "Available" ? "" : "disabled";
                 const btnText = item.status === "Available" ? "Request Borrow" : "Currently Unavailable";
 
-                container.innerHTML += `
-                    <div class="col-md-4 col-lg-3 mb-4">
-                        <div class="item-card" style="animation-delay: ${index * 0.1}s">
-                            <div class="item-image">📦</div>
-                            <div class="item-body">
-                                <h5>${escapeHtml(item.equipmentName)}</h5>
-                                <p class="item-id">#${escapeHtml(item.equipmentId)}</p>
-                                <p class="item-category">
-                                    <span class="badge bg-primary">${escapeHtml(item.category)}</span>
-                                </p>
-                                <div class="item-status">${statusBadge}</div>
-                                <button class="btn btn-primary w-100 mt-2" 
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#borrowModal" 
-                                        ${disabledBtn}>
-                                    ${btnText}
-                                </button>
-                            </div>
-                        </div>
-                    </div>`;
+       container.innerHTML += `
+            <div class="col-md-4 col-lg-3 mb-4">
+                <div class="item-card" style="animation-delay: ${index * 0.1}s">
+                    <div class="item-image">📦</div>
+                    <div class="item-body">
+                        <h5>${escapeHtml(item.equipmentName)}</h5>
+                        <p class="item-id">#${escapeHtml(item.equipmentId)}</p>
+                        <p class="mt-1 text-muted small">
+                            Remaining: <strong>${item.availableQuantity}</strong>
+                        </p>
+                        <div class="item-status">${statusBadge}</div>
+
+                        <button class="btn btn-primary w-100 mt-2" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#borrowModal" 
+                                ${disabledBtn}>
+                            ${btnText}
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+
             });
 
             attachBorrowEventListeners();

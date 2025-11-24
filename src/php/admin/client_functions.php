@@ -31,18 +31,26 @@ $conn = Database::getInstance()->getConnection();
  */
 function fetchAvailableItems($conn) {
     $sql = "
-        SELECT equipmentId, equipmentName, category, status
+        SELECT 
+            equipmentId, 
+            equipmentName, 
+            category, 
+            status,
+            quantity,
+            available AS availableQuantity
         FROM equipment
-        WHERE status = 'available'
-        ORDER BY equipmentName DESC
+        ORDER BY equipmentName ASC
     ";
+
     $result = $conn->query($sql);
-     $items = [];
+    $items = [];
+
     while ($row = $result->fetch_assoc()) {
         $items[] = $row;
     }
     return $items;
 }
+
 
 /**
  * Fetch all available rooms for reservation
