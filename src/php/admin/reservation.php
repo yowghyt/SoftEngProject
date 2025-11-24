@@ -56,6 +56,7 @@ function getAllDoneReservations() {
         rr.reservationId AS reservation_id,
         r.roomName AS room,
         CONCAT(u.fname, ' ', u.lname, ' (', u.idNumber, ')') AS name,
+        rr.status AS status,
         rr.date AS date,
         rr.startTime AS start_time,
         rr.endTime AS end_time
@@ -65,12 +66,15 @@ function getAllDoneReservations() {
     JOIN users u ON rr.userId = u.userId
 
     WHERE 
-        rr.status = 'Approved'
-
-        AND (
-            rr.date < CURDATE() 
-            OR 
-            (rr.date = CURDATE() AND rr.endTime < CURTIME())
+        (
+            rr.status = 'Completed'
+            OR (
+                rr.status = 'Approved'
+                AND (
+                    rr.date < CURDATE() 
+                    OR (rr.date = CURDATE() AND rr.endTime < CURTIME())
+                )
+            )
         )
 
     ORDER BY rr.date DESC, rr.endTime DESC

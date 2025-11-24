@@ -339,15 +339,32 @@ async function loadReservationHistory() {
 
         if (result.status === "success" && result.data.length > 0) {
             result.data.forEach(res => {
+                // format date and time consistent with active reservations
+                const displayDate = formatDate(res.date);
+                const displayStart = formatTime(res.start_time);
+                const displayEnd = formatTime(res.end_time);
+
+                // status badge styling
+                const status = (res.status || 'Completed').toLowerCase();
+                let badgeClass = 'bg-secondary';
+                let badgeText = res.status || 'Completed';
+                if (status === 'completed' || status === 'done') {
+                    badgeClass = 'bg-success';
+                } else if (status === 'approved' || status === 'in use') {
+                    badgeClass = 'bg-warning text-dark';
+                } else if (status === 'rejected' || status === 'cancelled') {
+                    badgeClass = 'bg-danger';
+                }
+
                 tableBody.innerHTML += `
                     <tr>
                         <td>${res.reservation_id}</td>
                         <td>${res.room}</td>
                         <td>${res.name}</td>
-                        <td>${res.date}</td>
-                        <td>${res.start_time}</td>
-                        <td>${res.end_time}</td>
-                        <td><span class="badge bg-success">Done</span></td>
+                        <td>${displayDate}</td>
+                        <td>${displayStart}</td>
+                        <td>${displayEnd}</td>
+                        <td><span class="badge ${badgeClass}">${badgeText}</span></td>
                     </tr>
                 `;
             });

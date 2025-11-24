@@ -37,6 +37,20 @@ try {
     $db = Database::getInstance();
     $conn = $db->getConnection();
 
+    // Auto-complete room reservations that have ended:
+    // If a reservation is still 'Approved' but its date is before today,
+    // or it is today and endTime <= now, mark it as 'Completed'.
+    $autoUpdateSql = "UPDATE roomreservation SET status = 'Completed' 
+        WHERE status = 'Approved' AND (date < CURDATE() OR (date = CURDATE() AND endTime <= CURTIME()))";
+    $conn->query($autoUpdateSql);
+
+    // Also sync the corresponding request rows to 'Completed' for room requests
+    $syncRequestsSql = "UPDATE request rq 
+        JOIN roomreservation rr ON rq.reservationId = rr.reservationId 
+        SET rq.status = 'Completed' 
+        WHERE rr.status = 'Completed' AND rq.requestType = 'room' AND rq.status != 'Completed'";
+    $conn->query($syncRequestsSql);
+
     $query = "
         SELECT 
             rr.reservationId,

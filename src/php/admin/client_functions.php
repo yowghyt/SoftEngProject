@@ -175,6 +175,37 @@ function fetchUserBorrows($conn, $userId) {
 function submitRoomReservation($conn, $userId, $roomId, $date, $start, $end, $people, $purpose) {
     $conn->begin_transaction();
     try {
+        // Check for room conflicts: same room, same date, overlapping time (Pending or Approved)
+        $checkRoom = $conn->prepare("SELECT COUNT(*) as cnt FROM roomreservation WHERE roomId = ? AND date = ? AND status IN ('Pending','Approved') AND NOT (endTime <= ? OR startTime >= ?)");
+        if (!$checkRoom) {
+            throw new Exception('Prepare failed (checkRoom): ' . $conn->error);
+        }
+        $checkRoom->bind_param('isss', $roomId, $date, $start, $end);
+        if (!$checkRoom->execute()) {
+            throw new Exception('Execute failed (checkRoom): ' . $checkRoom->error);
+        }
+        $resRoom = $checkRoom->get_result();
+        $rRow = $resRoom->fetch_assoc();
+        $checkRoom->close();
+        if ($rRow && intval($rRow['cnt']) > 0) {
+            throw new Exception('The selected room is already reserved for the chosen date/time.');
+        }
+
+        // Check for user conflicts: user cannot have another reservation at the same date/time
+        $checkUser = $conn->prepare("SELECT COUNT(*) as cnt FROM roomreservation WHERE userId = ? AND date = ? AND status IN ('Pending','Approved') AND NOT (endTime <= ? OR startTime >= ?)");
+        if (!$checkUser) {
+            throw new Exception('Prepare failed (checkUser): ' . $conn->error);
+        }
+        $checkUser->bind_param('isss', $userId, $date, $start, $end);
+        if (!$checkUser->execute()) {
+            throw new Exception('Execute failed (checkUser): ' . $checkUser->error);
+        }
+        $resUser = $checkUser->get_result();
+        $uRow = $resUser->fetch_assoc();
+        $checkUser->close();
+        if ($uRow && intval($uRow['cnt']) > 0) {
+            throw new Exception('You already have another room reservation at the selected date/time.');
+        }
         $stmt = $conn->prepare("
             INSERT INTO roomreservation
                 (userId, roomId, date, startTime, endTime, capacityUsed, status, purpose)
