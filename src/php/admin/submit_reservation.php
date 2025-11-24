@@ -21,8 +21,25 @@ if (!$userId || !$roomId || !$date || !$start || !$end || !$people) {
 }
 
 // call the function; on failure it will already echo an error JSON and exit
-$success = submitRoomReservation($conn, (int)$userId, (int)$roomId, $date, $start, $end, (int)$people, $purpose);
+// submitRoomReservation now returns the new reservationId on success
+$reservationId = submitRoomReservation($conn, (int)$userId, (int)$roomId, $date, $start, $end, (int)$people, $purpose);
 
-if ($success === true) {
-    echo json_encode(["success" => true]);
+if ($reservationId) {
+    // Safety: ensure a corresponding request row exists (some paths may have skipped it)
+    $check = $conn->prepare("SELECT requestId FROM request WHERE reservationId = ? AND requestType = 'room' LIMIT 1");
+    $check->bind_param('i', $reservationId);
+    $check->execute();
+    $res = $check->get_result();
+    $exists = $res->fetch_assoc();
+    $check->close();
+
+    if (!$exists) {
+        $ins = $conn->prepare("INSERT INTO request (userId, reservationId, requestType, status) VALUES (?, ?, 'room', 'Pending')");
+        // we need the userId again; use the passed POST value
+        $ins->bind_param('ii', $userId, $reservationId);
+        $ins->execute();
+        $ins->close();
+    }
+
+    echo json_encode(["success" => true, "reservationId" => $reservationId]);
 }

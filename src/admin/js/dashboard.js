@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', function () {
     loadBorrowedItems();
     loadActiveRooms();
     loadBorrowerHistory();
-    loadReservationHistory();
 
     // Refresh data every 60 seconds
     setInterval(() => {
@@ -328,42 +327,6 @@ function completeRoomReservation(reservationId, roomName) {
         });
     }
 }
-
-async function loadReservationHistory() {
-    try {
-        const response = await fetch("/SoftEngProject/src/php/admin/reservation.php?action=get_all_done_reservations");
-        const result = await response.json();
-
-        const tableBody = document.getElementById("reservationHistoryTable");
-        tableBody.innerHTML = "";
-
-        if (result.status === "success" && result.data.length > 0) {
-            result.data.forEach(res => {
-                tableBody.innerHTML += `
-                    <tr>
-                        <td>${res.reservation_id}</td>
-                        <td>${res.room}</td>
-                        <td>${res.name}</td>
-                        <td>${res.date}</td>
-                        <td>${res.start_time}</td>
-                        <td>${res.end_time}</td>
-                        <td><span class="badge bg-success">Done</span></td>
-                    </tr>
-                `;
-            });
-        } else {
-            tableBody.innerHTML = `
-                <tr>
-                    <td colspan="7" class="text-center py-3 text-muted">No completed reservations yet</td>
-                </tr>
-            `;
-        }
-
-    } catch (error) {
-        console.error("Error loading reservation history:", error);
-    }
-}
-
 
 // ==================== SIDEBAR TOGGLE ====================
 function toggleSidebar() {

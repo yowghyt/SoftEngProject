@@ -104,7 +104,7 @@ VALUES
             throw new Exception('Execute failed (request): ' . $stmt2->error);
         }
         $conn->commit();
-        return true;
+        return $reservationId;
 
     } catch (Exception $e) {
         $conn->rollback();
