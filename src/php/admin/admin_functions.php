@@ -314,9 +314,28 @@ function handleEquipmentReturn($conn, $reservationId)
         }
         $stmt->close();
 
-        // 3. Increment the AVAILABLE equipment quantity (CORRECTED LINE)
-        $stmt = $conn->prepare("UPDATE equipment SET available = available + ? WHERE equipmentId = ?");
-        $stmt->bind_param("ii", $quantity, $equipmentId);
+        // 3. Read current equipment availability and total quantity
+        $stmt = $conn->prepare("SELECT available, quantity FROM equipment WHERE equipmentId = ?");
+        $stmt->bind_param("i", $equipmentId);
+        $stmt->execute();
+        $equipRow = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        if (!$equipRow) {
+            throw new Exception("Equipment not found.");
+        }
+
+        $currentAvailable = (int)$equipRow['available'];
+        $totalQuantity = (int)$equipRow['quantity'];
+
+        // Calculate new available but ensure it does not exceed total quantity
+        $newAvailable = $currentAvailable + (int)$quantity;
+        if ($newAvailable > $totalQuantity) {
+            $newAvailable = $totalQuantity;
+        }
+
+        $stmt = $conn->prepare("UPDATE equipment SET available = ? WHERE equipmentId = ?");
+        $stmt->bind_param("ii", $newAvailable, $equipmentId);
         if (!$stmt->execute()) {
             throw new Exception("Failed to update available quantity: " . $conn->error);
         }

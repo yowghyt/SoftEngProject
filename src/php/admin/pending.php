@@ -112,30 +112,64 @@ function approveEquipmentRequest($conn, $data)
     }
 
     $equipmentId = $equipmentRow['equipmentId'];
+    // 2. Read current equipment availability and total quantity
+    $stmt = $conn->prepare("SELECT available, quantity FROM equipment WHERE equipmentId = ?");
+    $stmt->bind_param("i", $equipmentId);
+    $stmt->execute();
+    $equipRow = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
 
-    // 2. Approve request in request table
+    if (!$equipRow) {
+        echo json_encode(["status" => "error", "message" => "Equipment not found"]);
+        return;
+    }
+
+    $currentAvailable = (int)$equipRow['available'];
+    $totalQuantity = (int)$equipRow['quantity'];
+
+    // Normalize if available somehow exceeded quantity
+    if ($currentAvailable > $totalQuantity) {
+        $stmt = $conn->prepare("UPDATE equipment SET available = ? WHERE equipmentId = ?");
+        $norm = $totalQuantity;
+        $stmt->bind_param("ii", $norm, $equipmentId);
+        $stmt->execute();
+        $stmt->close();
+        $currentAvailable = $totalQuantity;
+    }
+
+    if ($currentAvailable <= 0) {
+        echo json_encode(["status" => "error", "message" => "No available items to approve"]);
+        return;
+    }
+
+    // 3. Approve request in request table
     $sync = $conn->prepare("UPDATE request SET status = 'Approved' WHERE reservationId = ? AND requestType = 'equipment'");
     $sync->bind_param("i", $reservationId);
     $sync->execute();
     $sync->close();
 
-    // 3. Approve equipment reservation
+    // 4. Approve equipment reservation
     $stmt = $conn->prepare("UPDATE equipmentreservation SET status = 'Approved' WHERE reservationId = ?");
     $stmt->bind_param("i", $reservationId);
     $stmt->execute();
     $stmt->close();
 
-    // 4. Reduce equipment quantity
-    $stmt = $conn->prepare("UPDATE equipment SET available = available - 1 WHERE equipmentId = ? AND available > 0");
-    $stmt->bind_param("i", $equipmentId);
+    // 5. Decrement available safely (ensure it does not go below 0)
+    $newAvailable = $currentAvailable - 1;
+    if ($newAvailable < 0) $newAvailable = 0;
+
+    $stmt = $conn->prepare("UPDATE equipment SET available = ? WHERE equipmentId = ?");
+    $stmt->bind_param("ii", $newAvailable, $equipmentId);
     $stmt->execute();
     $stmt->close();
 
-    // 5. If quantity becomes 0 → mark as Borrowed/Unavailable
-    $stmt = $conn->prepare("UPDATE equipment SET status = 'Borrowed' WHERE equipmentId = ? AND available = 0");
-    $stmt->bind_param("i", $equipmentId);
-    $stmt->execute();
-    $stmt->close();
+    // 6. If quantity becomes 0 → mark as Borrowed/Unavailable
+    if ($newAvailable === 0) {
+        $stmt = $conn->prepare("UPDATE equipment SET status = 'Borrowed' WHERE equipmentId = ?");
+        $stmt->bind_param("i", $equipmentId);
+        $stmt->execute();
+        $stmt->close();
+    }
 
     echo json_encode([
         "status" => "success",
@@ -197,6 +231,27 @@ function returnEquipmentRequest($conn, $data)
 
     $equipmentId = $equipmentRow['equipmentId'];
 
+    // 1b. Read current equipment availability and total quantity
+    $stmt = $conn->prepare("SELECT available, quantity FROM equipment WHERE equipmentId = ?");
+    $stmt->bind_param("i", $equipmentId);
+    $stmt->execute();
+    $equip = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    if (!$equip) {
+        echo json_encode(["status" => "error", "message" => "Equipment not found"]);
+        return;
+    }
+
+    $currentAvailable = (int)$equip['available'];
+    $totalQuantity = (int)$equip['quantity'];
+
+    // Calculate new available but ensure it does not exceed total quantity
+    $newAvailable = $currentAvailable + 1;
+    if ($newAvailable > $totalQuantity) {
+        $newAvailable = $totalQuantity;
+    }
+
     // Use transaction to ensure consistency
     $conn->begin_transaction();
 
@@ -212,9 +267,9 @@ function returnEquipmentRequest($conn, $data)
     $ok2 = $sync->execute();
     $sync->close();
 
-    // 4. Increment equipment available count
-    $stmt = $conn->prepare("UPDATE equipment SET available = available + 1 WHERE equipmentId = ?");
-    $stmt->bind_param("i", $equipmentId);
+    // 4. Set equipment available to the capped value
+    $stmt = $conn->prepare("UPDATE equipment SET available = ? WHERE equipmentId = ?");
+    $stmt->bind_param("ii", $newAvailable, $equipmentId);
     $ok3 = $stmt->execute();
     $stmt->close();
 
