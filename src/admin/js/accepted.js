@@ -41,7 +41,7 @@ function displayEquipmentRequests(requests) {
             <td>${req.studentName}</td>
             <td>${req.equipmentName}</td>
             <td>${formatDate(req.requestedDate)}</td>
-            <td>${formatDate(req.startTime)} - ${formatDate(req.dueDate)}</td>
+            <td>${formatDate(req.requestedDate)} - ${formatDate(req.dueDate)}</td>
             <td>${req.purpose}</td>
             <td><span class="badge bg-warning">Pending</span></td>
             <td>
@@ -368,7 +368,17 @@ async function updatePendingCountBadge() {
 
 // ==================== HELPER FUNCTIONS ====================
 function formatDate(dateString) {
-    const date = new Date(dateString);
+    if (!dateString) return 'N/A';
+    
+    // Fix: Replace dashes with slashes for consistent cross-browser parsing of dates
+    const fixedDateString = dateString.replace(/-/g, '/');
+    const date = new Date(fixedDateString);
+
+    // Check if the date object is valid
+    if (isNaN(date.getTime())) {
+        return 'Invalid Date'; 
+    }
+
     return date.toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
