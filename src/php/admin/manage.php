@@ -138,13 +138,13 @@ function addEquipment($conn, $data) {
     
     // Build SQL based on available columns
     if (in_array('category', $columns) && in_array('brand', $columns)) {
-        $stmt = $conn->prepare("INSERT INTO equipment (equipmentName, quantity, status, category, brand, `condition`, description) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO equipment (equipmentName, quantity, available, status, category, brand, `condition`, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         // FIX: Changed "sissss" to "sisssss" (7 parameters need 7 type chars)
-        $stmt->bind_param("sisssss", $equipmentName, $quantity, $status, $category, $brand, $condition, $description);
+        $stmt->bind_param("siisssss", $equipmentName, $quantity, $quantity, $status, $category, $brand, $condition, $description);
     } else {
         // Use basic columns only
-        $stmt = $conn->prepare("INSERT INTO equipment (equipmentName, quantity, status) VALUES (?, ?, ?)");
-        $stmt->bind_param("sis", $equipmentName, $quantity, $status);
+        $stmt = $conn->prepare("INSERT INTO equipment (equipmentName, quantity, available, status) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("sis", $equipmentName, $quantity, $quantity, $status);
     }
     
     if ($stmt->execute()) {
