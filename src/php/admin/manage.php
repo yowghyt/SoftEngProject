@@ -115,6 +115,7 @@ function getEquipmentDetails($conn) {
 function addEquipment($conn, $data) {
     $equipmentName = $data['equipmentName'] ?? '';
     $quantity = $data['quantity'] ?? 0;
+    $available = $quantity;
     $status = $data['status'] ?? 'Available';
     
     // Optional fields
@@ -140,11 +141,11 @@ function addEquipment($conn, $data) {
     if (in_array('category', $columns) && in_array('brand', $columns)) {
         $stmt = $conn->prepare("INSERT INTO equipment (equipmentName, quantity, available, status, category, brand, `condition`, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         // FIX: Changed "sissss" to "sisssss" (7 parameters need 7 type chars)
-        $stmt->bind_param("siisssss", $equipmentName, $quantity, $quantity, $status, $category, $brand, $condition, $description);
+        $stmt->bind_param("siisssss", $equipmentName, $quantity, $available, $status, $category, $brand, $condition, $description);
     } else {
         // Use basic columns only
         $stmt = $conn->prepare("INSERT INTO equipment (equipmentName, quantity, available, status) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("sis", $equipmentName, $quantity, $quantity, $status);
+        $stmt->bind_param("sis", $equipmentName, $quantity, $available, $status);
     }
     
     if ($stmt->execute()) {
@@ -173,6 +174,47 @@ function updateEquipment($conn, $data) {
         return;
     }
     
+    // Fetch current equipment details to validate
+    $getStmt = $conn->prepare("SELECT quantity, available FROM equipment WHERE equipmentId = ?");
+    $getStmt->bind_param("i", $equipmentId);
+    $getStmt->execute();
+    $getResult = $getStmt->get_result();
+    
+    if ($getResult->num_rows === 0) {
+        echo json_encode(["status" => "error", "message" => "Equipment not found"]);
+        $getStmt->close();
+        return;
+    }
+    
+    $currentEquipment = $getResult->fetch_assoc();
+    $currentQuantity = $currentEquipment['quantity'];
+    $currentAvailable = $currentEquipment['available'];
+    $getStmt->close();
+    
+    // Calculate borrowed items
+    $borrowedCount = $currentQuantity - $currentAvailable;
+    
+    // Validation: Check if quantity and available are equal
+    if ($currentQuantity !== $currentAvailable) {
+        // Items are borrowed - validate that new quantity >= borrowed count
+        if ($quantity < $borrowedCount) {
+            echo json_encode([
+                "status" => "error",
+                "message" => "Cannot reduce quantity below borrowed items. Currently borrowed: $borrowedCount item(s). You cannot set quantity lower than $borrowedCount.",
+                "borrowedCount" => $borrowedCount,
+                "currentQuantity" => $currentQuantity,
+                "currentAvailable" => $currentAvailable
+            ]);
+            return;
+        }
+        
+        // Calculate new available based on borrowed items
+        $newAvailable = $quantity - $borrowedCount;
+    } else {
+        // All items are available, so new available = new quantity
+        $newAvailable = $quantity;
+    }
+    
     // Check available columns
     $columnsQuery = "SHOW COLUMNS FROM equipment";
     $columnsResult = $conn->query($columnsQuery);
@@ -188,17 +230,20 @@ function updateEquipment($conn, $data) {
         $condition = $data['condition'] ?? null;
         $description = $data['description'] ?? null;
         
-        $stmt = $conn->prepare("UPDATE equipment SET equipmentName = ?, quantity = ?, category = ?, brand = ?, `condition` = ?, description = ? WHERE equipmentId = ?");
-        $stmt->bind_param("sissssi", $equipmentName, $quantity, $category, $brand, $condition, $description, $equipmentId);
+        $stmt = $conn->prepare("UPDATE equipment SET equipmentName = ?, quantity = ?, available = ?, category = ?, brand = ?, `condition` = ?, description = ? WHERE equipmentId = ?");
+        $stmt->bind_param("siissssi", $equipmentName, $quantity, $newAvailable, $category, $brand, $condition, $description, $equipmentId);
     } else {
-        $stmt = $conn->prepare("UPDATE equipment SET equipmentName = ?, quantity = ? WHERE equipmentId = ?");
-        $stmt->bind_param("sii", $equipmentName, $quantity, $equipmentId);
+        $stmt = $conn->prepare("UPDATE equipment SET equipmentName = ?, quantity = ?, available = ? WHERE equipmentId = ?");
+        $stmt->bind_param("siii", $equipmentName, $quantity, $newAvailable, $equipmentId);
     }
     
     if ($stmt->execute()) {
         echo json_encode([
             "status" => "success",
-            "message" => "Equipment updated successfully"
+            "message" => "Equipment updated successfully",
+            "newQuantity" => $quantity,
+            "newAvailable" => $newAvailable,
+            "borrowedCount" => $borrowedCount
         ]);
     } else {
         echo json_encode([

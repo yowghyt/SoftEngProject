@@ -302,12 +302,21 @@ async function updateItem() {
         const result = await response.json();
 
         if (result.status === "success") {
-            alert("Equipment updated successfully!");
+            let successMessage = "Equipment updated successfully!";
+            if (result.borrowedCount > 0) {
+                successMessage += `\n\nNote: ${result.borrowedCount} item(s) are currently borrowed.\nQuantity updated to: ${result.newQuantity}\nAvailable updated to: ${result.newAvailable}`;
+            }
+            alert(successMessage);
             bootstrap.Modal.getInstance(document.getElementById('editItemModal')).hide();
             currentEditEquipmentId = null;
             loadEquipment();
         } else {
-            alert("Error: " + result.message);
+            // Handle validation errors
+            let errorMessage = result.message;
+            if (result.borrowedCount !== undefined) {
+                errorMessage += `\n\nDetails:\n- Borrowed Items: ${result.borrowedCount}\n- Current Quantity: ${result.currentQuantity}\n- Current Available: ${result.currentAvailable}`;
+            }
+            alert("Error: " + errorMessage);
         }
     } catch (error) {
         console.error("Error:", error);
