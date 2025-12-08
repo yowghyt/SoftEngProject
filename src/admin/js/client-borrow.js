@@ -324,7 +324,7 @@ function createModals() {
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Student Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="borrowStudentName" placeholder="Enter full name">
+                            <input type="text" class="form-control" id="borrowStudentName" placeholder="Enter full name" readonly>
                         </div>
                     </div>
                     <div class="row">
@@ -377,7 +377,7 @@ function createModals() {
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Student Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="reserveStudentName" placeholder="Enter full name">
+                            <input type="text" class="form-control" id="reserveStudentName" placeholder="Enter full name" readonly>
                         </div>
                     </div>
                     <div class="mb-3">
