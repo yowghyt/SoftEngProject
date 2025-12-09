@@ -151,6 +151,11 @@ function setupFilters() {
     // Get the input fields from the Time-In form
     const studentIdInput = document.getElementById("timeInStudentId");
     const fullNameInput  = document.getElementById("timeInFullName");
+    
+    // Make the full name input readonly since it's auto-filled from database
+    if (fullNameInput) {
+        fullNameInput.readOnly = true;
+    }
 
     // Optional: hidden field to store the actual database user ID (if needed later)
     let hiddenUserId = document.getElementById("timeInUserId");
